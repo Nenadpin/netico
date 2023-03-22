@@ -1,0 +1,389 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  padding: 10px 0;
+}
+.App {
+  text-align: center;
+  background-color: #efefef;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  display: block;
+  align-items: center;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+}
+.footer {
+  position: fixed;
+  bottom: 1cm;
+}
+
+.headerStart {
+  width: 21cm;
+  background-color: #d1d3d3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  padding-bottom: 10px;
+}
+select {
+  height: 2rem;
+  font-size: large;
+  font-weight: bold;
+  padding-left: 5px;
+  margin-bottom: 15px;
+}
+.order {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 21cm;
+}
+.newOrder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: white;
+}
+.newOrder input {
+  border: none;
+  margin: 0;
+  min-width: 20px;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+}
+#ord1 {
+  width: 21cm;
+  height: 29.7cm;
+  padding: 1cm;
+  font-size: 0.6rem;
+}
+.newOrderHeader {
+  display: grid;
+  margin-bottom: 5px;
+  width: 19cm;
+  grid-template-columns: 1fr 1fr;
+  background-color: black;
+  gap: 1px;
+  border: 1px solid black;
+  text-align: left;
+}
+.newOrderHeader > span {
+  background-color: white;
+  padding: 1px 5px;
+}
+.orderInfo {
+  display: grid;
+  width: 21cm;
+  grid-template-columns: 100px 400px 130px 170px;
+  text-align: left;
+}
+.newOrderChoice {
+  display: grid;
+  width: 21cm;
+  grid-template-columns: 100px 600px 100px;
+  text-align: left;
+}
+button {
+  height: 2rem;
+  border: none;
+  border-radius: 5px;
+  background-color: lightgreen;
+  margin-bottom: 15px;
+}
+button:active {
+  transform: scale(0.9);
+}
+.orderInfo > input {
+  margin-bottom: 0;
+}
+.orderDetails {
+  display: grid;
+  width: 19cm;
+  grid-template-columns: 1cm 1.2cm 8.4cm 1cm 1.4cm 3cm 3cm;
+  text-align: left;
+  background-color: black;
+}
+.orderDetails > span {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  margin: 1px;
+  padding: 5px;
+}
+.orderDetails2 {
+  display: grid;
+  width: 13cm;
+  grid-template-columns: 1cm 1.2cm 8.4cm 1cm 1.4cm;
+  text-align: left;
+  background-color: black;
+}
+.orderDetails2 > span {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  margin: 1px;
+  padding: 5px;
+}
+.orderTotal {
+  display: grid;
+  width: 6cm;
+  grid-template-columns: 3cm 3cm;
+  text-align: left;
+  background-color: black;
+  margin-left: 13cm;
+  margin-bottom: 50px;
+}
+.orderTotal > span {
+  background-color: white;
+  margin: 1px;
+  padding: 5px;
+}
+.orderFooter {
+  display: grid;
+  width: 19cm;
+  text-align: left;
+  background-color: black;
+  row-gap: 1px;
+  padding: 1px;
+}
+.orderFooter > p {
+  background-color: white;
+}
+.potpisi {
+  margin-top: 10px;
+  display: flex;
+  width: 19cm;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.zapisnik {
+  display: flex;
+  flex-direction: column;
+  width: 21cm;
+  margin-left: 5px;
+  overflow-x: scroll;
+}
+.modal {
+  display: block;
+  position: fixed;
+  left: 0;
+  width: 21cm;
+  opacity: 0.5;
+  height: 100%;
+  background-color: white;
+}
+.zapisnikLeft {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 21cm;
+  margin-bottom: 1cm;
+  border: 1px solid black;
+}
+.naruceno {
+  display: flex;
+  flex-direction: row;
+  padding: 0.2cm 0.5cm;
+  column-gap: 0.5cm;
+  width: 21cm;
+  border: 1px solid black;
+}
+.zapisnikEl {
+  display: grid;
+  padding: 0.2cm;
+  width: 21cm;
+  column-gap: 1px;
+  grid-template-columns: 1.5cm 2cm 1.5cm 5.5cm 1.5cm 1.5cm 1.5cm 1cm 1.5cm;
+}
+.zapisnikEl > span {
+  width: 100%;
+}
+.zapisnikEl > span > input {
+  width: inherit;
+  font-size: 1rem;
+}
+.zapisnikDetails {
+  display: grid;
+  padding: 0.2cm;
+  width: 21cm;
+  column-gap: 1px;
+  grid-template-columns: 1.5cm 1.5cm 1.8cm 5.5cm 1.5cm 1.5cm 1.5cm 1cm 4.7cm;
+}
+.nalog {
+  display: grid;
+  text-align: left;
+  grid-template-columns: 4cm 6cm;
+}
+
+.newContainer {
+  display: block;
+  width: 19cm;
+}
+table,
+th,
+td {
+  font-size: 0.85rem;
+  border: 1px solid black;
+  border-collapse: collapse;
+  line-height: 20px;
+  text-align: center;
+}
+table {
+  width: 100%;
+}
+textarea {
+  resize: none;
+}
+th {
+  line-height: 40px;
+  background-color: #d1d3d3;
+}
+.tbl1 {
+  width: 16cm;
+}
+.tbl1 th {
+  background-color: white;
+  line-height: 20px;
+}
+.tbl {
+  margin-top: 30px;
+}
+.tbl td {
+  border: none;
+  font-size: 14px;
+}
+.tblZ {
+  margin-top: 0;
+}
+.tblZ td {
+  border: none;
+  font-size: 14px;
+}
+.newReportMain {
+  display: grid;
+  width: 19cm;
+  grid-template-columns: 7cm 12cm;
+  background-color: black;
+  margin-left: 50px;
+}
+.newReportSub {
+  display: grid;
+  grid-template-columns: 3.5cm 6cm 2.5cm;
+  background-color: black;
+}
+.newReportSub > span {
+  background-color: white;
+  margin: 1px;
+}
+.newReportSub > span:nth-child(4):hover {
+  transform: scale(1.1);
+}
+.newReportMain > div {
+  background-color: white;
+}
+.diagram {
+  position: fixed;
+  left: 20.5cm;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+}
+
+button {
+  font-size: large;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  padding: 5px;
+  margin-left: 15px;
+}
+.report {
+  display: block;
+  position: relative;
+  width: 21cm;
+  height: 29.7cm;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: auto;
+  background-color: white;
+  border: 1px solid black;
+  padding-left: 1.5cm;
+  overflow: hidden;
+}
+.reportTable {
+  display: block;
+  position: relative;
+  width: 21cm;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: auto;
+  background-color: white;
+  overflow: hidden;
+}
+.coverLogo {
+  display: block;
+  margin-top: 2.5cm;
+  margin-left: 2.5cm;
+}
+.logoText {
+  display: flex;
+  margin-left: 3.7cm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: large;
+}
+.headerLogo {
+  display: block;
+  margin-top: 0.5cm;
+}
+.headerLogoText {
+  display: flex;
+  margin-left: 1.2cm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+}
+.centerCover {
+  display: flex;
+  flex-direction: column;
+  height: 22cm;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bolder;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.tb3 {
+  display: grid;
+  width: 16.9cm;
+  margin-left: 2.5cm;
+  text-align: left;
+  grid-template-columns: 5.8cm 6cm 5cm;
+  border: 1px solid black;
+  background-color: black;
+  grid-gap: 1px;
+}
+.tb3 > span {
+  background-color: white;
+  padding-left: 5px;
+}
+@media print {
+  html,
+  body {
+    height: initial !important;
+    overflow: initial !important;
+  }
+}
+
+@media print {
+  .page-break {
+    break-inside: avoid;
+  }
+}
