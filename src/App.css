@@ -3,6 +3,9 @@
   margin: 0;
   padding: 0;
 }
+#test::-webkit-scrollbar {
+  display: none;
+}
 
 h2 {
   padding: 10px 0;

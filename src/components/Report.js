@@ -884,6 +884,7 @@ const Report = () => {
           napIzv={napIzv}
           str={(8 + Math.ceil(no / 43)).toString()}
           pageCount={pageCount}
+          ispPolja={ispPolja}
         />
       </div>
     </div>

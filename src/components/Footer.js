@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import ReportContext from "../Context";
 
-const Footer = ({ pad, str, pageCount }) => {
+const Footer = ({ pad, str, pageCount, z }) => {
   const { sifraIspitivanja } = useContext(ReportContext);
   return (
     <div
@@ -9,7 +9,7 @@ const Footer = ({ pad, str, pageCount }) => {
         position: "absolute",
         display: "block",
         top: pad ? pad : "28.5cm",
-        left: "1.5cm",
+        left: z === 1 ? "0" : "1.5cm",
       }}
     >
       <hr
