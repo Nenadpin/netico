@@ -7,6 +7,7 @@ import Header from "./Header";
 import Sadrzaj from "./Sadrzaj";
 import ReportTable from "./ReportTable";
 import Zakljucak from "./Zakljucak";
+import Listovi from "./Listovi";
 const months = [
   "Јануар",
   "Фебруар",
@@ -40,7 +41,6 @@ const Report = () => {
   useMemo(() => {
     if (narudzbenica && polja && history) {
       let no_el = Object.keys(history).length;
-      console.log(no_el);
       setNo(no_el);
       let tIsp = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
@@ -885,6 +885,12 @@ const Report = () => {
           str={(8 + Math.ceil(no / 43)).toString()}
           pageCount={pageCount}
           ispPolja={ispPolja}
+        />
+        <Listovi
+          pageCount={pageCount}
+          no={no}
+          ispPolja={ispPolja}
+          ispCurr={ispCurr}
         />
       </div>
     </div>

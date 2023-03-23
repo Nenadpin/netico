@@ -11,7 +11,6 @@ import NewTS from "./components/NewTS";
 
 const Start = () => {
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
-  const [prev, setPrev] = useState([]); // Lokalna lista prethodnih ispitivanja
 
   const {
     trafoStanica,
@@ -20,6 +19,7 @@ const Start = () => {
     narudzbenica,
     tipPrikaza,
     examine,
+    prev,
     sviUgovori,
     setKd,
     setSviUgovori,
@@ -36,6 +36,7 @@ const Start = () => {
     setAllOrders,
     setUgovor,
     setHistory,
+    setPrev,
     setPageCount,
   } = useContext(ReportContext);
 
@@ -89,6 +90,7 @@ const Start = () => {
       return e.sifra_ts === ts_no;
     });
     newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
+    console.log(newTS);
     setTrafoStanica(newTS[0]);
     const tmp = ispList
       .filter((ex) => {
@@ -120,7 +122,6 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-
     setHistory(temp1);
     setElHist(x);
     setTipPrikaza(1);
@@ -145,6 +146,7 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
+    console.log(temp1);
     setHistory(temp1);
     setElHist(x);
     if (!narudzbenica)

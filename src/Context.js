@@ -22,6 +22,7 @@ export const ReportProvider = ({ children }) => {
   const [reports, setReports] = useState([]);
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
   const [pageCount, setPageCount] = useState(0);
+  const [prev, setPrev] = useState([]); // Lokalna lista prethodnih ispitivanja
   // const [contract, setContract] = useState({});
   // const [lista, setLista] = useState({});
   // const [ispLista, setIspLista] = useState({});
@@ -30,6 +31,7 @@ export const ReportProvider = ({ children }) => {
   return (
     <ReportContext.Provider
       value={{
+        prev,
         tsList,
         trafoStanica,
         polja,
@@ -53,6 +55,7 @@ export const ReportProvider = ({ children }) => {
         // lista,
         // ispLista,
         // napon,
+        setPrev,
         setTsList,
         setTrafoStanica,
         setPolja,

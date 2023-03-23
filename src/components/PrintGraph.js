@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Legend);
 
-const PrintGraph = ({ chartData, setChartData }) => {
+const PrintGraph = ({ chartData }) => {
   let labelS = [];
   for (let i = 0; i < 501; i++) {
     labelS.push(Math.floor(50 + i * 1.9));
@@ -76,7 +76,6 @@ const PrintGraph = ({ chartData, setChartData }) => {
         },
         ticks: {
           stepSize: 200,
-          // beginAtZero: true,
           maxTicksLimit: 5,
         },
         suggestedMin: 40,
@@ -136,13 +135,13 @@ const PrintGraph = ({ chartData, setChartData }) => {
       },
     },
   };
-  //   const getPageMargins = () => {
-  //     return `@page { margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important; }`;
-  //   };
+
   return (
     <>
       <Line data={dataU} options={optionsU}></Line>
-      <Line data={dataT} options={optionsT}></Line>
+      {chartData?.ut.data.length ? (
+        <Line data={dataT} options={optionsT}></Line>
+      ) : null}
     </>
   );
 };
