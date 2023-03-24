@@ -17,6 +17,8 @@ const Ispitivanje = () => {
   const [chartData, setChartData] = useState(null);
   const selector = useRef();
   const selectorB = useRef();
+  const brIzv = useRef();
+  const datRef = useRef();
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Slika"];
   let r_br = 0;
 
@@ -97,6 +99,7 @@ const Ispitivanje = () => {
   };
 
   const submitIsp = async () => {
+    console.log(examine);
     if (
       window.confirm(
         "Sigurni ste da upisujemo ove rezultate? Elementi koji nisu oznaceni bojom ce biti bez napona?"
@@ -112,6 +115,8 @@ const Ispitivanje = () => {
         isp: dataExam,
         nap: trafoStanica.naponski_nivo,
         naz: `ТС ${trafoStanica.naponski_nivo.trim()} kV ${trafoStanica.naziv}`,
+        brI: brIzv.current.value,
+        dat: datRef.current.value,
       };
       console.log(dataIsp);
       try {
@@ -122,6 +127,7 @@ const Ispitivanje = () => {
         });
         if (response2.status === 210) {
           alert("primljeno");
+          localStorage.clear();
           window.location.reload();
         } else {
           alert("neka greska...");
@@ -320,6 +326,24 @@ const Ispitivanje = () => {
             </div>
           );
         })}
+        <div
+          style={{
+            marginTop: "0.5cm",
+            marginBottom: "1cm",
+            width: "21cm",
+            display: "grid",
+            gridTemplateColumns: "5cm 5cm 5cm 5cm",
+          }}
+        >
+          <span>Broj izvestaja</span>
+          <input
+            ref={brIzv}
+            defaultValue={trafoStanica.naponski_nivo}
+            style={{ width: "3cm" }}
+          ></input>
+          <span>Datum ispitivanja</span>
+          <input style={{ width: "3cm" }} ref={datRef}></input>
+        </div>
       </div>
       <div className="diagram">
         <div style={{ color: "blue", fontWeight: "bold" }}>
