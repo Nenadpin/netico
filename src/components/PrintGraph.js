@@ -11,28 +11,6 @@ import {
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Legend);
 
 const PrintGraph = ({ chartData }) => {
-  let labelS = [];
-  for (let i = 0; i < 501; i++) {
-    labelS.push(Math.floor(50 + i * 1.9));
-  }
-  let labelT = [];
-  for (let i = 0; i < 601; i++) {
-    labelT.push(Math.floor(-10 + i * 0.1));
-  }
-  // setChartData({
-  //   lub: "",
-  //   luf: "",
-  //   lt: "",
-  //   us: {
-  //     label: labelS,
-  //     dataF: [],
-  //     dataB: [],
-  //   },
-  //   ut: {
-  //     label: labelT,
-  //     data: [],
-  //   },
-  // });
   const dataU = {
     labels: chartData?.us.label,
     datasets: [
@@ -78,8 +56,8 @@ const PrintGraph = ({ chartData }) => {
           stepSize: 200,
           maxTicksLimit: 5,
         },
-        suggestedMin: 40,
-        suggestedMax: 1050,
+        suggestedMin: 0,
+        suggestedMax: 1000,
       },
     },
     elements: {

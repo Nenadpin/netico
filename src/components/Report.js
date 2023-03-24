@@ -39,7 +39,7 @@ const Report = () => {
   const dateRef2 = useRef();
 
   useMemo(() => {
-    if (narudzbenica && polja && history) {
+    if (narudzbenica?.stavke && polja && history) {
       let no_el = Object.keys(history).length;
       setNo(no_el);
       let tIsp = ispList.filter((i) => {
@@ -304,8 +304,8 @@ const Report = () => {
                   Број уговора
                 </td>
                 <td style={{ lineHeight: "20px", textAlign: "left" }}>
-                  Овирни споразум бр. {ugovor.broj_ugovora_korisnik} од{" "}
-                  {ugovor.datum_ugovora} године према ЈН 18-22
+                  Овирни споразум бр. {ugovor?.broj_ugovora_korisnik} од{" "}
+                  {ugovor?.datum_ugovora} године према ЈН 18-22
                 </td>
               </tr>
               <tr>
@@ -607,7 +607,7 @@ const Report = () => {
             fontFamily: "arial",
             fontSize: "1rem",
           }}
-          defaultValue={`У извештају су приказани резултати ултразвучног испитивања струјних и напонских мерних трансформатора и кабловских завршница, у трансформаторској станици која је предмет овог извештаја, спроведених према Оквирном споразуму бр. ${ugovor.broj_ugovora_korisnik} od ${ugovor.datum_ugovora} године према ЈН 18-22. Испитивање је извршено према захтевима из наруџбенице:`}
+          defaultValue={`У извештају су приказани резултати ултразвучног испитивања струјних и напонских мерних трансформатора и кабловских завршница, у трансформаторској станици која је предмет овог извештаја, спроведених према Оквирном споразуму бр. ${ugovor?.broj_ugovora_korisnik} od ${ugovor?.datum_ugovora} године према ЈН 18-22. Испитивање је извршено према захтевима из наруџбенице:`}
         ></textarea>
         {reports[elHist]?.naponski_nivo.split("/").map((nap, idn) => {
           return (

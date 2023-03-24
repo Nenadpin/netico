@@ -32,8 +32,32 @@ const Ispitivanje = () => {
         setExamine(JSON.parse(localStorage.getItem("currExamine")));
     } catch (error) {
       console.log(error.message);
+    } finally {
+      let labelS = [];
+      for (let i = 0; i < 501; i++) {
+        labelS.push(Math.floor(50 + i * 1.9));
+      }
+      let labelT = [];
+      for (let i = 0; i < 601; i++) {
+        labelT.push(Math.floor(-10 + i * 0.1));
+      }
+      setChartData({
+        lub: "",
+        luf: "",
+        lt: "",
+        us: {
+          label: labelS,
+          dataF: [],
+          dataB: [],
+        },
+        ut: {
+          label: labelT,
+          data: [],
+        },
+      });
     }
   };
+
   const populateEls = () => {
     let newEl = [];
     for (let i = 0; i < examine?.length; i++) {
@@ -86,6 +110,8 @@ const Ispitivanje = () => {
         sifra: sifraIspitivanja,
         nar: narudzbenica.broj_narudzbenice,
         isp: dataExam,
+        nap: trafoStanica.naponski_nivo,
+        naz: `ТС ${trafoStanica.naponski_nivo.trim()} kV ${trafoStanica.naziv}`,
       };
       console.log(dataIsp);
       try {
@@ -162,6 +188,7 @@ const Ispitivanje = () => {
             d.push(parseFloat(temp[1]));
           }
         }
+        console.log(d);
         let sd = chartData;
         sd.us.dataB = d;
         sd.lub = filename;
@@ -185,8 +212,8 @@ const Ispitivanje = () => {
         ) : null}
         {trafoStanica.napon.map((el, index) => {
           return (
-            <div>
-              <h3 key={index}>
+            <div key={index}>
+              <h3>
                 Polja sa naponom {el} kV{" "}
                 <span
                   style={{

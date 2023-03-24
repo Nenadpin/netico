@@ -21,6 +21,7 @@ const Start = () => {
     examine,
     prev,
     sviUgovori,
+    reports,
     setKd,
     setSviUgovori,
     setEmplList,
@@ -37,7 +38,6 @@ const Start = () => {
     setUgovor,
     setHistory,
     setPrev,
-    setPageCount,
   } = useContext(ReportContext);
 
   // Na ucitavanju stranice, prikuplja podatke
@@ -209,7 +209,7 @@ const Start = () => {
                   >
                     Datum: {x.datum} Ispitivanje br: {x.r_br}
                   </span>
-                  {narudzbenica?.stavke ? (
+                  {reports && narudzbenica?.stavke ? (
                     <span
                       onClick={() => izvestaj(idx, x.r_br)}
                       style={{
