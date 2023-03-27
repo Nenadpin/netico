@@ -17,6 +17,7 @@ const PrintGraph = ({ chartData }) => {
       {
         label: chartData?.lub ? chartData.lub : "",
         data: chartData?.us.dataB,
+        spanGaps: false,
         borderColor: "red",
         borderWidth: 1,
         pointborderColour: "white",
@@ -48,15 +49,16 @@ const PrintGraph = ({ chartData }) => {
       },
       x: {
         display: true,
+        type: "linear",
         title: {
           display: true,
           text: "Frequency(MHz)",
         },
         ticks: {
           stepSize: 200,
-          maxTicksLimit: 5,
+          maxTicksLimit: 15,
         },
-        suggestedMin: 0,
+        suggestedMin: 50,
         suggestedMax: 1000,
       },
     },
@@ -101,7 +103,7 @@ const PrintGraph = ({ chartData }) => {
         },
         ticks: {
           stepSize: 200,
-          maxTicksLimit: 6,
+          maxTicksLimit: 4,
         },
         suggestedMin: -20,
         suggestedMax: 60,

@@ -35,14 +35,15 @@ const Ispitivanje = () => {
     } catch (error) {
       console.log(error.message);
     } finally {
-      let labelS = [];
-      for (let i = 0; i < 501; i++) {
+      let labelS = [0];
+      for (let i = 0; i < 500; i++) {
         labelS.push(Math.floor(50 + i * 1.9));
       }
       let labelT = [];
       for (let i = 0; i < 601; i++) {
         labelT.push(Math.floor(-10 + i * 0.1));
       }
+      console.log(labelS);
       setChartData({
         lub: "",
         luf: "",
@@ -145,7 +146,7 @@ const Ispitivanje = () => {
     let filename = e.target.files[0]?.name.slice(0, -4);
     reader.onload = (e) => {
       const text = e.target.result;
-      let dF = [],
+      let dF = [null],
         dT = [];
       if (filename?.includes("FREQ") && !filename?.includes("Base")) {
         let a = text.split("</Header>");
@@ -156,6 +157,7 @@ const Ispitivanje = () => {
             dF.push(parseFloat(temp[1]));
           }
         }
+        dF.pop();
         let sd = { ...chartData };
         sd.us.dataF = dF;
         sd.luf = filename;
@@ -183,7 +185,7 @@ const Ispitivanje = () => {
     let filename = e.target.files[0]?.name.slice(0, -4);
     reader.onload = (e) => {
       const text = e.target.result;
-      let d = [];
+      let d = [null];
 
       if (filename?.includes("Base")) {
         let a = text.split("</Header>");
@@ -194,6 +196,7 @@ const Ispitivanje = () => {
             d.push(parseFloat(temp[1]));
           }
         }
+        d.pop();
         console.log(d);
         let sd = chartData;
         sd.us.dataB = d;
