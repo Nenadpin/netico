@@ -73,6 +73,7 @@ const PrintGraph = ({ chartData }) => {
     datasets: [
       {
         label: chartData?.lt ? chartData.lt : "",
+        spanGaps: false,
         data: chartData?.ut.data,
         borderColor: "blue",
         borderWidth: 1,
@@ -97,16 +98,17 @@ const PrintGraph = ({ chartData }) => {
       },
       x: {
         display: true,
+        type: "linear",
         title: {
           display: true,
           text: "t(ms)",
         },
         ticks: {
-          stepSize: 200,
-          maxTicksLimit: 4,
+          stepSize: 5,
+          maxTicksLimit: 50,
         },
-        suggestedMin: -20,
-        suggestedMax: 60,
+        suggestedMin: -12,
+        suggestedMax: 50,
       },
     },
     elements: {

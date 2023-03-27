@@ -37,13 +37,13 @@ const Ispitivanje = () => {
     } finally {
       let labelS = [0];
       for (let i = 0; i < 500; i++) {
-        labelS.push(Math.floor(50 + i * 1.9));
+        labelS.push((500 + i * 19) / 10);
       }
-      let labelT = [];
-      for (let i = 0; i < 601; i++) {
-        labelT.push(Math.floor(-10 + i * 0.1));
+      let labelT = [-12];
+      for (let i = 0; i < 600; i++) {
+        labelT.push((-100 + i) / 10);
       }
-      console.log(labelS);
+      console.log(labelT);
       setChartData({
         lub: "",
         luf: "",
@@ -147,7 +147,7 @@ const Ispitivanje = () => {
     reader.onload = (e) => {
       const text = e.target.result;
       let dF = [null],
-        dT = [];
+        dT = [null];
       if (filename?.includes("FREQ") && !filename?.includes("Base")) {
         let a = text.split("</Header>");
         a = a[1]?.split("\r\n<d>");
@@ -171,6 +171,8 @@ const Ispitivanje = () => {
             dT.push(parseFloat(a[i].substring(7)));
           }
         }
+        dT.pop();
+        console.log(dT);
         let sd = { ...chartData };
         sd.ut.data = dT;
         sd.lt = filename;
