@@ -11,22 +11,20 @@ export const ReportProvider = ({ children }) => {
   const [history, setHistory] = useState(null); //istorija stanja elemenata za izabrano ispitivanje
   const [mesto, setMesto] = useState("");
   const [ispList, setIspList] = useState([]); //lista svih ispitivanja za izabranu TS
-  const [tipPrikaza, setTipPrikaza] = useState(0);
+  const [tipPrikaza, setTipPrikaza] = useState(null);
   const [sviUgovori, setSviUgovori] = useState(null);
   const [kd, setKd] = useState(null);
   const [emplList, setEmplList] = useState(null);
   const [examine, setExamine] = useState(null); //niz stanja elemenata. Koristi se samo u Ispitivanje.js za POST u bazu
   const [sifraIspitivanja, setSifraIspitivanja] = useState(null);
-  const [ugovor, setUgovor] = useState({});
+  const [ugovor, setUgovor] = useState();
+  const [orders, setOrders] = useState(null);
   const [allOrders, setAllOrders] = useState(null);
   const [reports, setReports] = useState([]);
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
   const [pageCount, setPageCount] = useState(0);
   const [prev, setPrev] = useState([]); // Lokalna lista prethodnih ispitivanja
-  // const [contract, setContract] = useState({});
-  // const [lista, setLista] = useState({});
-  // const [ispLista, setIspLista] = useState({});
-  // const [napon, setNapon] = useState([]);
+  const [role, setRole] = useState(null);
 
   return (
     <ReportContext.Provider
@@ -47,14 +45,13 @@ export const ReportProvider = ({ children }) => {
         examine,
         sifraIspitivanja,
         ugovor,
+        orders,
         allOrders,
         reports,
         history,
         pageCount,
-        // contract,
-        // lista,
-        // ispLista,
-        // napon,
+        role,
+        setRole,
         setPrev,
         setTsList,
         setTrafoStanica,
@@ -71,14 +68,11 @@ export const ReportProvider = ({ children }) => {
         setExamine,
         setSifraIspitivanja,
         setUgovor,
+        setOrders,
         setAllOrders,
         setReports,
         setHistory,
         setPageCount,
-        // setContract,
-        // setLista,
-        // setIspLista,
-        // setNapon,
       }}
     >
       {children}

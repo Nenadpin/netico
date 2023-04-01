@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import serbianTransliteration from "serbian-transliteration";
 import { useReactToPrint } from "react-to-print";
 import { useContext } from "react";
@@ -7,14 +7,12 @@ import ReportContext from "../Context";
 const Order = () => {
   const {
     trafoStanica,
-    setNarudzbenica,
+    narudzbenica,
     mesto,
     kd,
     sviUgovori,
     ugovor,
     setMesto,
-    prevOrders,
-    setTipPrikaza,
     setUgovor,
   } = useContext(ReportContext);
   const zavodniBr = useRef();
@@ -30,6 +28,13 @@ const Order = () => {
   const [orderDetails, setOrderDetails] = useState([]);
   const [total, setTotal] = useState(0);
   const [newOrd, setNewOrd] = useState(true);
+
+  useMemo(() => {
+    if (narudzbenica) {
+      setOrderDetails(narudzbenica.stavke);
+      setTotal(narudzbenica.iznos / 1.2);
+    }
+  }, [narudzbenica]);
 
   const handleSubmit = () => {
     let oneItem = {
@@ -67,19 +72,19 @@ const Order = () => {
       datumNar2.current.value &&
       mesto
     ) {
-      setNarudzbenica({
-        br: brNarudz.current.value,
-        sifraTs: trafoStanica.ts,
-        iznos: total * 1.2,
-        operativno: "nova",
-        datum: datumNar.current.value,
-        sifraUg: ugovor.oznaka,
-        stavke: orderDetails,
-        mesto: mesto,
-        datum2: datumNar2.current.value,
-        br_sap: brSap.current.value,
-        zavodni_br: zavodniBr.current.value,
-      });
+      // setNarudzbenica({
+      //   br: brNarudz.current.value,
+      //   sifraTs: trafoStanica.ts,
+      //   iznos: total * 1.2,
+      //   operativno: "nova",
+      //   datum: datumNar.current.value,
+      //   sifraUg: ugovor.oznaka,
+      //   stavke: orderDetails,
+      //   mesto: mesto,
+      //   datum2: datumNar2.current.value,
+      //   br_sap: brSap.current.value,
+      //   zavodni_br: zavodniBr.current.value,
+      // });
       try {
         const response2 = await fetch("http://localhost:5000/order", {
           method: "POST",
@@ -110,20 +115,19 @@ const Order = () => {
       }
     } else alert("Niste popunili sve podatke!");
   };
-  const populate = (i) => {
-    zavodniBr.current.value = prevOrders[i].zavodni_br;
-    brNarudz.current.value = prevOrders[i].broj_narudzbenice;
-    brSap.current.value = prevOrders[i].br_sap;
-    datumNar.current.value = prevOrders[i].datum;
-    datumNar2.current.value = prevOrders[i].datum2;
-    setTotal(prevOrders[i].iznos / 1.2);
-    if (prevOrders[i].stavke) {
-      setOrderDetails(prevOrders[i].stavke);
-    }
-    if (prevOrders[i].mesto)
-      setMesto(serbianTransliteration.toCyrillic(prevOrders[i].mesto));
-    setNewOrd(false);
-  };
+  // const populate = () => {
+  //   if (narudzbenica) {
+  //     setTotal(narudzbenica.iznos / 1.2);
+  //     let ug = sviUgovori.filter((u) => {
+  //       return u.oznaka === narudzbenica.sifra_ugovora;
+  //     })[0];
+  //     setUgovor(ug);
+  //     setOrderDetails(narudzbenica.stavke);
+  //     setMesto(narudzbenica.mesto);
+  //     setNewOrd(false);
+  //   }
+  // };
+
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
     documentTitle: "Narudzbenica",
@@ -132,45 +136,6 @@ const Order = () => {
 
   return (
     <div className="order">
-      <div>
-        {prevOrders ? <h4>Prethodne narudzbenice</h4> : null}
-        {prevOrders
-          ? prevOrders.map((ord, ido) => {
-              return (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "10cm 3cm",
-                    margin: "5px auto",
-                  }}
-                >
-                  <h5
-                    key={ido}
-                    style={{ cursor: "pointer", color: "blue" }}
-                    onClick={() => populate(ido)}
-                  >
-                    Broj narudzbenice: {ord.broj_narudzbenice} Datum:{" "}
-                    {ord.datum}
-                  </h5>
-                  {ord.operativno === "nova" ? (
-                    <h5
-                      style={{ cursor: "pointer", color: "green" }}
-                      onClick={() => setTipPrikaza(3)}
-                    >
-                      ЗАПИСНИК
-                    </h5>
-                  ) : ord.operativno === "proverena" ? (
-                    <h5>НАЛОГ</h5>
-                  ) : ord.operativno === "u radu" ? (
-                    <h5>ИСПИТИВАЊЕ</h5>
-                  ) : ord.operativno === "zavrsena" ? (
-                    <h5>ИЗВЕШТЕНА</h5>
-                  ) : null}
-                </div>
-              );
-            })
-          : null}
-      </div>
       {newOrd ? (
         <>
           <div className="orderInfo">
@@ -190,9 +155,19 @@ const Order = () => {
               }}
               type="text"
             >
-              <option disabled={true} value="">
-                --ИЗБОР УГОВОРА--
-              </option>
+              {!narudzbenica ? (
+                <option disabled={true} value="">
+                  --ИЗБОР УГОВОРА--
+                </option>
+              ) : (
+                <option disabled={true} value={narudzbenica.sifra_ugovora}>
+                  {
+                    sviUgovori.filter((ug) => {
+                      return ug.oznaka === narudzbenica.sifra_ugovora;
+                    })[0].opis_ugovora
+                  }
+                </option>
+              )}
               {sviUgovori
                 ? sviUgovori.map((ug, index) => (
                     <option key={index} value={ug.oznaka}>
@@ -208,6 +183,7 @@ const Order = () => {
               type="text"
               ref={mestoRef}
               placeholder="ogranak..."
+              defaultValue={narudzbenica.mesto}
               onBlur={() =>
                 setMesto(
                   serbianTransliteration.toCyrillic(mestoRef.current.value)
@@ -289,6 +265,7 @@ const Order = () => {
             <input
               type="text"
               ref={zavodniBr}
+              defaultValue={narudzbenica?.zavodni_br}
               placeholder="заводни број..."
             ></input>
           </div>
@@ -314,19 +291,25 @@ const Order = () => {
               НЗН број наруџбенице:
               <input
                 type="text"
+                defaultValue={narudzbenica?.broj_narudzbenice}
                 ref={brNarudz}
                 placeholder="број наруџбенице..."
               ></input>
             </span>
             <span>
               Број интерног налога (САП број):
-              <input type="text" ref={brSap}></input>
+              <input
+                type="text"
+                ref={brSap}
+                defaultValue={narudzbenica?.br_sap}
+              ></input>
             </span>
             <span>
               Датум креирања:
               <input
                 type="text"
                 ref={datumNar}
+                defaultValue={narudzbenica?.datum}
                 placeholder="датум креирања..."
               ></input>
             </span>
@@ -334,18 +317,27 @@ const Order = () => {
               Датум издавања:
               <input
                 type="text"
+                defaultValue={narudzbenica?.datum2}
                 ref={datumNar2}
                 placeholder="датум издавања..."
               ></input>
             </span>
           </div>
         </>
-
         <p style={{ marginBottom: "0.75cm" }}>
-          На основу Оквирног споразума број{" "}
-          {ugovor ? ugovor.broj_ugovora_korisnik : null} од{" "}
-          {ugovor.datum_ugovora} закљученог у поступку јавне набавке предмет:
-          пружање услуге {ugovor.opis_ugovora}, издаје се наруџбеница
+          На основу Оквирног споразума број {narudzbenica?.sifra_ugovora} од{" "}
+          {ugovor
+            ? ugovor.datum_ugovora
+            : sviUgovori.filter((ug) => {
+                return ug.oznaka === narudzbenica.sifra_ugovora;
+              })[0].datum_ugovora}{" "}
+          закљученог у поступку јавне набавке предмет: пружање услуге{" "}
+          {ugovor
+            ? ugovor.opis_ugovora
+            : sviUgovori.filter((ug) => {
+                return ug.oznaka === narudzbenica.sifra_ugovora;
+              })[0].opis_ugovora}
+          , издаје се наруџбеница
         </p>
         <div className="orderDetails">
           <span>Р.Бр.</span>
@@ -356,7 +348,7 @@ const Order = () => {
           <span>Јединична цена из оквирног споразума (РСД без ПДВ-а)</span>
           <span>ИЗНОС (РСД без ПДВ-а)</span>
         </div>
-        {orderDetails.length
+        {orderDetails?.length
           ? orderDetails.map((i, index) => {
               return (
                 <div className="orderDetails" key={index}>
@@ -455,7 +447,7 @@ const Order = () => {
               backgroundColor: "transparent",
             }}
           >
-            {ugovor.oznaka === "UG03-110"
+            {ugovor?.oznaka === "UG03-110"
               ? "функционално испитивање"
               : "превентивно одржавање"}
           </span>

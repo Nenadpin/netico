@@ -143,12 +143,13 @@ const Ispitivanje = () => {
 
   const inputRead = (e) => {
     e.preventDefault();
-    let filename = e.target.files[0]?.name.slice(0, -4);
+    let filename = e.target.files[0]?.name;
     reader.onload = (e) => {
       const text = e.target.result;
       let dF = [null],
         dT = [null];
       if (filename?.includes("FREQ") && !filename?.includes("Base")) {
+        filename = filename.substring(9);
         let a = text.split("</Header>");
         a = a[1]?.split("\r\n<d>");
         for (let i = 1; i < a.length; i++) {
@@ -163,8 +164,10 @@ const Ispitivanje = () => {
         sd.luf = filename;
         setChartData(sd);
       } else if (filename?.includes("SCOPE")) {
-        console.log(filename);
+        filename = filename.substring(9);
         let a = text.split('<units am="dBm" />');
+        let b = a[0].split('<Frequency units="MHz">');
+        b = parseFloat(b[1]).toString() + " Mhz";
         a = a[1].split("\r\n");
         for (let i = 1; i < a.length; i++) {
           if (parseFloat(a[i].substring(7))) {
@@ -175,7 +178,7 @@ const Ispitivanje = () => {
         console.log(dT);
         let sd = { ...chartData };
         sd.ut.data = dT;
-        sd.lt = filename;
+        sd.lt = filename + " (Frequency " + b;
         setChartData(sd);
       } else alert("Greska u citanju fajla...");
     };
@@ -184,7 +187,7 @@ const Ispitivanje = () => {
 
   const inputBase = (e) => {
     e.preventDefault();
-    let filename = e.target.files[0]?.name.slice(0, -4);
+    let filename = e.target.files[0]?.name.substring(9);
     reader.onload = (e) => {
       const text = e.target.result;
       let d = [null];
@@ -200,7 +203,7 @@ const Ispitivanje = () => {
         }
         d.pop();
         console.log(d);
-        let sd = chartData;
+        let sd = { ...chartData };
         sd.us.dataB = d;
         sd.lub = filename;
         setChartData(sd);
@@ -221,22 +224,16 @@ const Ispitivanje = () => {
         {!ispEls ? (
           <button onClick={() => populateEls()}>Сви елементи</button>
         ) : null}
+        <button
+          style={{ position: "absolute", left: "17.5cm", top: "5.5cm" }}
+          onClick={() => selectorB.current.click()}
+        >
+          Base file
+        </button>
         {trafoStanica.napon.map((el, index) => {
           return (
             <div key={index}>
-              <h3>
-                Polja sa naponom {el} kV{" "}
-                <span
-                  style={{
-                    marginLeft: "1cm",
-                    color: "blue",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => selectorB.current.click()}
-                >
-                  Учитај BASE
-                </span>{" "}
-              </h3>
+              <h3>Polja sa naponom {el} kV</h3>
               {polja
                 .filter((x) => {
                   r_br = 1;
@@ -315,6 +312,8 @@ const Ispitivanje = () => {
                                         ? "yellow"
                                         : elpn.isp === 3
                                         ? "red"
+                                        : elpn.moja_sifra === currentEl?.sifra
+                                        ? "blue"
                                         : "white",
                                     cursor: "pointer",
                                   }}
