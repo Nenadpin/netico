@@ -28,13 +28,13 @@ const NewTS = () => {
       objekat: serbianTransliteration.toCyrillic(objekatRef.current.value),
       koordinate: koordRef.current.value,
     };
-    if (
-      tsList.filter((t) => {
-        return t.sifra_ts === newTS.sifra;
-      }).length
-    )
-      alert("Vec postoji ta sifra TS!");
-    else if (newTS.sifra && newTS.naziv && newTS.napon) {
+    // if (
+    //   tsList.filter((t) => {
+    //     return t.sifra_ts === newTS.sifra;
+    //   }).length
+    // )
+    //  alert("Vec postoji ta sifra TS!");
+    if (newTS.sifra && newTS.naziv && newTS.napon) {
       try {
         const response = await fetch("http://localhost:5000/nova_ts", {
           method: "POST",
@@ -45,7 +45,7 @@ const NewTS = () => {
           alert("primljeno");
           window.location.reload();
         } else {
-          alert("neka greska...");
+          alert("Vec postoji ta sifra trafostanice ili greska servera...");
           return;
         }
       } catch (error) {

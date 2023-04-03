@@ -15,6 +15,7 @@ const Ispitivanje = () => {
   const [currentEl, setCurrentEl] = useState(null);
   const [ispEls, setIspEls] = useState(null);
   const [chartData, setChartData] = useState(null);
+  const [structure, setStructure] = useState(null);
   const selector = useRef();
   const selectorB = useRef();
   const brIzv = useRef();
@@ -68,10 +69,25 @@ const Ispitivanje = () => {
     }
     setIspEls(newEl);
   };
+  const getStructure = async () => {
+    if (sifraIspitivanja) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/struktura${sifraIspitivanja}`
+        );
+        const jsonData = await response.json();
+        console.log(jsonData);
+        setStructure(jsonData);
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+  };
 
   useMemo(() => {
     if (narudzbenica) {
       getElements();
+      getStructure();
     }
   }, [narudzbenica]);
 
@@ -141,15 +157,16 @@ const Ispitivanje = () => {
   };
   const reader = new FileReader();
 
-  const inputRead = (e) => {
-    e.preventDefault();
-    let filename = e.target.files[0]?.name;
-    reader.onload = (e) => {
-      const text = e.target.result;
+  const displayFile = async (f) => {
+    try {
+      const response = await fetch(`http://localhost:5000/route${f}`);
+      const jsonData = await response.json();
+      console.log(jsonData);
+      const text = jsonData;
       let dF = [null],
         dT = [null];
-      if (filename?.includes("FREQ") && !filename?.includes("Base")) {
-        filename = filename.substring(9);
+      if (f?.includes("FREQ") && !f?.includes("Base")) {
+        f = f.substring(9);
         let a = text.split("</Header>");
         a = a[1]?.split("\r\n<d>");
         for (let i = 1; i < a.length; i++) {
@@ -161,10 +178,10 @@ const Ispitivanje = () => {
         dF.pop();
         let sd = { ...chartData };
         sd.us.dataF = dF;
-        sd.luf = filename;
+        sd.luf = f;
         setChartData(sd);
-      } else if (filename?.includes("SCOPE")) {
-        filename = filename.substring(9);
+      } else if (f?.includes("SCOPE")) {
+        f = f.substring(9);
         let a = text.split('<units am="dBm" />');
         let b = a[0].split('<Frequency units="MHz">');
         b = parseFloat(b[1]).toString() + " Mhz";
@@ -178,13 +195,13 @@ const Ispitivanje = () => {
         console.log(dT);
         let sd = { ...chartData };
         sd.ut.data = dT;
-        sd.lt = filename + " (Frequency " + b;
+        sd.lt = f + " (Frequency " + b;
         setChartData(sd);
       } else alert("Greska u citanju fajla...");
-    };
-    reader.readAsText(e.target.files[0]);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
-
   const inputBase = (e) => {
     e.preventDefault();
     let filename = e.target.files[0]?.name.substring(9);
@@ -224,12 +241,35 @@ const Ispitivanje = () => {
         {!ispEls ? (
           <button onClick={() => populateEls()}>Сви елементи</button>
         ) : null}
-        <button
+        {/* <button
           style={{ position: "absolute", left: "17.5cm", top: "5.5cm" }}
           onClick={() => selectorB.current.click()}
         >
           Base file
-        </button>
+        </button> */}
+        {structure
+          ? Object.keys(structure)
+              .filter((b) => {
+                return b.includes("PK03");
+              })
+              .map((f, indf) => {
+                return (
+                  <div key={indf}>
+                    {structure[f].map((el, iel) => {
+                      return (
+                        <p
+                          style={{ color: "blue", cursor: "pointer" }}
+                          key={iel}
+                          onClick={() => displayFile(el)}
+                        >
+                          {el}
+                        </p>
+                      );
+                    })}
+                  </div>
+                );
+              })
+          : null}
         {trafoStanica.napon.map((el, index) => {
           return (
             <div key={index}>
@@ -318,7 +358,9 @@ const Ispitivanje = () => {
                                     cursor: "pointer",
                                   }}
                                 >
-                                  {colors[elpn.isp]}
+                                  {ispEls?.includes(elpn.moja_sifra)
+                                    ? colors[elpn.isp]
+                                    : ""}
                                 </span>
                               </div>
                             );
@@ -355,10 +397,6 @@ const Ispitivanje = () => {
           {currentEl?.fazaEl}
         </div>
         <PrintGraph chartData={chartData} setChartData={setChartData} />
-        <div style={{ display: "none" }}>
-          <input type="file" onChange={inputBase} ref={selectorB} />
-          <input type="file" onChange={inputRead} ref={selector} />
-        </div>
         <div style={{ marginTop: "20px" }}>
           <button
             style={{ width: "110px", backgroundColor: "green" }}

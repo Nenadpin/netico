@@ -27,7 +27,6 @@ const Order = () => {
   const [kdStavka, setKdStavka] = useState(0);
   const [orderDetails, setOrderDetails] = useState([]);
   const [total, setTotal] = useState(0);
-  const [newOrd, setNewOrd] = useState(true);
 
   useMemo(() => {
     if (narudzbenica) {
@@ -51,14 +50,12 @@ const Order = () => {
   };
 
   const deleteItem = (x) => {
-    if (newOrd) {
-      let tempDetails = orderDetails.filter((a) => {
-        if (orderDetails.indexOf(a) === parseInt(x))
-          setTotal((prev) => prev - a.kol * a.cena);
-        return orderDetails.indexOf(a) !== parseInt(x);
-      });
-      setOrderDetails(tempDetails);
-    }
+    let tempDetails = orderDetails.filter((a) => {
+      if (orderDetails.indexOf(a) === parseInt(x))
+        setTotal((prev) => prev - a.kol * a.cena);
+      return orderDetails.indexOf(a) !== parseInt(x);
+    });
+    setOrderDetails(tempDetails);
   };
 
   const handleOrder = async () => {
@@ -72,19 +69,6 @@ const Order = () => {
       datumNar2.current.value &&
       mesto
     ) {
-      // setNarudzbenica({
-      //   br: brNarudz.current.value,
-      //   sifraTs: trafoStanica.ts,
-      //   iznos: total * 1.2,
-      //   operativno: "nova",
-      //   datum: datumNar.current.value,
-      //   sifraUg: ugovor.oznaka,
-      //   stavke: orderDetails,
-      //   mesto: mesto,
-      //   datum2: datumNar2.current.value,
-      //   br_sap: brSap.current.value,
-      //   zavodni_br: zavodniBr.current.value,
-      // });
       try {
         const response2 = await fetch("http://localhost:5000/order", {
           method: "POST",
@@ -115,18 +99,6 @@ const Order = () => {
       }
     } else alert("Niste popunili sve podatke!");
   };
-  // const populate = () => {
-  //   if (narudzbenica) {
-  //     setTotal(narudzbenica.iznos / 1.2);
-  //     let ug = sviUgovori.filter((u) => {
-  //       return u.oznaka === narudzbenica.sifra_ugovora;
-  //     })[0];
-  //     setUgovor(ug);
-  //     setOrderDetails(narudzbenica.stavke);
-  //     setMesto(narudzbenica.mesto);
-  //     setNewOrd(false);
-  //   }
-  // };
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -136,109 +108,104 @@ const Order = () => {
 
   return (
     <div className="order">
-      {newOrd ? (
-        <>
-          <div className="orderInfo">
-            <span style={{ marginTop: "7px" }}>
-              <strong>Уговор: </strong>
-            </span>
-            <select
-              onFocus={(e) => {
-                e.target.selectedIndex = 0;
-              }}
-              autoFocus
-              onChange={(e) => {
-                let temUg = sviUgovori.filter((x) => {
-                  return x.oznaka === e.target.value;
-                });
-                setUgovor(temUg[0]);
-              }}
-              type="text"
-            >
-              {!narudzbenica ? (
-                <option disabled={true} value="">
-                  --ИЗБОР УГОВОРА--
-                </option>
-              ) : (
-                <option disabled={true} value={narudzbenica.sifra_ugovora}>
-                  {
-                    sviUgovori.filter((ug) => {
-                      return ug.oznaka === narudzbenica.sifra_ugovora;
-                    })[0].opis_ugovora
-                  }
-                </option>
-              )}
-              {sviUgovori
-                ? sviUgovori.map((ug, index) => (
-                    <option key={index} value={ug.oznaka}>
-                      {ug.opis_ugovora}
-                    </option>
-                  ))
-                : null}
-            </select>
-            <span style={{ marginTop: "7px", marginLeft: "2px" }}>
-              <strong>Mesto/Ogranak:</strong>
-            </span>
-            <input
-              type="text"
-              ref={mestoRef}
-              placeholder="ogranak..."
-              defaultValue={narudzbenica.mesto}
-              onBlur={() =>
-                setMesto(
-                  serbianTransliteration.toCyrillic(mestoRef.current.value)
-                )
-              }
-              style={{ height: "2rem", fontSize: "1rem", paddingLeft: "2px" }}
-            ></input>
-          </div>
-          <div className="newOrderChoice">
-            <span style={{ marginTop: "7px" }}>
-              <strong>Услуга: </strong>
-            </span>
-            <select
-              onFocus={(e) => {
-                e.target.selectedIndex = 0;
-              }}
-              autoFocus
-              onChange={(e) => {
-                setKdStavka(e.target.value - 1);
-                kolicina.current.focus();
-              }}
-            >
+      <>
+        <div className="orderInfo">
+          <span style={{ marginTop: "7px" }}>
+            <strong>Уговор: </strong>
+          </span>
+          <select
+            onFocus={(e) => {
+              e.target.selectedIndex = 0;
+            }}
+            autoFocus
+            onChange={(e) => {
+              let temUg = sviUgovori.filter((x) => {
+                return x.oznaka === e.target.value;
+              });
+              setUgovor(temUg[0]);
+            }}
+            type="text"
+          >
+            {!narudzbenica ? (
               <option disabled={true} value="">
-                --ИЗБОР УСЛУГЕ--
+                --ИЗБОР УГОВОРА--
               </option>
-              {kd
-                ? kd.map((item, indkd) => (
-                    <option key={indkd} value={item.r_br}>
-                      {item.r_br}. {item.opis_usluge}
-                    </option>
-                  ))
-                : null}
-            </select>
-            <input
-              type="number"
-              style={{
-                marginLeft: "15px",
-                height: "2rem",
-                fontSize: "large",
-                textAlign: "center",
-              }}
-              placeholder="Ком"
-              ref={kolicina}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSubmit();
-              }}
-            ></input>
-          </div>
-        </>
-      ) : null}
+            ) : (
+              <option disabled={true} value={narudzbenica.sifra_ugovora}>
+                {
+                  sviUgovori.filter((ug) => {
+                    return ug.oznaka === narudzbenica.sifra_ugovora;
+                  })[0].opis_ugovora
+                }
+              </option>
+            )}
+            {sviUgovori
+              ? sviUgovori.map((ug, index) => (
+                  <option key={index} value={ug.oznaka}>
+                    {ug.opis_ugovora}
+                  </option>
+                ))
+              : null}
+          </select>
+          <span style={{ marginTop: "7px", marginLeft: "2px" }}>
+            <strong>Mesto/Ogranak:</strong>
+          </span>
+          <input
+            type="text"
+            ref={mestoRef}
+            placeholder="ogranak..."
+            defaultValue={narudzbenica?.mesto}
+            onBlur={() =>
+              setMesto(
+                serbianTransliteration.toCyrillic(mestoRef.current.value)
+              )
+            }
+            style={{ height: "2rem", fontSize: "1rem", paddingLeft: "2px" }}
+          ></input>
+        </div>
+        <div className="newOrderChoice">
+          <span style={{ marginTop: "7px" }}>
+            <strong>Услуга: </strong>
+          </span>
+          <select
+            onFocus={(e) => {
+              e.target.selectedIndex = 0;
+            }}
+            autoFocus
+            onChange={(e) => {
+              setKdStavka(e.target.value - 1);
+              kolicina.current.focus();
+            }}
+          >
+            <option disabled={true} value="">
+              --ИЗБОР УСЛУГЕ--
+            </option>
+            {kd
+              ? kd.map((item, indkd) => (
+                  <option key={indkd} value={item.r_br}>
+                    {item.r_br}. {item.opis_usluge}
+                  </option>
+                ))
+              : null}
+          </select>
+          <input
+            type="number"
+            style={{
+              marginLeft: "15px",
+              height: "2rem",
+              fontSize: "large",
+              textAlign: "center",
+            }}
+            placeholder="Ком"
+            ref={kolicina}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSubmit();
+            }}
+          ></input>
+        </div>
+      </>
       <div>
-        <button
-          onClick={handleOrder}
-          style={{ display: newOrd ? "inline-block" : "none" }}
-        >
+        <button onClick={handleOrder} style={{ display: "inline-block" }}>
           Упиши у базу
         </button>
         <button onClick={handlePrint}>Сними PDF</button>
@@ -329,14 +296,14 @@ const Order = () => {
           {ugovor
             ? ugovor.datum_ugovora
             : sviUgovori.filter((ug) => {
-                return ug.oznaka === narudzbenica.sifra_ugovora;
-              })[0].datum_ugovora}{" "}
+                return ug.oznaka === narudzbenica?.sifra_ugovora;
+              })[0]?.datum_ugovora}{" "}
           закљученог у поступку јавне набавке предмет: пружање услуге{" "}
           {ugovor
             ? ugovor.opis_ugovora
             : sviUgovori.filter((ug) => {
-                return ug.oznaka === narudzbenica.sifra_ugovora;
-              })[0].opis_ugovora}
+                return ug.oznaka === narudzbenica?.sifra_ugovora;
+              })[0]?.opis_ugovora}
           , издаје се наруџбеница
         </p>
         <div className="orderDetails">

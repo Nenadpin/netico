@@ -9,6 +9,7 @@ import Ispitivanje from "./components/Ispitivanje";
 import Report from "./components/Report";
 import NewTS from "./components/NewTS";
 import Login from "./components/Login";
+import Upload from "./components/Upload";
 
 const Start = () => {
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
@@ -26,6 +27,7 @@ const Start = () => {
     sviUgovori,
     reports,
     setOrders,
+    setPrev,
     setKd,
     setSviUgovori,
     setEmplList,
@@ -38,14 +40,13 @@ const Start = () => {
     setTipPrikaza,
     setExamine,
     setReports,
-    setAllOrders,
     setUgovor,
     setHistory,
-    setPrev,
   } = useContext(ReportContext);
   const [filter, setFilter] = useState(false);
   const [dispOrd, setDispOrd] = useState(null);
   const [editOrd, setEdit] = useState(false);
+  const [upload, setUpload] = useState(false);
   // Na ucitavanju stranice, prikuplja podatke
   // sa backenda o svim TS i ispitivanjima
   useEffect(() => {
@@ -72,41 +73,29 @@ const Start = () => {
     }
   };
 
-  const getFields = async (e) => {
-    try {
-      const response = await fetch(`http://localhost:5000/detalji_stanice${e}`);
-      const jsonData = await response.json();
-      console.log(jsonData);
-      setPolja(jsonData.fields);
-      setNarudzbenica(jsonData.curr[0]);
-      setExamine(jsonData.els);
-      setAllOrders(jsonData.allOrd);
-      setReports(jsonData.izv);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
-
   // Kad se izabere TS, proverava istoriju ispitivanja
   //i vraca listu svih ispitivanja izabrane TS
   // i na kraju se formira globalno stanje trafoStanice
 
   const checkHistory = async (ord_no) => {
-    let ts_no = orders.filter((o) => {
+    let nar = orders.filter((o) => {
       return o.broj_narudzbenice === ord_no;
-    })[0].sifra_ts;
-
-    await getFields(ts_no);
-    let newTS = tsList.filter((e) => {
-      return e.sifra_ts === ts_no;
-    });
-    newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
-    setTrafoStanica(newTS[0]);
-    // // setNarudzbenica(
-    // //   orders.filter((o) => {
-    // //     return (o.broj_narudzbenice = ord_no);
-    // //   })[0]
-    // );
+    })[0];
+    console.log(nar);
+    setNarudzbenica({ ...nar });
+    let ts_no = nar.sifra_ts;
+    try {
+      const response = await fetch(
+        `http://localhost:5000/detalji_stanice${ts_no}`
+      );
+      const jsonData = await response.json();
+      console.log(jsonData);
+      setPolja(jsonData.fields);
+      setExamine(jsonData.els);
+      setReports(jsonData.izv);
+    } catch (err) {
+      console.log(err.message);
+    }
     const tmp = ispList
       .filter((ex) => {
         return ex.sifra_ts === ts_no;
@@ -118,9 +107,29 @@ const Start = () => {
     else {
       setPrev([]);
     }
+    let newTS = tsList.filter((e) => {
+      return e.sifra_ts === ts_no;
+    });
+    newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
+    setTrafoStanica({ ...newTS[0] });
+  };
+
+  const techOps = (ts_no) => {
+    let newTS = tsList.filter((e) => {
+      return e.sifra_ts === ts_no;
+    });
+    newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
+    setTrafoStanica({ ...newTS[0] });
+    let sif = ispList.filter((i) => {
+      return i.sifra_ts === ts_no;
+    })[0]?.r_br;
+    console.log(sif);
+    if (!narudzbenica) setTipPrikaza(2);
   };
 
   const prikazi = (x, y) => {
+    if (y < 10) y = "00" + y;
+    else if (10 < y < 100) y = "0" + y;
     let temp1 = {};
     let temp = examine
       .map((h) => {
@@ -131,11 +140,13 @@ const Start = () => {
       .filter((f) => {
         return f.length > 0;
       });
+    console.log(examine);
     for (let i = 0; i < temp.length; i++) {
       if (temp[i][0].stanje_izolacije !== 5) {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
+    console.log(temp1);
     setHistory(temp1);
     setElHist(x);
     setTipPrikaza(1);
@@ -160,7 +171,6 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-    console.log(temp1);
     setHistory(temp1);
     setElHist(x);
     if (!narudzbenica)
@@ -179,49 +189,57 @@ const Start = () => {
     setTipPrikaza(6);
     setSifraIspitivanja(isp);
   };
+
   const filterTS = (choice) => {
     let ispOrders = orders;
     switch (choice) {
       case "isp": {
         ispOrders = ispOrders.filter((o) => {
+          return o.operativno === "uploaded";
+        });
+        if (ispOrders.length) break;
+        else return;
+      }
+      case "upload": {
+        ispOrders = ispOrders.filter((o) => {
           return o.operativno === "upisano";
         });
-        break;
+        if (ispOrders.length) break;
+        else return;
       }
       case "nova": {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "nova";
         });
-        break;
+        if (ispOrders.length) break;
+        else return;
       }
       case "nalog": {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "nalog";
         });
-        break;
-      }
-      case "zapisnik": {
-        ispOrders = ispOrders.filter((o) => {
-          return o.operativno === "zapisnik";
-        });
-        break;
+        if (ispOrders.length) break;
+        else return;
       }
       case "new": {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "zavrseno";
         });
-        break;
+        if (ispOrders.length) break;
+        else return;
       }
       case "current": {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno !== "zavrseno" && o.operativno !== "greska";
         });
-        break;
+        if (ispOrders.length) break;
+        else return;
       }
       default:
         ispOrders = [];
     }
-    setDispOrd(ispOrders);
+    if (!ispOrders.length) setTipPrikaza(2);
+    setDispOrd([...ispOrders]);
     setFilter(true);
   };
 
@@ -252,7 +270,7 @@ const Start = () => {
           </div>
         ) : role === "operator" ? (
           <div>
-            <button onClick={() => filterTS("zapisnik")}>Записник</button>
+            <button onClick={() => filterTS("nalog")}>Записник</button>
           </div>
         ) : role === "expert" ? (
           <div>
@@ -260,17 +278,31 @@ const Start = () => {
           </div>
         ) : role === "tech" ? (
           <div>
-            <button onClick={() => filterTS("new")}>Наруџбеница</button>
-            <button onClick={() => filterTS("nova")}>Налог</button>
+            <button
+              onClick={() => {
+                setUpload(false);
+                filterTS("nova");
+              }}
+            >
+              Налог
+            </button>
             <button
               onClick={() => {
                 setFilter(false);
+                setUpload(false);
                 setTipPrikaza(0);
               }}
             >
               Нова ТС
             </button>
-            <button>Унос фајлова</button>
+            <button
+              onClick={() => {
+                filterTS("upload");
+                setUpload(true);
+              }}
+            >
+              Унос фајлова
+            </button>
           </div>
         ) : null}
         {dispOrd?.length && filter ? (
@@ -287,13 +319,34 @@ const Start = () => {
             <option disabled={true} value="">
               --NARUDZBENICA--
             </option>
-            {dispOrd.length
-              ? dispOrd.map((ord, index) => (
-                  <option key={index} value={ord.broj_narudzbenice}>
-                    {ord.sifra_ts} - {ord.broj_narudzbenice}
-                  </option>
-                ))
-              : null}
+            {dispOrd.map((ord, index) => (
+              <option key={index} value={ord.broj_narudzbenice}>
+                {ord.sifra_ts} - {ord.naziv.substring(0, 20)} нзн:{" "}
+                {ord.broj_narudzbenice.substring(0, 10)}{" "}
+                {ord.operativno !== "zavrseno" ? ord.operativno : ""}
+              </option>
+            ))}
+          </select>
+        ) : null}
+        {role === "tech" && !dispOrd ? (
+          <select
+            onFocus={(e) => {
+              setTipPrikaza(null);
+              setNarudzbenica(null);
+              e.target.selectedIndex = 0;
+            }}
+            autoFocus
+            type="text"
+            onChange={(e) => techOps(e.target.value)}
+          >
+            <option disabled={true} value="">
+              --NOVA NARUDZBENICA--
+            </option>
+            {tsList.map((ts, index) => (
+              <option key={index} value={ts.sifra_ts}>
+                {ts.sifra_ts} - {ts.naziv}
+              </option>
+            ))}
           </select>
         ) : null}
         {prev.length && tipPrikaza !== 5 && role === "admin" && !editOrd ? (
@@ -360,7 +413,7 @@ const Start = () => {
               >
                 Zapisnik
               </h4>
-            ) : narudzbenica?.operativno === "upisano" && filter ? (
+            ) : narudzbenica?.operativno === "uploaded" && filter && !upload ? (
               <h4
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
@@ -371,16 +424,9 @@ const Start = () => {
                   setTipPrikaza(5);
                 }}
               >
-                Ispitivanje
+                Pokreni
               </h4>
-            ) : (
-              <h4
-                style={{ cursor: "pointer", color: "blue" }}
-                onClick={() => setTipPrikaza(2)}
-              >
-                Narudzbenica
-              </h4>
-            )}
+            ) : null}
           </span>
         ) : null}
       </div>
@@ -399,6 +445,7 @@ const Start = () => {
       ) : tipPrikaza === 0 ? (
         <NewTS />
       ) : null}
+      {upload && trafoStanica.sifra_ts ? <Upload /> : null}
     </>
   );
 };

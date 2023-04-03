@@ -285,7 +285,7 @@ const Zapisnik = () => {
         diff += parseInt(tempPolje.pi);
       }
       if (tempPolje.us === "") setTotalEl((prev) => prev - diff);
-      //      setElpn(tempPolje);
+      setElpn(tempPolje);
       localStorage.setItem("zapisnik", JSON.stringify(zapisnikDetails));
       localStorage.setItem("total", totalEl);
       setZapisnikDetails((zapisnikDetails) => [...zapisnikDetails, tempPolje]);
