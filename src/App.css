@@ -317,7 +317,6 @@ button {
   width: 21cm;
   height: 29.7cm;
   font-family: Arial, Helvetica, sans-serif;
-  border: 1px solid black;
   margin: auto;
   background-color: white;
   padding-left: 1.5cm;
@@ -384,8 +383,15 @@ button {
     overflow: initial !important;
   }
 }
-
+@media screen {
+  .zakljucak {
+    visibility: hidden;
+  }
+}
 @media print {
+  .limiter {
+    visibility: hidden;
+  }
   .page-break {
     break-inside: avoid;
   }

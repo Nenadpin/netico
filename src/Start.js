@@ -98,7 +98,7 @@ const Start = () => {
     }
     const tmp = ispList
       .filter((ex) => {
-        return ex.sifra_ts === ts_no;
+        return ex.sifra_ts === ts_no && ex.narudzbenica === ord_no;
       })
       .sort((b, c) => {
         return b.r_br - c.r_br;
@@ -128,8 +128,12 @@ const Start = () => {
   };
 
   const prikazi = (x, y) => {
-    if (y < 10) y = "00" + y;
-    else if (10 < y < 100) y = "0" + y;
+    if (y < 10) {
+      y = "00" + y;
+    } else if (y < 100) {
+      y = "0" + y;
+    }
+    console.log(x, y);
     let temp1 = {};
     let temp = examine
       .map((h) => {
@@ -140,13 +144,14 @@ const Start = () => {
       .filter((f) => {
         return f.length > 0;
       });
+    console.log(temp);
     console.log(examine);
     for (let i = 0; i < temp.length; i++) {
       if (temp[i][0].stanje_izolacije !== 5) {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-    console.log(temp1);
+
     setHistory(temp1);
     setElHist(x);
     setTipPrikaza(1);
@@ -154,6 +159,7 @@ const Start = () => {
 
   const izvestaj = (x, isp) => {
     let temp1 = {};
+    console.log(isp, examine);
     let temp = examine
       .map((h) => {
         return h.history?.filter((e) => {
@@ -161,7 +167,7 @@ const Start = () => {
         });
       })
       .filter((f) => {
-        return f.length > 0;
+        return f?.length > 0;
       });
     for (let i = 0; i < temp.length; i++) {
       if (
@@ -171,19 +177,11 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
+    console.log(temp1);
     setHistory(temp1);
     setElHist(x);
-    if (!narudzbenica)
-      setNarudzbenica(
-        allOrders.filter((ord) => {
-          return ord.sifra_ts === trafoStanica.sifra_ts;
-        })[0]
-      );
-    const conCurr = allOrders.filter((ord) => {
-      return ord.broj_narudzbenice === narudzbenica?.broj_narudzbenice;
-    });
     const contract = sviUgovori.filter((c) => {
-      return c.oznaka === conCurr[0]?.sifra_ugovora;
+      return c.oznaka === narudzbenica?.sifra_ugovora;
     });
     setUgovor(contract[0]);
     setTipPrikaza(6);
@@ -357,6 +355,7 @@ const Start = () => {
                 <p key={idx}>
                   <span
                     onClick={() => {
+                      console.log(reports);
                       setSifraIspitivanja(x.r_br);
                       prikazi(idx, x.r_br);
                     }}
@@ -364,7 +363,9 @@ const Start = () => {
                   >
                     Datum: {x.datum} Ispitivanje br: {x.r_br}
                   </span>
-                  {reports && narudzbenica?.stavke ? (
+                  {reports.filter((r) => {
+                    return r.narudzbenica === narudzbenica?.broj_narudzbenice;
+                  }).length && narudzbenica?.stavke ? (
                     <span
                       onClick={() => izvestaj(idx, x.r_br)}
                       style={{

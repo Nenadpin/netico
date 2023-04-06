@@ -32,7 +32,7 @@ const Report = () => {
   const [ispCurr, setIspCurr] = useState([]);
   const [napIzv, setNapIzv] = useState(null);
   const [ispPolja, setIspPolja] = useState(null);
-  const [izvBr, setIzvBr] = useState("");
+  const [izvBr, setIzvBr] = useState(null);
   const printRef = useRef();
   const dateRef = useRef();
   const dateRef1 = useRef();
@@ -54,8 +54,9 @@ const Report = () => {
           return (
             p.element.filter((e) => {
               return (
-                e.history[elHist].stanje_izolacije !== 0 &&
-                e.history[elHist].stanje_izolacije !== 5
+                e.history &&
+                e.history[elHist]?.stanje_izolacije !== 0 &&
+                e.history[elHist]?.stanje_izolacije !== 5
               );
             }).length > 0
           );
@@ -65,23 +66,25 @@ const Report = () => {
             return h.history[elHist].stanje_izolacije !== 0;
           });
         }
-        console.log(f);
         setIspPolja(f);
-        setIzvBr(reports[elHist]?.broj_izvestaja);
+        let tIzvest = reports.filter((r) => {
+          return r.narudzbenica === narudzbenica.broj_narudzbenice;
+        });
+        if (tIzvest.length) setIzvBr({ ...tIzvest[0] });
       }
       let nap = {};
       for (let i = 0; i < narudzbenica.stavke.length; i++) {
         if ([1, 2, 6, 7, 10, 12].includes(narudzbenica.stavke[i].pos))
-          nap["10"] = nap["10"]
-            ? [...nap["10"], narudzbenica.stavke[i]]
+          nap[10] = nap[10]
+            ? [...nap[10], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
         else if ([3, 4, 8, 9, 11, 13].includes(narudzbenica.stavke[i].pos))
-          nap["35"] = nap["35"]
-            ? [...nap["35"], narudzbenica.stavke[i]]
+          nap[35] = nap[35]
+            ? [...nap[35], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
         else if ([5, 14].includes(narudzbenica.stavke[i].pos))
-          nap["110"] = nap["110"]
-            ? [...nap["110"], narudzbenica.stavke[i]]
+          nap[110] = nap[110]
+            ? [...nap[110], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
       }
       no_el += 8 + Math.ceil(no_el / 43) + Object.keys(nap).length;
@@ -159,9 +162,7 @@ const Report = () => {
           }}
         >
           <span style={{ color: "#4f4d4d" }}>ИЗВЕШТАЈ БРОЈ: </span>
-          <span style={{ color: "#74bc74" }}>
-            {reports[elHist]?.broj_izvestaja}
-          </span>
+          <span style={{ color: "#74bc74" }}>{izvBr?.broj_izvestaja}</span>
         </p>
         <p
           style={{
@@ -185,7 +186,7 @@ const Report = () => {
             textAlign: "center",
           }}
         >
-          {reports[elHist]?.naziv}
+          {izvBr?.naziv}
         </p>
         <br />
         <br />
@@ -241,7 +242,7 @@ const Report = () => {
                 fontWeight: "600",
               }}
             >
-              {reports[elHist]?.broj_izvestaja}
+              {izvBr?.broj_izvestaja}
             </span>
           </p>
           <p
@@ -268,7 +269,7 @@ const Report = () => {
               marginTop: "0",
             }}
           >
-            {reports[elHist]?.naziv}
+            {izvBr?.naziv}
           </p>
           <table
             className="tbl"
@@ -341,7 +342,7 @@ const Report = () => {
                   -MVA
                 </td>
               </tr>
-              {reports[elHist]?.naponski_nivo.split("/").map((post, idp) => {
+              {izvBr?.naponski_nivo.split("/").map((post, idp) => {
                 return (
                   <tr key={idp}>
                     <td style={{ textAlign: "left" }}>
@@ -609,42 +610,50 @@ const Report = () => {
           }}
           defaultValue={`У извештају су приказани резултати ултразвучног испитивања струјних и напонских мерних трансформатора и кабловских завршница, у трансформаторској станици која је предмет овог извештаја, спроведених према Оквирном споразуму бр. ${ugovor?.broj_ugovora_korisnik} od ${ugovor?.datum_ugovora} године према ЈН 18-22. Испитивање је извршено према захтевима из наруџбенице:`}
         ></textarea>
-        {reports[elHist]?.naponski_nivo.split("/").map((nap, idn) => {
-          return (
-            <div key={idn}>
-              <p style={{ textAlign: "left" }}>{nap.trim()} kV</p>
-              <table className="tbl1">
-                <colgroup>
-                  <col span="1" style={{ width: "10%" }}></col>
-                  <col span="1"></col>
-                  <col span="1" style={{ width: "15%" }}></col>
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>Ознака</th>
-                    <th>Опис</th>
-                    <th>Количина</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {napIzv
-                    ? napIzv[nap.trim()].map((izv, idIzv) => {
-                        return (
-                          <tr key={idIzv}>
-                            <td style={{ textAlign: "center" }}>{izv.pos}</td>
-                            <td style={{ textAlign: "left", padding: "5px" }}>
-                              {izv.opis}
-                            </td>
-                            <td style={{ textAlign: "center" }}>{izv.kol}</td>
-                          </tr>
-                        );
-                      })
-                    : null}
-                </tbody>
-              </table>
-            </div>
-          );
-        })}
+        {napIzv
+          ? Object.keys(napIzv).map((nap, idn) => {
+              return (
+                <div key={idn}>
+                  <p style={{ textAlign: "left" }}>{nap} kV</p>
+                  <table className="tbl1">
+                    <colgroup>
+                      <col span="1" style={{ width: "10%" }}></col>
+                      <col span="1"></col>
+                      <col span="1" style={{ width: "15%" }}></col>
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>Ознака</th>
+                        <th>Опис</th>
+                        <th>Количина</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {napIzv
+                        ? napIzv[nap]?.map((izv, idIzv) => {
+                            return (
+                              <tr key={idIzv}>
+                                <td style={{ textAlign: "center" }}>
+                                  {izv.pos}
+                                </td>
+                                <td
+                                  style={{ textAlign: "left", padding: "5px" }}
+                                >
+                                  {izv.opis}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {izv.kol}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        : null}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })
+          : null}
         <textarea
           rows={4}
           style={{
@@ -875,7 +884,7 @@ const Report = () => {
       </div>
       <div id="pg6" className="reportTable">
         <ReportTable
-          izvBr={izvBr}
+          izvBr={izvBr?.broj_izvestaja}
           no={no}
           ispPolja={ispPolja}
           pageCount={[pageCount]}
@@ -884,6 +893,7 @@ const Report = () => {
           napIzv={napIzv}
           str={(8 + Math.ceil(no / 43)).toString()}
           pageCount={pageCount}
+          setPageCount={setPageCount}
           ispPolja={ispPolja}
         />
         <Listovi

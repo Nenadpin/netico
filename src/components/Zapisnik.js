@@ -161,7 +161,7 @@ const Zapisnik = () => {
     if (oznakaPolja.current.value && elNapon > -1 && tipPolja) {
       let tempPolje = {
         ozn: oznakaPolja.current.value.toUpperCase(),
-        napkV: trafoStanica.napon[elNapon].trim() + "kV",
+        napkV: trafoStanica.napon[elNapon].trim(),
         tip: tipPolja,
         izvod: serbianTransliteration
           .toCyrillic(nazivPolja.current.value)
@@ -736,7 +736,7 @@ const Zapisnik = () => {
                     borderRadius: "10px",
                   }}
                 >
-                  {elpn.ozn} -{elpn.napkV}
+                  {elpn.ozn} -{elpn.napkV}kV
                   <table
                     className="tblZ"
                     style={{

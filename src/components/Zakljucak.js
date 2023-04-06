@@ -1,45 +1,20 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState, useRef } from "react";
 import ReportContext from "../Context";
 import TextareaAutosize from "react-textarea-autosize";
 import Header from "./Header";
 import Footer from "./Footer";
 import napomenaText from "./Misljenje.json";
 
-const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
-  const [elements, setElements] = useState(null);
+const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
   const [zuto, setZuto] = useState(null);
   const [crveno, setCrveno] = useState(null);
+  const [dummy, setDummy] = useState(0);
+  const bodyRef = useRef();
 
   const { history, elHist } = useContext(ReportContext);
 
   useMemo(() => {
-    let listItems = Object.keys(history);
-    let elObj = {
-      st: {},
-      nt: {},
-      kz: {},
-      pi: {},
-    };
-    for (let i = 0; i < listItems.length; i++) {
-      let item = listItems[i].slice(-4, -2);
-      if (item === "ST")
-        elObj.st[parseInt(listItems[i].substring(5, 8))]
-          ? (elObj.st[parseInt(listItems[i].substring(5, 8))] += 1)
-          : (elObj.st[parseInt(listItems[i].substring(5, 8))] = 1);
-      else if (item === "NT")
-        elObj.nt[parseInt(listItems[i].substring(5, 8))]
-          ? (elObj.nt[parseInt(listItems[i].substring(5, 8))] += 1)
-          : (elObj.nt[parseInt(listItems[i].substring(5, 8))] = 1);
-      else if (item === "KZ")
-        elObj.st[parseInt(listItems[i].substring(5, 8))]
-          ? (elObj.kz[parseInt(listItems[i].substring(5, 8))] += 1)
-          : (elObj.kz[parseInt(listItems[i].substring(5, 8))] = 1);
-      else
-        elObj.pi[parseInt(listItems[i].substring(5, 8))]
-          ? (elObj.pi[parseInt(listItems[i].substring(5, 8))] += 1)
-          : (elObj.pi[parseInt(listItems[i].substring(5, 8))] = 1);
-    }
-    setElements(elObj);
+    console.log(history);
     if (ispPolja) {
       let f = [],
         g = [];
@@ -66,45 +41,81 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
           }
         }
       }
+      console.log(f, g);
       setZuto(f);
       setCrveno(g);
     }
   }, [history]);
+  const expandPage = () => {
+    console.log(bodyRef.current.offsetHeight);
+    if (bodyRef.current.offsetHeight > 2050) {
+      setPageCount((p) => p + 1);
+      setDummy(1);
+    }
+  };
 
   return (
     <>
       <div
         className="report"
         style={{
-          height: (Object.keys(napIzv).length * 29.7).toString() + "cm",
+          height:
+            ((Object.keys(napIzv).length + dummy) * 29.7).toString() + "cm",
         }}
       >
         {Object.keys(napIzv).map((h, ih) => {
           return (
-            <div
-              key={ih}
-              style={{
-                height: "40px",
-                width: "100%",
-                position: "absolute",
-                top: (ih * 29.7).toString() + "cm",
-              }}
-            >
-              <Header />
-              <Footer str={parseInt(str) + ih} pageCount={pageCount} z={1} />
-              <hr
+            <>
+              <div
+                className="zakljucak"
+                key={ih}
                 style={{
+                  height: "40px",
+                  width: "100%",
                   position: "absolute",
-                  left: "-1.5cm",
-                  width: "21cm",
+                  top: (ih * 29.7).toString() + "cm",
+                }}
+              >
+                <Header />
+                <Footer str={parseInt(str) + ih} pageCount={pageCount} z={1} />
+              </div>
+              <hr
+                className="limiter"
+                style={{
+                  width: "18cm",
+                  position: "absolute",
                   height: "1px",
-                  top: ((ih + 1) * 29.7).toString() + "cm",
+                  top: ((ih + 1) * 28).toString() + "cm",
                 }}
               ></hr>
-            </div>
+            </>
           );
         })}
-        <table style={{ border: "none", width: "21cm" }}>
+        {dummy > 0 ? (
+          <div
+            className="zakljucak"
+            style={{
+              height: "40px",
+              width: "100%",
+              position: "absolute",
+              top: (Object.keys(napIzv).length * 29.7).toString() + "cm",
+            }}
+          >
+            <Header />
+            <Footer
+              str={parseInt(str) + Object.keys(napIzv).length}
+              pageCount={pageCount}
+              z={1}
+            />
+          </div>
+        ) : null}
+        <table
+          style={{
+            border: "none",
+            width: "21cm",
+            position: "absolute",
+          }}
+        >
           <thead>
             <tr style={{ border: "none" }}>
               <td
@@ -118,20 +129,27 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
               ></td>
             </tr>
           </thead>
-          {napIzv && elements
-            ? Object.keys(napIzv)
-                .sort()
-                .reverse()
-                .map((pn, iz) => {
-                  return (
-                    <tbody>
-                      <tr style={{ border: "none" }}>
-                        <td style={{ border: "none" }}>
+          <tbody
+            ref={bodyRef}
+            style={{
+              height:
+                ((Object.keys(napIzv).length + dummy) * 26.7).toString() + "cm",
+            }}
+          >
+            <tr style={{ border: "none" }}>
+              <td style={{ border: "none", display: "block" }}>
+                {napIzv
+                  ? Object.keys(napIzv)
+                      .sort()
+                      .reverse()
+                      .map((pn, iz) => {
+                        return (
                           <div
                             key={iz}
                             style={{
                               display: "block",
                               textAlign: "left",
+                              width: "18cm",
                             }}
                           >
                             {iz === 0 ? (
@@ -156,6 +174,7 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                     fontSize: "1rem",
                                     color: "#0073ce",
                                     marginTop: "1cm",
+                                    marginLeft: "-1.5cm",
                                   }}
                                 >
                                   6 ЗАКЉУЧАК - МИШЉЕЊЕ И ТУМАЧЕЊЕ
@@ -184,25 +203,10 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                 fontFamily: "arial",
                                 fontSize: "0.9rem",
                               }}
+                              maxRows={7}
                               defaultValue={`У ${pn}kV делу ТС, ултразвучном методом испитано је ${
-                                elements.st[pn] + elements.nt[pn]
-                              },  мерних трансформатора, ${
-                                elements.st[pn]
-                                  ? `${elements.st[pn]} струјних, `
-                                  : ""
-                              }${
-                                elements.nt[pn]
-                                  ? `${elements.nt[pn]} напонских`
-                                  : ""
-                              } мерних трансформатора, ${
-                                elements.kz[pn]
-                                  ? `${elements.kz[pn]} кабловских завршница, `
-                                  : ""
-                              }${
-                                elements.pi[pn]
-                                  ? `${elements.pi[pn]} потпорних изолатора`
-                                  : ""
-                              }. Резултати испитивања приказани су у Табели 2, испитни листови испитане опреме налазе се у делу 7 ПРИЛОЗИ.`}
+                                Object.keys(history)?.length
+                              },  мерних трансформатора,  струјних,  напонских мерних трансформатора, кабловских завршница, потпорних изолатора. Резултати испитивања приказани су у Табели 2, испитни листови испитане опреме налазе се у делу 7 ПРИЛОЗИ.`}
                             />
                             <p
                               style={{
@@ -237,36 +241,7 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                 fontSize: "0.9rem",
                               }}
                               minRows={6}
-                              defaultValue={`${
-                                napomenaText?.zadovoljavajuce[0]
-                              } ${
-                                elements.st[pn] +
-                                elements.nt[pn] -
-                                zuto?.filter((z) => {
-                                  return (
-                                    z.napon === pn &&
-                                    z.el.substring(1, 3) === "МТ"
-                                  );
-                                }).length
-                              } мерних трансформатора ${
-                                elements.kz[pn]
-                                  ? `${
-                                      elements.kz[pn] -
-                                      zuto?.filter((z) => {
-                                        return z.napon === pn && z.el === "КЗ";
-                                      }).length
-                                    } кабловских завршница, `
-                                  : ""
-                              } и ${
-                                elements.pi[pn]
-                                  ? `${
-                                      elements.pi[pn] -
-                                      zuto?.filter((z) => {
-                                        return z.napon === pn && z.el === "ПИ";
-                                      }).length
-                                    } потпорних изолатора `
-                                  : ""
-                              } ${napomenaText.zadovoljavajuce[1]}`}
+                              defaultValue={`${napomenaText?.zadovoljavajuce[0]} мерних трансформатора кабловских завршница, потпорних изолатора ${napomenaText.zadovoljavajuce[1]}`}
                             />
                             <p
                               style={{
@@ -278,9 +253,9 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                             >
                               {napomenaText.zadovoljavajuce[2]}
                             </p>
-                            {(zuto?.filter((z) => {
+                            {zuto?.filter((z) => {
                               return z.napon === pn;
-                            })).length > 0 ? (
+                            })?.length > 0 ? (
                               <div>
                                 <p
                                   style={{
@@ -301,47 +276,7 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                     fontSize: "0.9rem",
                                   }}
                                   minRows={3}
-                                  defaultValue={`Код испитане опреме са становишта ултразвучног испитивања, на ${
-                                    zuto?.filter((z) => {
-                                      return (
-                                        z.napon === pn &&
-                                        z.el.substring(1, 3) === "МТ"
-                                      );
-                                    }).length
-                                      ? `${
-                                          zuto?.filter((z) => {
-                                            return (
-                                              z.napon === pn &&
-                                              z.el.substring(1, 3) === "МТ"
-                                            );
-                                          }).length
-                                        } мерном трансформатору и`
-                                      : ""
-                                  } ${
-                                    zuto?.filter((z) => {
-                                      return z.napon === pn && z.el === "КЗ";
-                                    }).length
-                                      ? `${
-                                          zuto?.filter((z) => {
-                                            return (
-                                              z.napon === pn && z.el === "КЗ"
-                                            );
-                                          }).length
-                                        } кабловских завршница и`
-                                      : ""
-                                  } ${
-                                    zuto?.filter((z) => {
-                                      return z.napon === pn && z.el === "ПИ";
-                                    }).length
-                                      ? `${
-                                          zuto?.filter((z) => {
-                                            return (
-                                              z.napon === pn && z.el === "ПИ"
-                                            );
-                                          }).length
-                                        } потпорних изолатора`
-                                      : ""
-                                  } уочена је делимична деградација изолационих система. То су следећи елементи, у табели Табела 2, означени жутом бојом:`}
+                                  defaultValue={`Код испитане опреме са становишта ултразвучног испитивања, на  мерном трансформатору и кабловских завршница и потпорних изолатора уочена је делимична деградација изолационих система. То су следећи елементи, у табели Табела 2, означени жутом бојом:`}
                                 />
                                 {zuto.map((e, id) => {
                                   return (
@@ -386,9 +321,9 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                 </p>
                               </div>
                             ) : null}
-                            {(crveno?.filter((z) => {
+                            {crveno?.filter((z) => {
                               return z.napon === pn;
-                            })).length > 0 ? (
+                            })?.length > 0 ? (
                               <div>
                                 <p
                                   style={{
@@ -409,47 +344,7 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                     fontSize: "0.9rem",
                                   }}
                                   minRows={3}
-                                  defaultValue={`Код испитане опреме са становишта ултразвучног испитивања, на ${
-                                    crveno?.filter((z) => {
-                                      return (
-                                        z.napon === pn &&
-                                        z.el.substring(1, 3) === "МТ"
-                                      );
-                                    }).length
-                                      ? `${
-                                          crveno?.filter((z) => {
-                                            return (
-                                              z.napon === pn &&
-                                              z.el.substring(1, 3) === "МТ"
-                                            );
-                                          }).length
-                                        } мерном трансформатору и`
-                                      : ""
-                                  } ${
-                                    crveno?.filter((z) => {
-                                      return z.napon === pn && z.el === "КЗ";
-                                    }).length
-                                      ? `${
-                                          crveno?.filter((z) => {
-                                            return (
-                                              z.napon === pn && z.el === "КЗ"
-                                            );
-                                          }).length
-                                        } кабловских завршница и`
-                                      : ""
-                                  } ${
-                                    crveno?.filter((z) => {
-                                      return z.napon === pn && z.el === "ПИ";
-                                    }).length
-                                      ? `${
-                                          crveno?.filter((z) => {
-                                            return (
-                                              z.napon === pn && z.el === "ПИ"
-                                            );
-                                          }).length
-                                        } потпорних изолатора`
-                                      : ""
-                                  } уочена је значајна деградација изолационих система. То су следећи елементи, у табели Табела 2, означени црвеном бојом:`}
+                                  defaultValue={`Код испитане опреме са становишта ултразвучног испитивања, на мерном трансформатору и кабловских завршница и потпорних изолатора уочена је значајна деградација изолационих система. То су следећи елементи, у табели Табела 2, означени црвеном бојом:`}
                                 />
                                 {crveno.map((e, id) => {
                                   return (
@@ -468,21 +363,28 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                                   style={{
                                     marginTop: "1rem",
                                     fontSize: "0.9rem",
+                                    fontStyle: "italic",
+                                    fontWeight: "bold",
                                   }}
                                 >
-                                  Препоручује се замена елемената изолационих
-                                  система испитиване опреме.
+                                  Потребна замена елемента у оквиру редовног
+                                  одржавања!
                                 </p>
-                                <p
+                                <TextareaAutosize
                                   style={{
-                                    margin: "1rem 0",
+                                    border: "none",
+                                    width: "18cm",
+                                    textAlign: "justify",
+                                    marginRight: "1.5cm",
+                                    fontFamily: "arial",
                                     fontWeight: "bold",
                                     fontStyle: "italic",
                                     fontSize: "0.9rem",
                                   }}
-                                >
-                                  {napomenaText.znacajna[2]}
-                                </p>
+                                  minRows={7}
+                                  defaultValue={`Напомена:
+                                  Испитивања „UHF“ методом показала су да у ћелији К04, у приземљу где су смештени предметни елементима (КЗ и ПИ), постоје одређене сметње које се могу и чути, и које маскирају евентуално присуство парцијалних пражњења у испитиваним елементима. У овој ћелији је неопходно извршити проверу свих спојева у ћелији и/или снимање термовизијском камером. Након отклањања неисправности предлаже се да се изврши ново испитивање предметних елемената.`}
+                                />
                               </div>
                             ) : null}
                             <p
@@ -520,12 +422,12 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
                               {napomenaText.napomena[1]}
                             </p>
                           </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  );
-                })
-            : null}
+                        );
+                      })
+                  : null}
+              </td>
+            </tr>
+          </tbody>
           <tfoot>
             <tr style={{ border: "none" }}>
               <td style={{ height: "1.5cm", border: "none" }}></td>
@@ -544,6 +446,7 @@ const Zakljucak = ({ napIzv, str, pageCount, ispPolja }) => {
             color: "#0073ce",
             marginTop: "13.5cm",
           }}
+          onClick={() => expandPage()}
         >
           7 ПРИЛОЗИ
         </p>

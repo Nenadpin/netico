@@ -16,8 +16,8 @@ const Ispitivanje = () => {
   const [ispEls, setIspEls] = useState(null);
   const [chartData, setChartData] = useState(null);
   const [structure, setStructure] = useState(null);
-  const selector = useRef();
-  const selectorB = useRef();
+  const [modal, setModal] = useState(false);
+  const [fileTree, setFileTree] = useState(null);
   const brIzv = useRef();
   const datRef = useRef();
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Slika"];
@@ -92,6 +92,7 @@ const Ispitivanje = () => {
   }, [narudzbenica]);
 
   const resetData = () => {
+    setModal(false);
     let sd = chartData;
     sd.us.dataF = [];
     sd.ut.data = [];
@@ -103,6 +104,7 @@ const Ispitivanje = () => {
     setCurrentEl(null);
   };
   const promeni = (ele, no) => {
+    setModal(false);
     let tempel = examine.map((e) => {
       if (e.moja_sifra === ele) {
         return { ...e, isp: no };
@@ -155,13 +157,19 @@ const Ispitivanje = () => {
       }
     }
   };
-  const reader = new FileReader();
 
   const displayFile = async (f) => {
+    const fileData = {
+      dir: `ISP${sifraIspitivanja}`,
+      fName: f,
+    };
     try {
-      const response = await fetch(`http://localhost:5000/route${f}`);
+      const response = await fetch(`http://localhost:5000/route${fileData}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fileData),
+      });
       const jsonData = await response.json();
-      console.log(jsonData);
       const text = jsonData;
       let dF = [null],
         dT = [null];
@@ -202,31 +210,37 @@ const Ispitivanje = () => {
       console.log(error.message);
     }
   };
-  const inputBase = (e) => {
-    e.preventDefault();
-    let filename = e.target.files[0]?.name.substring(9);
-    reader.onload = (e) => {
-      const text = e.target.result;
-      let d = [null];
-
-      if (filename?.includes("Base")) {
-        let a = text.split("</Header>");
-        a = a[1].split("\r\n<d>");
-        for (let i = 1; i < a.length; i++) {
-          if (parseFloat(a[i])) {
-            let temp = a[i].split(",");
-            d.push(parseFloat(temp[1]));
-          }
-        }
-        d.pop();
-        console.log(d);
-        let sd = { ...chartData };
-        sd.us.dataB = d;
-        sd.lub = filename;
-        setChartData(sd);
-      } else alert("Greska u citanju fajla ili nije Base fajl...");
+  const displayBase = async (f) => {
+    const fileData = {
+      dir: `ISP${sifraIspitivanja}`,
+      fName: f,
     };
-    reader.readAsText(e.target.files[0]);
+    try {
+      const response = await fetch(`http://localhost:5000/route${fileData}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fileData),
+      });
+      const jsonData = await response.json();
+      const text = jsonData;
+      let d = [null];
+      let a = text.split("</Header>");
+      a = a[1].split("\r\n<d>");
+      for (let i = 1; i < a.length; i++) {
+        if (parseFloat(a[i])) {
+          let temp = a[i].split(",");
+          d.push(parseFloat(temp[1]));
+        }
+      }
+      d.pop();
+      console.log(d);
+      let sd = { ...chartData };
+      sd.us.dataB = d;
+      sd.lub = f;
+      setChartData(sd);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   return (
@@ -237,20 +251,54 @@ const Ispitivanje = () => {
         columnGap: "50px",
       }}
     >
+      <div
+        className="modal"
+        style={{ display: modal ? "block" : "none" }}
+      ></div>
+      {modal ? (
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            flexDirection: "column",
+            padding: "5px",
+            width: "12cm",
+            left: "6cm",
+            top: "10cm",
+            backgroundColor: "rgb(209,211,211)",
+            border: "2px solid black",
+            opacity: "1",
+            zIndex: "100",
+            borderRadius: "10px",
+          }}
+        >
+          <p
+            style={{ right: "0.5cm", cursor: "pointer" }}
+            onClick={() => setModal(false)}
+          >
+            X
+          </p>
+          {structure[fileTree]?.map((f, indf) => {
+            return (
+              <p
+                style={{ color: "blue", cursor: "pointer" }}
+                key={indf}
+                onClick={() => displayFile(f)}
+              >
+                {f}
+              </p>
+            );
+          })}
+        </div>
+      ) : null}
       <div className="newContainer">
         {!ispEls ? (
           <button onClick={() => populateEls()}>Сви елементи</button>
         ) : null}
-        {/* <button
-          style={{ position: "absolute", left: "17.5cm", top: "5.5cm" }}
-          onClick={() => selectorB.current.click()}
-        >
-          Base file
-        </button> */}
         {structure
           ? Object.keys(structure)
               .filter((b) => {
-                return b.includes("PK03");
+                return b.includes("Base");
               })
               .map((f, indf) => {
                 return (
@@ -258,9 +306,9 @@ const Ispitivanje = () => {
                     {structure[f].map((el, iel) => {
                       return (
                         <p
-                          style={{ color: "blue", cursor: "pointer" }}
+                          style={{ color: "red", cursor: "pointer" }}
                           key={iel}
-                          onClick={() => displayFile(el)}
+                          onClick={() => displayBase(el)}
                         >
                           {el}
                         </p>
@@ -340,7 +388,9 @@ const Ispitivanje = () => {
                                           ),
                                         }));
                                       } else {
-                                        selector.current.click();
+                                        setModal(true);
+                                        setFileTree(elpn.us.substring(5, 12));
+                                        console.log(fileTree);
                                       }
                                     }
                                   }}
