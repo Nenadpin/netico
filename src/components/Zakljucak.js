@@ -20,7 +20,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
         g = [];
       for (let i = 0; i < ispPolja.length; i++) {
         for (let j = 0; j < ispPolja[i].element.length; j++) {
-          if (ispPolja[i].element[j].history[elHist].stanje_izolacije === 2) {
+          if (ispPolja[i].element[j].history[elHist]?.stanje_izolacije === 2) {
             f.push({
               napon: ispPolja[i].napon.trim(),
               ozn: ispPolja[i].celija_oznaka,
@@ -29,7 +29,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
               faza: "фаза " + ispPolja[i].element[j].faza_opis,
             });
           } else if (
-            ispPolja[i].element[j].history[elHist].stanje_izolacije === 3
+            ispPolja[i].element[j].history[elHist]?.stanje_izolacije === 3
           ) {
             g.push({
               napon: ispPolja[i].napon.trim(),

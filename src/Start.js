@@ -17,7 +17,6 @@ const Start = () => {
   const {
     role,
     trafoStanica,
-    allOrders,
     ispList,
     narudzbenica,
     tipPrikaza,
@@ -81,7 +80,6 @@ const Start = () => {
     let nar = orders.filter((o) => {
       return o.broj_narudzbenice === ord_no;
     })[0];
-    console.log(nar);
     setNarudzbenica({ ...nar });
     let ts_no = nar.sifra_ts;
     try {
@@ -96,13 +94,16 @@ const Start = () => {
     } catch (err) {
       console.log(err.message);
     }
-    const tmp = ispList
-      .filter((ex) => {
-        return ex.sifra_ts === ts_no && ex.narudzbenica === ord_no;
-      })
-      .sort((b, c) => {
-        return b.r_br - c.r_br;
+    let tmp = [...ispList];
+    if (role === "admin")
+      tmp = tmp.filter((ex) => {
+        return ex.sifra_ts === ts_no;
       });
+    else
+      tmp = tmp.filter((ex) => {
+        return ex.sifra_ts === ts_no && ex.narudzbenica === ord_no;
+      });
+    console.log(tmp);
     if (tmp.length) setPrev(tmp);
     else {
       setPrev([]);
@@ -144,14 +145,12 @@ const Start = () => {
       .filter((f) => {
         return f.length > 0;
       });
-    console.log(temp);
-    console.log(examine);
+
     for (let i = 0; i < temp.length; i++) {
       if (temp[i][0].stanje_izolacije !== 5) {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-
     setHistory(temp1);
     setElHist(x);
     setTipPrikaza(1);
@@ -195,6 +194,7 @@ const Start = () => {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "uploaded";
         });
+        setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else return;
       }
@@ -202,6 +202,7 @@ const Start = () => {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "upisano";
         });
+        setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else return;
       }
@@ -209,6 +210,7 @@ const Start = () => {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "nova";
         });
+        setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else return;
       }
@@ -216,13 +218,23 @@ const Start = () => {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "nalog";
         });
+        setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else return;
       }
       case "new": {
-        ispOrders = ispOrders.filter((o) => {
-          return o.operativno === "zavrseno";
-        });
+        let lista = [];
+        let ctrl = [];
+        for (let i = 0; i < ispOrders.length; i++) {
+          if (
+            ispOrders[i].operativno === "zavrseno" &&
+            !ctrl.includes(ispOrders[i].sifra_ts)
+          ) {
+            lista.push(ispOrders[i]);
+            ctrl.push(ispOrders[i].sifra_ts);
+          }
+        }
+        setDispOrd([...lista]);
         if (ispOrders.length) break;
         else return;
       }
@@ -230,6 +242,7 @@ const Start = () => {
         ispOrders = ispOrders.filter((o) => {
           return o.operativno !== "zavrseno" && o.operativno !== "greska";
         });
+        setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else return;
       }
@@ -237,7 +250,6 @@ const Start = () => {
         ispOrders = [];
     }
     if (!ispOrders.length) setTipPrikaza(2);
-    setDispOrd([...ispOrders]);
     setFilter(true);
   };
 
@@ -251,6 +263,8 @@ const Start = () => {
           <div>
             <button
               onClick={() => {
+                setTrafoStanica({});
+                setPrev([]);
                 setEdit(false);
                 filterTS("new");
               }}
@@ -259,6 +273,8 @@ const Start = () => {
             </button>
             <button
               onClick={() => {
+                setTrafoStanica({});
+                setPrev([]);
                 setEdit(true);
                 filterTS("current");
               }}
@@ -319,8 +335,10 @@ const Start = () => {
             </option>
             {dispOrd.map((ord, index) => (
               <option key={index} value={ord.broj_narudzbenice}>
-                {ord.sifra_ts} - {ord.naziv.substring(0, 20)} нзн:{" "}
-                {ord.broj_narudzbenice.substring(0, 10)}{" "}
+                {ord.sifra_ts} - {ord.naziv.substring(0, 30)}{" "}
+                {ord.operativno !== "zavrseno"
+                  ? `нзн: ${ord.broj_narudzbenice?.substring(0, 10)} `
+                  : ""}
                 {ord.operativno !== "zavrseno" ? ord.operativno : ""}
               </option>
             ))}
@@ -355,7 +373,6 @@ const Start = () => {
                 <p key={idx}>
                   <span
                     onClick={() => {
-                      console.log(reports);
                       setSifraIspitivanja(x.r_br);
                       prikazi(idx, x.r_br);
                     }}
@@ -431,17 +448,17 @@ const Start = () => {
           </span>
         ) : null}
       </div>
-      {tipPrikaza === 1 ? (
+      {tipPrikaza === 1 && trafoStanica.sifra_ts ? (
         <NewReport />
-      ) : tipPrikaza === 2 ? (
+      ) : tipPrikaza === 2 && trafoStanica.sifra_ts ? (
         <Order />
-      ) : tipPrikaza === 3 ? (
+      ) : tipPrikaza === 3 && trafoStanica.sifra_ts ? (
         <Nalog />
-      ) : tipPrikaza === 4 ? (
+      ) : tipPrikaza === 4 && trafoStanica.sifra_ts ? (
         <Zapisnik />
-      ) : tipPrikaza === 5 ? (
+      ) : tipPrikaza === 5 && trafoStanica.sifra_ts ? (
         <Ispitivanje />
-      ) : tipPrikaza === 6 ? (
+      ) : tipPrikaza === 6 && trafoStanica.sifra_ts ? (
         <Report />
       ) : tipPrikaza === 0 ? (
         <NewTS />

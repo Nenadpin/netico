@@ -19,7 +19,6 @@ export const ReportProvider = ({ children }) => {
   const [sifraIspitivanja, setSifraIspitivanja] = useState(null);
   const [ugovor, setUgovor] = useState();
   const [orders, setOrders] = useState(null);
-  const [allOrders, setAllOrders] = useState(null);
   const [reports, setReports] = useState([]);
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
   const [pageCount, setPageCount] = useState(0);
@@ -46,7 +45,6 @@ export const ReportProvider = ({ children }) => {
         sifraIspitivanja,
         ugovor,
         orders,
-        allOrders,
         reports,
         history,
         pageCount,
@@ -69,7 +67,6 @@ export const ReportProvider = ({ children }) => {
         setSifraIspitivanja,
         setUgovor,
         setOrders,
-        setAllOrders,
         setReports,
         setHistory,
         setPageCount,

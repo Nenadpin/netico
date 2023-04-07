@@ -9,12 +9,13 @@ const Ispitivanje = () => {
     trafoStanica,
     narudzbenica,
     examine,
+    chartData,
+    setChartData,
     setExamine,
     sifraIspitivanja,
   } = useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
   const [ispEls, setIspEls] = useState(null);
-  const [chartData, setChartData] = useState(null);
   const [structure, setStructure] = useState(null);
   const [modal, setModal] = useState(false);
   const [fileTree, setFileTree] = useState(null);
@@ -44,7 +45,6 @@ const Ispitivanje = () => {
       for (let i = 0; i < 600; i++) {
         labelT.push((-100 + i) / 10);
       }
-      console.log(labelT);
       setChartData({
         lub: "",
         luf: "",

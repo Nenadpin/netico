@@ -1,14 +1,78 @@
-import { useContext, useState, useRef } from "react";
+import { useContext, useState } from "react";
+import ViewGraph from "./ViewGraph";
 import ReportContext from "../Context";
 
 const NewReport = () => {
   const { polja, trafoStanica, sifraIspitivanja, history } =
     useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
+  const [chartData, setChartData] = useState(null);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
   let r_br = 0;
-  const dir_name =
-    "https://nenadst.000webhostapp.com/slike/ISP" + sifraIspitivanja + "/";
+
+  const view = (h) => {
+    console.log(h);
+    let labelS = [0];
+    for (let i = 0; i < 500; i++) {
+      labelS.push((500 + i * 19) / 10);
+    }
+    let labelT = [-12];
+    for (let i = 0; i < 600; i++) {
+      labelT.push((-100 + i) / 10);
+    }
+    let ch = {
+      lub: "",
+      luf: "",
+      lug: "",
+      luh: "",
+      lt1: "",
+      lt2: "",
+      lt3: "",
+      lt4: "",
+      us: {
+        label: labelS,
+        dataF: [],
+        dataG: [],
+        dataH: [],
+        dataB: [],
+      },
+      ut: {
+        label: labelT,
+        data1: [],
+        data2: [],
+        data3: [],
+        data4: [],
+      },
+    };
+    ch.us.label = labelS;
+    ch.ut.label = labelT;
+    if (h.length) {
+      ch.lub = h[0].sifra_ispitivanja;
+      ch.lt1 = h[0].sifra_ispitivanja;
+      ch.us.dataB = h[0].chart?.us.dataF;
+      ch.ut.data1 = h[0].chart?.ut.data;
+    }
+    if (h.length === 2) {
+      ch.luf = h[1].sifra_ispitivanja;
+      ch.lt2 = h[1].sifra_ispitivanja;
+      ch.us.dataF = h[1].chart?.us.dataF;
+      ch.ut.data2 = h[1].chart?.ut.data;
+    }
+    if (h.length === 3) {
+      ch.lug = h[2].sifra_ispitivanja;
+      ch.lt3 = h[2].sifra_ispitivanja;
+      ch.us.dataG = h[2].chart?.us.dataF;
+      ch.ut.data3 = h[2].chart?.ut.data;
+    }
+    if (h.length === 4) {
+      ch.luh = h[3].sifra_ispitivanja;
+      ch.lt4 = h[3].sifra_ispitivanja;
+      ch.us.dataH = h[3].chart?.us.dataF;
+      ch.ut.data4 = h[3].chart?.ut.data;
+    }
+    console.log(ch);
+    setChartData(ch);
+  };
 
   return (
     <div
@@ -77,16 +141,14 @@ const NewReport = () => {
                             </td>
                             <td
                               onClick={() => {
-                                console.log(elpn);
                                 setCurrentEl({
                                   element: elpn.el_skraceno,
                                   naponEl: el,
                                   oznakaEl: polje.celija_oznaka,
                                   fazaEl: elpn.faza_opis,
                                   izolacija: history[elpn.moja_sifra],
-                                  slika: dir_name + elpn.us,
-                                  slika2: dir_name + elpn.ut,
                                 });
+                                view(elpn?.history);
                               }}
                               style={{
                                 backgroundColor:
@@ -116,56 +178,11 @@ const NewReport = () => {
       ) : null}
       {currentEl ? (
         <div className="diagram">
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "700px 100px",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "arial",
-                fontSize: "large",
-                color: "#0073ce",
-              }}
-            >
-              {currentEl
-                ? `ИСПИТНИ ЛИСТ ${currentEl.element}, ${currentEl.naponEl}, ПОЉЕ ${currentEl.oznakaEl}, ФАЗА ${currentEl.fazaEl}`
-                : null}
-            </div>
-            <div
-              style={{
-                backgroundColor:
-                  currentEl.izolacija === 1
-                    ? "green"
-                    : currentEl.izolacija === 2
-                    ? "yellow"
-                    : currentEl.izolacija === 3
-                    ? "red"
-                    : "white",
-              }}
-            >
-              {colors[currentEl.izolacija]}
-            </div>
+          <div style={{ color: "blue", fontWeight: "bold" }}>
+            Поље {currentEl?.oznakaEl}, {currentEl?.element} Фаза{" "}
+            {currentEl?.fazaEl}
           </div>
-          <img
-            src={currentEl.slika}
-            style={{
-              display: "block",
-              width: "800px",
-              height: "300px",
-            }}
-            alt="ultrazvucno ispitivanje"
-          ></img>
-          <img
-            src={currentEl.slika2}
-            style={{
-              display: "block",
-              width: "800px",
-              height: "300px",
-            }}
-            alt="ultrazvucno ispitivanje"
-          ></img>
+          <ViewGraph chartData={chartData} />
         </div>
       ) : null}
     </div>
