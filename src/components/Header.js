@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import ReportContext from "../Context";
 import logo from "../headerLogo.png";
 
-const Header = () => {
-  const { reports, elHist } = useContext(ReportContext);
+const Header = ({ izvBr }) => {
+  const { reports } = useContext(ReportContext);
   return (
     <div>
       <div>
@@ -26,7 +26,7 @@ const Header = () => {
               fontStyle: "italic",
             }}
           >
-            Извештај број: {reports[elHist]?.broj_izvestaja}
+            Извештај број: {izvBr?.broj_izvestaja}
           </span>
         </div>
       </div>

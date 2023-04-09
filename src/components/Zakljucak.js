@@ -5,13 +5,20 @@ import Header from "./Header";
 import Footer from "./Footer";
 import napomenaText from "./Misljenje.json";
 
-const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
+const Zakljucak = ({
+  napIzv,
+  str,
+  pageCount,
+  setPageCount,
+  ispPolja,
+  izvBr,
+}) => {
   const [zuto, setZuto] = useState(null);
   const [crveno, setCrveno] = useState(null);
   const [dummy, setDummy] = useState(0);
   const bodyRef = useRef();
 
-  const { history, elHist } = useContext(ReportContext);
+  const { history } = useContext(ReportContext);
 
   useMemo(() => {
     console.log(history);
@@ -20,7 +27,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
         g = [];
       for (let i = 0; i < ispPolja.length; i++) {
         for (let j = 0; j < ispPolja[i].element.length; j++) {
-          if (ispPolja[i].element[j].history[elHist]?.stanje_izolacije === 2) {
+          if (history[ispPolja[i].element[j].moja_sifra] === 2) {
             f.push({
               napon: ispPolja[i].napon.trim(),
               ozn: ispPolja[i].celija_oznaka,
@@ -28,9 +35,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
               el: ispPolja[i].element[j].el_skraceno,
               faza: "фаза " + ispPolja[i].element[j].faza_opis,
             });
-          } else if (
-            ispPolja[i].element[j].history[elHist]?.stanje_izolacije === 3
-          ) {
+          } else if (history[ispPolja[i].element[j].moja_sifra] === 3) {
             g.push({
               napon: ispPolja[i].napon.trim(),
               ozn: ispPolja[i].celija_oznaka,
@@ -76,7 +81,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
                   top: (ih * 29.7).toString() + "cm",
                 }}
               >
-                <Header />
+                <Header izvBr={izvBr} />
                 <Footer str={parseInt(str) + ih} pageCount={pageCount} z={1} />
               </div>
               <hr
@@ -101,7 +106,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
               top: (Object.keys(napIzv).length * 29.7).toString() + "cm",
             }}
           >
-            <Header />
+            <Header izvBr={izvBr} />
             <Footer
               str={parseInt(str) + Object.keys(napIzv).length}
               pageCount={pageCount}
@@ -436,7 +441,7 @@ const Zakljucak = ({ napIzv, str, pageCount, setPageCount, ispPolja }) => {
         </table>
       </div>
       <div className="report">
-        <Header />
+        <Header izvBr={izvBr} />
         <p
           style={{
             display: "block",

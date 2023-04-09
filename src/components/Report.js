@@ -24,7 +24,7 @@ const months = [
 ];
 
 const Report = () => {
-  const { polja, reports, elHist, ugovor, ispList, narudzbenica, history } =
+  const { polja, reports, ugovor, ispList, narudzbenica, history } =
     useContext(ReportContext);
 
   const [pageCount, setPageCount] = useState(0);
@@ -40,6 +40,7 @@ const Report = () => {
 
   useMemo(() => {
     if (narudzbenica?.stavke && polja && history) {
+      setIspPolja(null);
       let no_el = Object.keys(history).length;
       setNo(no_el);
       let tIsp = ispList.filter((i) => {
@@ -47,29 +48,21 @@ const Report = () => {
       });
       setIspCurr(tIsp);
       if (polja.length) {
-        let f = polja.filter((p) => {
-          return p.element;
-        });
-        f = f.filter((p) => {
-          return (
-            p.element.filter((e) => {
-              return (
-                e.history &&
-                e.history[elHist]?.stanje_izolacije !== 0 &&
-                e.history[elHist]?.stanje_izolacije !== 5
-              );
-            }).length > 0
-          );
-        });
-        for (let i = 0; i < f.length; i++) {
-          f[i].element = f[i].element.filter((h) => {
-            return h.history[elHist].stanje_izolacije !== 0;
-          });
+        let f = [];
+        for (let i = 0; i < polja.length; i++) {
+          if (
+            polja[i].element?.filter((e) => {
+              return Object.keys(history).includes(e.moja_sifra);
+            }).length
+          )
+            f.push(polja[i]);
         }
+        console.log(f);
         setIspPolja(f);
         let tIzvest = reports.filter((r) => {
           return r.narudzbenica === narudzbenica.broj_narudzbenice;
         });
+        console.log(tIzvest);
         if (tIzvest.length) setIzvBr({ ...tIzvest[0] });
       }
       let nap = {};
@@ -91,6 +84,8 @@ const Report = () => {
       console.log(nap);
       setPageCount(no_el);
       setNapIzv(nap);
+      console.log(narudzbenica);
+      console.log(ispPolja);
     }
   }, [narudzbenica]);
 
@@ -583,7 +578,7 @@ const Report = () => {
       </div>
       <Sadrzaj napIzv={napIzv} />
       <div id="pg4" className="report">
-        <Header />
+        <Header izvBr={izvBr} />
         <p
           style={{
             display: "block",
@@ -670,7 +665,7 @@ const Report = () => {
         <Footer str="4" pageCount={pageCount} />
       </div>
       <div id="pg6" className="report">
-        <Header />
+        <Header izvBr={izvBr} />
         <p
           style={{
             display: "block",
@@ -764,7 +759,7 @@ const Report = () => {
         <Footer str="6" pageCount={pageCount} />
       </div>
       <div id="pg7" className="report">
-        <Header />
+        <Header izvBr={izvBr} />
         <p
           style={{
             display: "block",
@@ -884,7 +879,7 @@ const Report = () => {
       </div>
       <div id="pg6" className="reportTable">
         <ReportTable
-          izvBr={izvBr?.broj_izvestaja}
+          izvBr={izvBr}
           no={no}
           ispPolja={ispPolja}
           pageCount={[pageCount]}
@@ -895,12 +890,14 @@ const Report = () => {
           pageCount={pageCount}
           setPageCount={setPageCount}
           ispPolja={ispPolja}
+          izvBr={izvBr}
         />
         <Listovi
           pageCount={pageCount}
           no={no}
           ispPolja={ispPolja}
           ispCurr={ispCurr}
+          izvBr={izvBr}
         />
       </div>
     </div>

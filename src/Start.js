@@ -25,6 +25,7 @@ const Start = () => {
     prev,
     sviUgovori,
     reports,
+    sifraIspitivanja,
     setOrders,
     setPrev,
     setKd,
@@ -33,7 +34,6 @@ const Start = () => {
     setIspList,
     setTrafoStanica,
     setPolja,
-    setElHist,
     setNarudzbenica,
     setSifraIspitivanja,
     setTipPrikaza,
@@ -80,7 +80,7 @@ const Start = () => {
     let nar = orders.filter((o) => {
       return o.broj_narudzbenice === ord_no;
     })[0];
-    setNarudzbenica({ ...nar });
+    if (role !== "admin" || editOrd) setNarudzbenica({ ...nar });
     let ts_no = nar.sifra_ts;
     try {
       const response = await fetch(
@@ -128,13 +128,12 @@ const Start = () => {
     if (!narudzbenica) setTipPrikaza(2);
   };
 
-  const prikazi = (x, y) => {
+  const prikazi = (y) => {
     if (y < 10) {
       y = "00" + y;
     } else if (y < 100) {
       y = "0" + y;
     }
-    console.log(x, y);
     let temp1 = {};
     let temp = examine
       .map((h) => {
@@ -143,26 +142,25 @@ const Start = () => {
         });
       })
       .filter((f) => {
-        return f.length > 0;
+        return f?.length > 0;
       });
-
+    console.log(temp);
     for (let i = 0; i < temp.length; i++) {
       if (temp[i][0].stanje_izolacije !== 5) {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
     setHistory(temp1);
-    setElHist(x);
     setTipPrikaza(1);
   };
 
-  const izvestaj = (x, isp) => {
+  const izvestaj = () => {
     let temp1 = {};
-    console.log(isp, examine);
+    console.log(sifraIspitivanja, examine);
     let temp = examine
       .map((h) => {
         return h.history?.filter((e) => {
-          return e.sifra_ispitivanja === `ISP${isp}`;
+          return e.sifra_ispitivanja === `ISP${sifraIspitivanja}`;
         });
       })
       .filter((f) => {
@@ -178,13 +176,11 @@ const Start = () => {
     }
     console.log(temp1);
     setHistory(temp1);
-    setElHist(x);
     const contract = sviUgovori.filter((c) => {
       return c.oznaka === narudzbenica?.sifra_ugovora;
     });
     setUgovor(contract[0]);
     setTipPrikaza(6);
-    setSifraIspitivanja(isp);
   };
 
   const filterTS = (choice) => {
@@ -264,6 +260,7 @@ const Start = () => {
             <button
               onClick={() => {
                 setTrafoStanica({});
+                setNarudzbenica(null);
                 setPrev([]);
                 setEdit(false);
                 filterTS("new");
@@ -374,29 +371,32 @@ const Start = () => {
                   <span
                     onClick={() => {
                       setSifraIspitivanja(x.r_br);
-                      prikazi(idx, x.r_br);
+                      setNarudzbenica(
+                        orders.filter(
+                          (o) => o.broj_narudzbenice === x.narudzbenica
+                        )[0]
+                      );
+                      prikazi(x.r_br);
                     }}
                     style={{ cursor: "pointer", color: "blue" }}
                   >
                     Datum: {x.datum} Ispitivanje br: {x.r_br}
                   </span>
-                  {reports.filter((r) => {
-                    return r.narudzbenica === narudzbenica?.broj_narudzbenice;
-                  }).length && narudzbenica?.stavke ? (
-                    <span
-                      onClick={() => izvestaj(idx, x.r_br)}
-                      style={{
-                        cursor: "pointer",
-                        color: "green",
-                        marginLeft: "1cm",
-                      }}
-                    >
-                      Izvestaj
-                    </span>
-                  ) : null}
                 </p>
               );
             })}
+            {narudzbenica?.operativno === "zavrseno" ? (
+              <p
+                style={{
+                  cursor: "pointer",
+                  color: "green",
+                  marginLeft: "1cm",
+                }}
+                onClick={() => izvestaj()}
+              >
+                Stampanje izvestaja za isptitivanje br: {sifraIspitivanja}
+              </p>
+            ) : null}
           </>
         ) : null}
         {editOrd ? (

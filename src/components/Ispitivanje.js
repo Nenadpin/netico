@@ -9,8 +9,6 @@ const Ispitivanje = () => {
     trafoStanica,
     narudzbenica,
     examine,
-    chartData,
-    setChartData,
     setExamine,
     sifraIspitivanja,
   } = useContext(ReportContext);
@@ -19,6 +17,7 @@ const Ispitivanje = () => {
   const [structure, setStructure] = useState(null);
   const [modal, setModal] = useState(false);
   const [fileTree, setFileTree] = useState(null);
+  const [chartDataIsp, setChartDataIsp] = useState(null);
   const brIzv = useRef();
   const datRef = useRef();
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Slika"];
@@ -45,7 +44,7 @@ const Ispitivanje = () => {
       for (let i = 0; i < 600; i++) {
         labelT.push((-100 + i) / 10);
       }
-      setChartData({
+      setChartDataIsp({
         lub: "",
         luf: "",
         lt: "",
@@ -93,12 +92,12 @@ const Ispitivanje = () => {
 
   const resetData = () => {
     setModal(false);
-    let sd = chartData;
+    let sd = chartDataIsp;
     sd.us.dataF = [];
     sd.ut.data = [];
     sd.luf = "";
     sd.lt = "";
-    setChartData((ch) => ({
+    setChartDataIsp((ch) => ({
       ...sd,
     }));
     setCurrentEl(null);
@@ -110,7 +109,7 @@ const Ispitivanje = () => {
         return { ...e, isp: no };
       } else return e;
     });
-    localStorage.setItem(ele, JSON.stringify(chartData));
+    localStorage.setItem(ele, JSON.stringify(chartDataIsp));
     localStorage.setItem("currExamine", JSON.stringify(tempel));
     resetData();
     setExamine(tempel);
@@ -184,10 +183,10 @@ const Ispitivanje = () => {
           }
         }
         dF.pop();
-        let sd = { ...chartData };
+        let sd = { ...chartDataIsp };
         sd.us.dataF = dF;
         sd.luf = f;
-        setChartData(sd);
+        setChartDataIsp(sd);
       } else if (f?.includes("SCOPE")) {
         f = f.substring(9);
         let a = text.split('<units am="dBm" />');
@@ -201,10 +200,10 @@ const Ispitivanje = () => {
         }
         dT.pop();
         console.log(dT);
-        let sd = { ...chartData };
+        let sd = { ...chartDataIsp };
         sd.ut.data = dT;
         sd.lt = f + " (Frequency " + b;
-        setChartData(sd);
+        setChartDataIsp(sd);
       } else alert("Greska u citanju fajla...");
     } catch (error) {
       console.log(error.message);
@@ -234,10 +233,10 @@ const Ispitivanje = () => {
       }
       d.pop();
       console.log(d);
-      let sd = { ...chartData };
+      let sd = { ...chartDataIsp };
       sd.us.dataB = d;
       sd.lub = f;
-      setChartData(sd);
+      setChartDataIsp(sd);
     } catch (error) {
       console.log(error.message);
     }
@@ -380,7 +379,7 @@ const Ispitivanje = () => {
                                         localStorage.getItem(elpn.moja_sifra)
                                       ) {
                                         console.log(elpn);
-                                        setChartData((ch) => ({
+                                        setChartDataIsp((ch) => ({
                                           ...JSON.parse(
                                             localStorage.getItem(
                                               elpn.moja_sifra
@@ -446,7 +445,7 @@ const Ispitivanje = () => {
           Поље {currentEl?.oznakaEl}, {currentEl?.element} Фаза{" "}
           {currentEl?.fazaEl}
         </div>
-        <PrintGraph chartData={chartData} setChartData={setChartData} />
+        <PrintGraph chartData={chartDataIsp} setChartData={setChartDataIsp} />
         <div style={{ marginTop: "20px" }}>
           <button
             style={{ width: "110px", backgroundColor: "green" }}

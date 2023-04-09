@@ -37,29 +37,33 @@ const Upload = () => {
   };
 
   return (
-    <div>
-      <p
-        style={{ fontSize: "1.5rem", margin: "15px" }}
-      >{`Ucitavanje snimaka na server za ispitivanje br:${sifra}`}</p>
+    <>
+      {sifra ? (
+        <div>
+          <p
+            style={{ fontSize: "1.5rem", margin: "15px" }}
+          >{`Ucitavanje snimaka na server za ispitivanje br:${sifra}`}</p>
 
-      <form
-        ref={uploadForm}
-        id="uploadForm"
-        onSubmit={(e) => {
-          e.preventDefault();
-          sendFiles();
-        }}
-      >
-        <input
-          style={{ fontSize: "1.5rem" }}
-          type="file"
-          id="myFiles"
-          accept="*"
-          multiple
-        />
-        <button>Submit</button>
-      </form>
-    </div>
+          <form
+            ref={uploadForm}
+            id="uploadForm"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendFiles();
+            }}
+          >
+            <input
+              style={{ fontSize: "1.5rem" }}
+              type="file"
+              id="myFiles"
+              accept="*"
+              multiple
+            />
+            <button>Submit</button>
+          </form>
+        </div>
+      ) : null}
+    </>
   );
 };
 

@@ -3,8 +3,7 @@ import ViewGraph from "./ViewGraph";
 import ReportContext from "../Context";
 
 const NewReport = () => {
-  const { polja, trafoStanica, sifraIspitivanja, history } =
-    useContext(ReportContext);
+  const { polja, trafoStanica, history } = useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
   const [chartData, setChartData] = useState(null);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];

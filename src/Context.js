@@ -7,7 +7,6 @@ export const ReportProvider = ({ children }) => {
   const [polja, setPolja] = useState([]); //niz polja izabrane trafostanice sa naponom
   const [stanja, setStanja] = useState([]); //niz stanja elemenata na datom ispitivanju
   const [narudzbenica, setNarudzbenica] = useState(null); //stanje objekta narudzbenica(ako postoji tekuca je curr, a ako ne, niz allOrders koji se mapira)
-  const [elHist, setElHist] = useState(null); //stanje iteratora kroz razlicite izbore (ispititivanja, izvestaja i svega sto se indeksima mapira)
   const [history, setHistory] = useState(null); //istorija stanja elemenata za izabrano ispitivanje
   const [mesto, setMesto] = useState("");
   const [ispList, setIspList] = useState([]); //lista svih ispitivanja za izabranu TS
@@ -34,7 +33,6 @@ export const ReportProvider = ({ children }) => {
         polja,
         stanja,
         narudzbenica,
-        elHist,
         mesto,
         ispList,
         tipPrikaza,
@@ -56,7 +54,6 @@ export const ReportProvider = ({ children }) => {
         setPolja,
         setStanja,
         setNarudzbenica,
-        setElHist,
         setMesto,
         setIspList,
         setTipPrikaza,
