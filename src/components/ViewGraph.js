@@ -34,7 +34,7 @@ const ViewGraph = ({ chartData }) => {
       {
         label: chartData?.lug ? chartData.lug : "",
         data: chartData?.us.dataG,
-        borderColor: "yellow",
+        borderColor: "green",
         borderWidth: 1,
         pointborderColour: "white",
         cubicInterpolationMode: "monotone",
@@ -109,7 +109,7 @@ const ViewGraph = ({ chartData }) => {
         label: chartData?.lt3 ? chartData.lt3 : "",
         spanGaps: false,
         data: chartData?.ut.data3,
-        borderColor: "yellow",
+        borderColor: "green",
         borderWidth: 1,
         pointborderColour: "white",
         cubicInterpolationMode: "monotone",

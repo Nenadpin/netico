@@ -21,7 +21,7 @@ const Zapisnik = () => {
     PI2010: 0,
   };
   const tipIzvoda = ["водно", "трафо", "мерно", "спојна", "резерва"];
-  const { trafoStanica, narudzbenica } = useContext(ReportContext);
+  const { trafoStanica, narudzbenica, polja } = useContext(ReportContext);
   const oznakaPolja = useRef();
   const nazivPolja = useRef();
   const smtciPolja = useRef();
@@ -31,6 +31,7 @@ const Zapisnik = () => {
   const kzciPolja = useRef();
   const kzulPolja = useRef();
   const izPolja = useRef();
+  const tempRef = useRef();
   const napomenaPolja = useRef([]);
   const spratPolja = useRef([]);
   const fazaPolja = useRef([]);
@@ -358,6 +359,7 @@ const Zapisnik = () => {
       ts: trafoStanica.sifra_ts,
       nar: narudzbenica.broj_narudzbenice,
       zap: zapisnikDetails,
+      temp: tempRef.current.value,
     };
     console.log(dataZap);
     try {
@@ -411,6 +413,16 @@ const Zapisnik = () => {
                 placeholder="Ozn..."
                 ref={oznakaPolja}
                 style={{ textTransform: "uppercase" }}
+                onBlur={() => {
+                  let poljeZ = polja.filter(
+                    (p) =>
+                      p.celija_oznaka ===
+                      oznakaPolja.current.value.toUpperCase()
+                  );
+                  if (poljeZ.length)
+                    nazivPolja.current.value = poljeZ[0].celija_naziv;
+                  else nazivPolja.current.value = "";
+                }}
               ></input>
             </span>
             <span>
@@ -527,7 +539,7 @@ const Zapisnik = () => {
                 style={{
                   width: "3cm",
                   marginTop: "5px",
-                  marginLeft: "5px",
+                  marginLeft: "-2px",
                   backgroundColor: totalEl > 0 ? "orangered" : "green",
                 }}
                 onClick={() => {
@@ -537,6 +549,9 @@ const Zapisnik = () => {
               >
                 {totalEl > 0 ? `UPISI (${totalEl})` : `SNIMI`}
               </button>
+              <span>
+                Temp <input ref={tempRef} style={{ width: "1cm" }}></input> °C
+              </span>
             </span>
           </div>
           <div

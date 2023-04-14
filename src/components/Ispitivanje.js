@@ -16,11 +16,12 @@ const Ispitivanje = () => {
   const [ispEls, setIspEls] = useState(null);
   const [structure, setStructure] = useState(null);
   const [modal, setModal] = useState(false);
+  const [baseFile, setBaseFile] = useState(null);
   const [fileTree, setFileTree] = useState(null);
   const [chartDataIsp, setChartDataIsp] = useState(null);
   const brIzv = useRef();
   const datRef = useRef();
-  const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Slika"];
+  const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Анализа"];
   let r_br = 0;
 
   const getElements = async () => {
@@ -68,6 +69,7 @@ const Ispitivanje = () => {
     }
     setIspEls(newEl);
   };
+
   const getStructure = async () => {
     if (sifraIspitivanja) {
       try {
@@ -94,13 +96,16 @@ const Ispitivanje = () => {
     setModal(false);
     let sd = chartDataIsp;
     sd.us.dataF = [];
+    sd.us.dataB = [];
     sd.ut.data = [];
     sd.luf = "";
+    sd.lub = "";
     sd.lt = "";
     setChartDataIsp((ch) => ({
       ...sd,
     }));
     setCurrentEl(null);
+    setBaseFile(null);
   };
   const promeni = (ele, no) => {
     setModal(false);
@@ -109,8 +114,10 @@ const Ispitivanje = () => {
         return { ...e, isp: no };
       } else return e;
     });
-    localStorage.setItem(ele, JSON.stringify(chartDataIsp));
-    localStorage.setItem("currExamine", JSON.stringify(tempel));
+    if (no !== 5) {
+      localStorage.setItem("currExamine", JSON.stringify(tempel));
+      localStorage.setItem(ele, JSON.stringify(chartDataIsp));
+    }
     resetData();
     setExamine(tempel);
     setCurrentEl(null);
@@ -158,6 +165,7 @@ const Ispitivanje = () => {
   };
 
   const displayFile = async (f) => {
+    console.log(f);
     const fileData = {
       dir: `ISP${sifraIspitivanja}`,
       fName: f,
@@ -172,7 +180,8 @@ const Ispitivanje = () => {
       const text = jsonData;
       let dF = [null],
         dT = [null];
-      if (f?.includes("FREQ") && !f?.includes("Base")) {
+      if (f?.includes("FREQ")) {
+        setBaseFile(f.split(" ")[4].substring(1));
         f = f.substring(9);
         let a = text.split("</Header>");
         a = a[1]?.split("\r\n<d>");
@@ -209,7 +218,9 @@ const Ispitivanje = () => {
       console.log(error.message);
     }
   };
+
   const displayBase = async (f) => {
+    console.log(f);
     const fileData = {
       dir: `ISP${sifraIspitivanja}`,
       fName: f,
@@ -232,7 +243,6 @@ const Ispitivanje = () => {
         }
       }
       d.pop();
-      console.log(d);
       let sd = { ...chartDataIsp };
       sd.us.dataB = d;
       sd.lub = f;
@@ -241,6 +251,12 @@ const Ispitivanje = () => {
       console.log(error.message);
     }
   };
+  useMemo(() => {
+    if (baseFile) {
+      let file = structure[`Base${baseFile}.pdsx`][0];
+      displayBase(file);
+    }
+  }, [baseFile]);
 
   return (
     <div
@@ -294,7 +310,7 @@ const Ispitivanje = () => {
         {!ispEls ? (
           <button onClick={() => populateEls()}>Сви елементи</button>
         ) : null}
-        {structure
+        {/* {structure
           ? Object.keys(structure)
               .filter((b) => {
                 return b.includes("Base");
@@ -316,7 +332,7 @@ const Ispitivanje = () => {
                   </div>
                 );
               })
-          : null}
+          : null} */}
         {trafoStanica.napon.map((el, index) => {
           return (
             <div key={index}>
@@ -392,6 +408,10 @@ const Ispitivanje = () => {
                                         console.log(fileTree);
                                       }
                                     }
+                                  }}
+                                  onDoubleClick={() => {
+                                    localStorage.removeItem(elpn.moja_sifra);
+                                    promeni(currentEl?.sifra, 5);
                                   }}
                                   style={{
                                     backgroundColor:
@@ -473,7 +493,7 @@ const Ispitivanje = () => {
           </button>
         </div>
         <button
-          style={{ cursor: "pointer", width: "485px", alignSelf: "center" }}
+          style={{ cursor: "pointer", width: "400px", alignSelf: "center" }}
           onClick={() => submitIsp()}
         >
           Упиши у базу

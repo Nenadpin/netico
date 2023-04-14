@@ -12,7 +12,7 @@ const Upload = () => {
     if (narudzbenica) {
       let sif = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
-      })[0].r_br;
+      })[0]?.r_br;
       setSifra(sif);
     }
   }, [narudzbenica]);

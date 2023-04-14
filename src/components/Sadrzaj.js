@@ -1,7 +1,7 @@
 import React from "react";
 import Footer from "./Footer";
 
-const Sadrzaj = ({ napIzv }) => {
+const Sadrzaj = ({ napIzv, strSad }) => {
   return (
     <div id="pg3" className="report">
       <p
@@ -76,7 +76,7 @@ const Sadrzaj = ({ napIzv }) => {
               ЗАКЉУЧАК - МИШЉЕЊЕ И ТУМАЧЕЊЕ . . . . . . . . . . . . . . . . . .
               . . . . . . . . . . . . . . . . . . . . . . . .
             </td>
-            <td style={{ textAlign: "right" }}>14</td>
+            <td style={{ textAlign: "right" }}>{7 + strSad}</td>
           </tr>
           {Object.keys(napIzv).map((n, index) => {
             return (
@@ -89,7 +89,7 @@ const Sadrzaj = ({ napIzv }) => {
                   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
                   . . . . . .
                 </td>
-                <td style={{ textAlign: "right" }}>{14 + index}</td>
+                <td style={{ textAlign: "right" }}>{7 + strSad + index}</td>
               </tr>
             );
           })}
@@ -101,7 +101,7 @@ const Sadrzaj = ({ napIzv }) => {
               . . . . . .
             </td>
             <td style={{ textAlign: "right" }}>
-              {14 + Object.keys(napIzv).length}
+              {7 + strSad + Object.keys(napIzv).length}
             </td>
           </tr>
         </tbody>

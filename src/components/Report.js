@@ -62,8 +62,8 @@ const Report = () => {
         let tIzvest = reports.filter((r) => {
           return r.narudzbenica === narudzbenica.broj_narudzbenice;
         });
-        console.log(tIzvest);
         if (tIzvest.length) setIzvBr({ ...tIzvest[0] });
+        console.log(tIzvest);
       }
       let nap = {};
       for (let i = 0; i < narudzbenica.stavke.length; i++) {
@@ -80,6 +80,7 @@ const Report = () => {
             ? [...nap[110], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
       }
+      console.log(nap);
       no_el += 8 + Math.ceil(no_el / 43) + Object.keys(nap).length;
       console.log(nap);
       setPageCount(no_el);
@@ -91,7 +92,8 @@ const Report = () => {
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    documentTitle: "Izvestaj",
+    documentTitle:
+      izvBr?.broj_izvestaja + " " + new Date().toLocaleDateString("en-US"),
     onAfterPrint: () => alert("uspesno"),
   });
 
@@ -429,6 +431,13 @@ const Report = () => {
                       width: "2cm",
                       textAlign: "left",
                     }}
+                    defaultValue={
+                      new Date().getDate() +
+                      "." +
+                      parseInt(new Date().getMonth() + 1) +
+                      "." +
+                      new Date().getFullYear()
+                    }
                   ></input>{" "}
                   г.
                 </td>
@@ -576,7 +585,10 @@ const Report = () => {
         </div>
         <Footer />
       </div>
-      <Sadrzaj napIzv={napIzv} />
+      <Sadrzaj
+        napIzv={napIzv}
+        strSad={Math.ceil(Object.keys(history).length / 43)}
+      />
       <div id="pg4" className="report">
         <Header izvBr={izvBr} />
         <p
@@ -883,6 +895,7 @@ const Report = () => {
           no={no}
           ispPolja={ispPolja}
           pageCount={[pageCount]}
+          napIzv={napIzv}
         />
         <Zakljucak
           napIzv={napIzv}

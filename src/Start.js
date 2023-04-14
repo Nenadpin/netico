@@ -24,7 +24,6 @@ const Start = () => {
     orders,
     prev,
     sviUgovori,
-    reports,
     sifraIspitivanja,
     setOrders,
     setPrev,
@@ -103,7 +102,6 @@ const Start = () => {
       tmp = tmp.filter((ex) => {
         return ex.sifra_ts === ts_no && ex.narudzbenica === ord_no;
       });
-    console.log(tmp);
     if (tmp.length) setPrev(tmp);
     else {
       setPrev([]);
@@ -113,6 +111,7 @@ const Start = () => {
     });
     newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
     setTrafoStanica({ ...newTS[0] });
+    console.log(filter, narudzbenica?.operativno);
   };
 
   const techOps = (ts_no) => {
@@ -251,9 +250,14 @@ const Start = () => {
 
   return (
     <>
-      <div className="headerStart">
+      <div
+        className="headerStart"
+        style={{
+          width: tipPrikaza === 1 || tipPrikaza === 5 ? "21cm" : "100%",
+        }}
+      >
         <img src={logo} alt="logotip"></img>
-        <h2>Парцијална пражњења</h2>
+        <h2>Parcijalna praznjenja</h2>
         {!role ? <Login /> : null}
         {role === "admin" ? (
           <div>
@@ -266,7 +270,7 @@ const Start = () => {
                 filterTS("new");
               }}
             >
-              Завршено
+              Zavrseno
             </button>
             <button
               onClick={() => {
@@ -276,35 +280,13 @@ const Start = () => {
                 filterTS("current");
               }}
             >
-              У Току
+              U Toku
             </button>
           </div>
         ) : role === "operator" ? (
           <div>
-            <button onClick={() => filterTS("nalog")}>Записник</button>
-          </div>
-        ) : role === "expert" ? (
-          <div>
-            <button onClick={() => filterTS("isp")}>Испитивање</button>
-          </div>
-        ) : role === "tech" ? (
-          <div>
-            <button
-              onClick={() => {
-                setUpload(false);
-                filterTS("nova");
-              }}
-            >
-              Налог
-            </button>
-            <button
-              onClick={() => {
-                setFilter(false);
-                setUpload(false);
-                setTipPrikaza(0);
-              }}
-            >
-              Нова ТС
+            <button onClick={() => filterTS("nalog")}>
+              Zapisnik sa terena
             </button>
             <button
               onClick={() => {
@@ -313,6 +295,31 @@ const Start = () => {
               }}
             >
               Унос фајлова
+            </button>
+          </div>
+        ) : role === "expert" ? (
+          <div>
+            <button onClick={() => filterTS("isp")}>Analiza</button>
+          </div>
+        ) : role === "tech" ? (
+          <div>
+            <button
+              onClick={() => {
+                setUpload(false);
+                filterTS("nova");
+                console.log(filter, narudzbenica?.operativno);
+              }}
+            >
+              Nalog
+            </button>
+            <button
+              onClick={() => {
+                setFilter(false);
+                setUpload(false);
+                setTipPrikaza(0);
+              }}
+            >
+              Nova TS
             </button>
           </div>
         ) : null}
@@ -385,7 +392,7 @@ const Start = () => {
                 </p>
               );
             })}
-            {narudzbenica?.operativno === "zavrseno" ? (
+            {narudzbenica?.operativno === "zavrseno" && narudzbenica.stavke ? (
               <p
                 style={{
                   cursor: "pointer",
@@ -399,7 +406,7 @@ const Start = () => {
             ) : null}
           </>
         ) : null}
-        {editOrd ? (
+        {editOrd && trafoStanica?.sifra_ts ? (
           <p
             style={{ cursor: "pointer", color: "blue" }}
             onClick={() => setTipPrikaza(2)}
@@ -429,7 +436,7 @@ const Start = () => {
                   setTipPrikaza(4);
                 }}
               >
-                Zapisnik
+                Zapisnik sa terena
               </h4>
             ) : narudzbenica?.operativno === "uploaded" && filter && !upload ? (
               <h4

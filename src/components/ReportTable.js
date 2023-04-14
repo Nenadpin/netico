@@ -3,8 +3,8 @@ import ReportContext from "../Context";
 import Footer from "./Footer";
 import logo from "../headerLogo.png";
 
-const ReportTable = ({ izvBr, no, ispPolja, pageCount }) => {
-  const { trafoStanica, history } = useContext(ReportContext);
+const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
+  const { history } = useContext(ReportContext);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
   let r_br = 0;
   let str = [];
@@ -78,7 +78,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount }) => {
                         className="newContainer"
                         style={{ marginLeft: "1.5cm" }}
                       >
-                        {trafoStanica.napon.map((el, index) => {
+                        {Object.keys(napIzv).map((el, index) => {
                           return (
                             <table
                               className="tbl"
