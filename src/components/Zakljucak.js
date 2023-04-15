@@ -3,7 +3,7 @@ import ReportContext from "../Context";
 import TextareaAutosize from "react-textarea-autosize";
 import Header from "./Header";
 import Footer from "./Footer";
-import napomenaText from "./Misljenje.json";
+import zakljucakText from "./Misljenje.json";
 
 const Zakljucak = ({
   napIzv,
@@ -52,10 +52,12 @@ const Zakljucak = ({
     }
   }, [history]);
   const expandPage = () => {
-    console.log(bodyRef.current.offsetHeight);
-    if (bodyRef.current.offsetHeight > 2050) {
+    if (dummy === 0) {
       setPageCount((p) => p + 1);
       setDummy(1);
+    } else {
+      setPageCount((p) => p - 1);
+      setDummy(0);
     }
   };
 
@@ -79,6 +81,7 @@ const Zakljucak = ({
                   width: "100%",
                   position: "absolute",
                   top: (ih * 29.7).toString() + "cm",
+                  zIndex: 1,
                 }}
               >
                 <Header izvBr={izvBr} />
@@ -87,10 +90,13 @@ const Zakljucak = ({
               <hr
                 className="limiter"
                 style={{
-                  width: "18cm",
+                  width: "21cm",
                   position: "absolute",
                   height: "1px",
-                  top: ((ih + 1) * 28).toString() + "cm",
+                  color: "black",
+                  marginLeft: "-1.5cm",
+                  top: ((1 + ih) * 26.2).toString() + "cm",
+                  zIndex: 1,
                 }}
               ></hr>
             </>
@@ -100,10 +106,11 @@ const Zakljucak = ({
           <div
             className="zakljucak"
             style={{
-              height: "40px",
+              height: "50px",
               width: "100%",
               position: "absolute",
               top: (Object.keys(napIzv).length * 29.7).toString() + "cm",
+              zIndex: 1,
             }}
           >
             <Header izvBr={izvBr} />
@@ -135,7 +142,6 @@ const Zakljucak = ({
             </tr>
           </thead>
           <tbody
-            ref={bodyRef}
             style={{
               height:
                 ((Object.keys(napIzv).length + dummy) * 26.7).toString() + "cm",
@@ -166,7 +172,7 @@ const Zakljucak = ({
                                   fontSize: "0.9rem",
                                   marginTop: "0.5cm",
                                 }}
-                                defaultValue={`У прилогу извештаја налазе се засебни испитни листови за сваки од елемената. У испитним листовима дати су подаци о елементима који су испитани и UHF снимци у спектралном и временском моду.`}
+                                defaultValue={zakljucakText.start}
                               ></textarea>
                               <p
                                 style={{
@@ -218,7 +224,7 @@ const Zakljucak = ({
                               fontSize: "0.9rem",
                             }}
                           >
-                            {napomenaText.baza}
+                            {zakljucakText.baza}
                           </p>
                           <TextareaAutosize
                             style={{
@@ -243,7 +249,7 @@ const Zakljucak = ({
                               fontSize: "0.9rem",
                             }}
                             minRows={6}
-                            defaultValue={`${napomenaText?.zadovoljavajuce[0]} мерних трансформатора кабловских завршница, потпорних изолатора ${napomenaText.zadovoljavajuce[1]}`}
+                            defaultValue={`${zakljucakText?.zadovoljavajuce[0]} мерних трансформатора кабловских завршница, потпорних изолатора ${zakljucakText.zadovoljavajuce[1]}`}
                           />
                           <p
                             style={{
@@ -253,7 +259,7 @@ const Zakljucak = ({
                               fontSize: "0.9rem",
                             }}
                           >
-                            {napomenaText.zadovoljavajuce[2]}
+                            {zakljucakText.zadovoljavajuce[2]}
                           </p>
                           {zuto?.filter((z) => {
                             return z.napon === pn;
@@ -278,7 +284,10 @@ const Zakljucak = ({
                                   fontSize: "0.9rem",
                                 }}
                                 minRows={3}
-                                defaultValue={`Код испитане опреме са становишта ултразвучног испитивања, на  мерном трансформатору и кабловских завршница и потпорних изолатора уочена је делимична деградација изолационих система. То су следећи елементи, у табели Табела 2, означени жутом бојом:`}
+                                defaultValue={
+                                  zakljucakText.delimicna[0] +
+                                  zakljucakText.delimicna[1]
+                                }
                               />
                               {zuto.map((e, id) => {
                                 return (
@@ -323,7 +332,7 @@ const Zakljucak = ({
                                   fontSize: "0.9rem",
                                 }}
                               >
-                                {napomenaText.delimicna[2]}
+                                {zakljucakText.delimicna[2]}
                               </p>
                             </div>
                           ) : null}
@@ -350,7 +359,10 @@ const Zakljucak = ({
                                   fontSize: "0.9rem",
                                 }}
                                 minRows={3}
-                                defaultValue={`Код испитане опреме са становишта ултразвучног испитивања, на мерном трансформатору и кабловских завршница и потпорних изолатора уочена је значајна деградација изолационих система. То су следећи елементи, у табели Табела 2, означени црвеном бојом:`}
+                                defaultValue={
+                                  zakljucakText.znacajna[0] +
+                                  zakljucakText.znacajna[1]
+                                }
                               />
                               {crveno.map((e, id) => {
                                 return (
@@ -377,8 +389,7 @@ const Zakljucak = ({
                                   fontWeight: "bold",
                                 }}
                               >
-                                Потребна замена елемента у оквиру редовног
-                                одржавања!
+                                {zakljucakText.znacajna[2]}
                               </p>
                               <TextareaAutosize
                                 style={{
@@ -391,9 +402,8 @@ const Zakljucak = ({
                                   fontStyle: "italic",
                                   fontSize: "0.9rem",
                                 }}
-                                minRows={7}
-                                defaultValue={`Напомена:
-                                  Испитивања „UHF“ методом показала су да у ћелији К04, у приземљу где су смештени предметни елементима (КЗ и ПИ), постоје одређене сметње које се могу и чути, и које маскирају евентуално присуство парцијалних пражњења у испитиваним елементима. У овој ћелији је неопходно извршити проверу свих спојева у ћелији и/или снимање термовизијском камером. Након отклањања неисправности предлаже се да се изврши ново испитивање предметних елемената.`}
+                                minRows={3}
+                                defaultValue={zakljucakText.dodatno}
                               />
                             </div>
                           ) : null}
@@ -417,7 +427,7 @@ const Zakljucak = ({
                               fontSize: "0.9rem",
                             }}
                           >
-                            {napomenaText.napomena[0]}
+                            {zakljucakText.napomena[0]}
                           </p>
                           <p
                             style={{
@@ -429,7 +439,7 @@ const Zakljucak = ({
                               fontSize: "0.9rem",
                             }}
                           >
-                            {napomenaText.napomena[1]}
+                            {zakljucakText.napomena[1]}
                           </p>
                         </div>
                       );

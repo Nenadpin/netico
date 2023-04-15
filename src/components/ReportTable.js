@@ -90,6 +90,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
                                   fontSize: "16px",
                                   fontStyle: "italic",
                                   padding: "10px",
+                                  textAlign: "left",
                                 }}
                               >
                                 Табела 2 Резултати испитивања елемената {el} kV

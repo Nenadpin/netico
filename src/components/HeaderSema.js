@@ -2,17 +2,17 @@ import React, { useContext } from "react";
 import ReportContext from "../Context";
 import logo from "../headerLogo.png";
 
-const Header = ({ izvBr }) => {
+const HeaderSema = ({ izvBr }) => {
   const { reports } = useContext(ReportContext);
   return (
-    <div>
+    <div style={{ marginLeft: "1.5cm" }}>
       <div>
         <img src={logo} alt="logo" className="headerLogo"></img>
         <div
           style={{
             position: "absolute",
             display: "flex",
-            width: "18cm",
+            width: "39cm",
             justifyContent: "space-between",
             top: "1cm",
             border: "1px 0",
@@ -32,7 +32,7 @@ const Header = ({ izvBr }) => {
       </div>
       <hr
         style={{
-          width: "18cm",
+          width: "39cm",
           height: "1px",
           zIndex: 1,
         }}
@@ -41,4 +41,4 @@ const Header = ({ izvBr }) => {
   );
 };
 
-export default Header;
+export default HeaderSema;

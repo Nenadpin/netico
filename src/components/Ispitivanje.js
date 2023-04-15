@@ -382,6 +382,7 @@ const Ispitivanje = () => {
                                 </span>
                                 <span
                                   onClick={() => {
+                                    console.log(structure);
                                     if (ispEls?.includes(elpn.moja_sifra)) {
                                       setCurrentEl({
                                         element: elpn.el_skraceno,
