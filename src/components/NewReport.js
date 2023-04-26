@@ -3,7 +3,8 @@ import ViewGraph from "./ViewGraph";
 import ReportContext from "../Context";
 
 const NewReport = () => {
-  const { polja, trafoStanica, history } = useContext(ReportContext);
+  const { polja, trafoStanica, history, tipPrikaza } =
+    useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
   const [chartData, setChartData] = useState(null);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
@@ -77,7 +78,7 @@ const NewReport = () => {
     <div
       style={{ display: "flex", flexDirection: "column", columnGap: "50px" }}
     >
-      {polja ? (
+      {polja && tipPrikaza === 1 ? (
         <div className="newContainer" style={{ marginLeft: "1cm" }}>
           {trafoStanica.napon.map((el, index) => {
             return (

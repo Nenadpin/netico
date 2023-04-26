@@ -50,7 +50,7 @@ const Nalog = () => {
           return;
         }
       } catch (error) {
-        console.log(error.message);
+        alert("greska na serveru");
       }
     }
   };

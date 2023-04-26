@@ -49,7 +49,7 @@ const NewTS = () => {
           return;
         }
       } catch (error) {
-        console.log(error.message);
+        alert("Greska na serveru");
       }
     }
   };

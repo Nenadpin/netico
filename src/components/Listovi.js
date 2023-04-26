@@ -9,16 +9,15 @@ const Listovi = ({ pageCount, no, ispPolja, ispCurr, izvBr }) => {
   const stanje = ["без напона", "зелено", "жуто", "црвено", "љубичасто"];
   const colors = ["white", "green", "yellow", "red", "purple"];
   let strNo = pageCount - no + 1;
-
   return (
     <>
       {ispPolja
         ? ispPolja.map((polje) =>
-            polje.element.map((ele, ie) => {
+            polje.element?.map((ele, ie) => {
               if (history[ele.moja_sifra])
                 return (
                   <div key={ie} className="report">
-                    <Header izvBr={{ izvBr }} />
+                    <Header izvBr={izvBr} />
                     <table
                       style={{
                         borderCollapse: "collapse",

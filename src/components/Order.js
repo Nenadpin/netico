@@ -91,7 +91,7 @@ const Order = () => {
           return;
         }
       } catch (error) {
-        console.log(error.message);
+        alert("greska na serveru");
       }
     } else alert("Niste popunili sve podatke!");
   };

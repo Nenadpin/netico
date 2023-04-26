@@ -26,7 +26,7 @@ const Zakljucak = ({
       let f = [],
         g = [];
       for (let i = 0; i < ispPolja.length; i++) {
-        for (let j = 0; j < ispPolja[i].element.length; j++) {
+        for (let j = 0; j < ispPolja[i].element?.length; j++) {
           if (history[ispPolja[i].element[j].moja_sifra] === 2) {
             f.push({
               napon: ispPolja[i].napon.trim(),
@@ -67,7 +67,7 @@ const Zakljucak = ({
         className="report"
         style={{
           height:
-            ((Object.keys(napIzv).length + dummy) * 29.7).toString() + "cm",
+            ((Object.keys(napIzv).length + dummy) * 29.5).toString() + "cm",
         }}
       >
         {Object.keys(napIzv).map((h, ih) => {

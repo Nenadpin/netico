@@ -24,7 +24,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
             display: "flex",
             flexDirection: "column",
             columnGap: "50px",
-            height: (29.7 * str.length).toString() + "cm",
+            height: (29.5 * str.length).toString() + "cm",
           }}
         >
           <table style={{ border: "none", width: "21cm" }}>
@@ -202,7 +202,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
             </tbody>
             <tfoot>
               <tr style={{ border: "none" }}>
-                <td style={{ height: "50px", border: "none" }}></td>
+                <td style={{ height: "60px", border: "none" }}></td>
               </tr>
             </tfoot>
           </table>
@@ -210,7 +210,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
             return (
               <>
                 <Footer
-                  pad={(28.5 + index * 29.7).toString() + "cm"}
+                  pad={(28.5 + index * 29.5).toString() + "cm"}
                   str={page}
                   pageCount={pageCount}
                 />

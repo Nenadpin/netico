@@ -5,7 +5,7 @@ import logo from "../headerLogo.png";
 const Header = ({ izvBr }) => {
   const { reports } = useContext(ReportContext);
   return (
-    <div>
+    <div className="reportHeader">
       <div>
         <img src={logo} alt="logo" className="headerLogo"></img>
         <div

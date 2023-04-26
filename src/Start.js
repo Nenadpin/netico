@@ -45,6 +45,7 @@ const Start = () => {
   const [dispOrd, setDispOrd] = useState(null);
   const [editOrd, setEdit] = useState(false);
   const [upload, setUpload] = useState(false);
+  const [editZap, setEditZap] = useState(false);
   // Na ucitavanju stranice, prikuplja podatke
   // sa backenda o svim TS i ispitivanjima
   useEffect(() => {
@@ -67,7 +68,7 @@ const Start = () => {
       setKd(jsonData.kd);
       setEmplList(jsonData.empl);
     } catch (err) {
-      console.error(err.message);
+      alert("greska na serveru");
     }
   };
 
@@ -79,6 +80,21 @@ const Start = () => {
     let nar = orders.filter((o) => {
       return o.broj_narudzbenice === ord_no;
     })[0];
+    if (editZap) {
+      try {
+        const response = await fetch(`http://localhost:5000/izmena_zap`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(nar),
+        });
+        if (response.status === 210) {
+          alert("Zapisnik je potrebno ponoviti...");
+          window.location.reload();
+        } else if (response.status === 501) alert("Greska na serveru");
+      } catch (err) {
+        console.log(err);
+      }
+    }
     if (role !== "admin" || editOrd) setNarudzbenica({ ...nar });
     let ts_no = nar.sifra_ts;
     try {
@@ -91,7 +107,7 @@ const Start = () => {
       setExamine(jsonData.els);
       setReports(jsonData.izv);
     } catch (err) {
-      console.log(err.message);
+      alert("Greska na serveru...");
     }
     let tmp = [...ispList];
     if (role === "admin")
@@ -111,7 +127,6 @@ const Start = () => {
     });
     newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
     setTrafoStanica({ ...newTS[0] });
-    console.log(filter, narudzbenica?.operativno);
   };
 
   const techOps = (ts_no) => {
@@ -143,7 +158,6 @@ const Start = () => {
       .filter((f) => {
         return f?.length > 0;
       });
-    console.log(temp);
     for (let i = 0; i < temp.length; i++) {
       if (temp[i][0].stanje_izolacije !== 5) {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
@@ -156,7 +170,6 @@ const Start = () => {
 
   const izvestaj = () => {
     let temp1 = {};
-    console.log(sifraIspitivanja, examine);
     let temp = examine
       .map((h) => {
         return h.history?.filter((e) => {
@@ -174,7 +187,6 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-    console.log(temp1);
     setHistory(temp1);
     const contract = sviUgovori.filter((c) => {
       return c.oznaka === narudzbenica?.sifra_ugovora;
@@ -295,7 +307,15 @@ const Start = () => {
                 setUpload(true);
               }}
             >
-              Унос фајлова
+              Unos fajlova
+            </button>
+            <button
+              onClick={() => {
+                filterTS("upload");
+                setEditZap(true);
+              }}
+            >
+              Ispravka zapisnika
             </button>
           </div>
         ) : role === "expert" ? (

@@ -33,7 +33,7 @@ const Upload = () => {
     if (json.status === "success") {
       alert("Primljeno!");
       window.location.reload();
-    }
+    } else alert("greska na serveru");
   };
 
   return (

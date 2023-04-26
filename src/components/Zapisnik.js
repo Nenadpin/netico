@@ -286,9 +286,6 @@ const Zapisnik = () => {
         diff += parseInt(tempPolje.pi);
       }
       if (tempPolje.us === "") setTotalEl((prev) => prev - diff);
-      setElpn(tempPolje);
-      localStorage.setItem("zapisnik", JSON.stringify(zapisnikDetails));
-      localStorage.setItem("total", totalEl);
       setZapisnikDetails((zapisnikDetails) => [...zapisnikDetails, tempPolje]);
       setTipPolja(0);
       setUkl("");
@@ -301,6 +298,9 @@ const Zapisnik = () => {
       kzciPolja.current.value = "";
       kzulPolja.current.value = "";
       izPolja.current.value = "";
+      setElpn(tempPolje);
+      setChEl(zapisnikDetails.length);
+      setModal(true);
     } else alert("Morate uneti Oznaku polja, napon i tip polja...");
     return;
   };
@@ -317,7 +317,6 @@ const Zapisnik = () => {
         `${temp[x].elementi[i].oznaka}${temp[x].elementi[i].faza}${temp[x].elementi[i].opis}`
       );
     }
-
     if (ctrl.size !== temp[x].elementi.length) {
       alert("Ne mogu biti vise elemenata na istoj fazi i poziciji!");
       return;
@@ -329,8 +328,9 @@ const Zapisnik = () => {
     }
     setElpn(null);
     setModal(false);
+    localStorage.setItem("zapisnik", JSON.stringify(zapisnikDetails));
+    localStorage.setItem("total", totalEl);
   };
-
   const handleDeleteZapisnik = (item) => {
     setZapisnikDetails(
       zapisnikDetails.filter((x) => {
@@ -354,6 +354,7 @@ const Zapisnik = () => {
       diff += parseInt(zapisnikDetails[item].pi);
     if (zapisnikDetails[item].us === "") setTotalEl((prev) => prev + diff);
   };
+
   const submitZapisnik = async () => {
     const dataZap = {
       ts: trafoStanica.sifra_ts,
@@ -371,15 +372,15 @@ const Zapisnik = () => {
       if (response2.status === 210) {
         alert("primljeno");
         setZapisnikDetails(null);
-        localStorage.removeItem("zapisnik");
-        localStorage.removeItem("total");
-        window.location.reload();
+        //localStorage.removeItem("zapisnik");
+        //localStorage.removeItem("total");
+        // window.location.reload();
       } else {
         alert("neka greska...");
         return;
       }
     } catch (error) {
-      console.log(error.message);
+      alert("Greska na serveru");
     }
   };
   const handleDetails = (id) => {
@@ -540,15 +541,26 @@ const Zapisnik = () => {
                   width: "3cm",
                   marginTop: "5px",
                   marginLeft: "-2px",
-                  backgroundColor: totalEl > 0 ? "orangered" : "green",
+                  backgroundColor: "orangered",
                 }}
-                onClick={() => {
-                  if (totalEl > 0) handleItem();
-                  else submitZapisnik();
-                }}
+                onClick={() => handleItem()}
               >
-                {totalEl > 0 ? `UPISI (${totalEl})` : `SNIMI`}
+                {`UPISI (${totalEl})`}
               </button>
+              {totalEl <= 0 ? (
+                <button
+                  style={{
+                    width: "3cm",
+                    marginLeft: "-2px",
+                    backgroundColor: "green",
+                  }}
+                  onClick={() => {
+                    if (totalEl <= 0) submitZapisnik();
+                  }}
+                >
+                  {`SNIMI`}
+                </button>
+              ) : null}
               <span>
                 Temp <input ref={tempRef} style={{ width: "1cm" }}></input> °C
               </span>
@@ -559,6 +571,8 @@ const Zapisnik = () => {
             onClick={() => {
               setElpn(null);
               setModal(false);
+              localStorage.setItem("zapisnik", JSON.stringify(zapisnikDetails));
+              localStorage.setItem("total", totalEl);
             }}
             style={{ display: modal ? "block" : "none" }}
           ></div>
@@ -743,7 +757,7 @@ const Zapisnik = () => {
                     padding: "5px",
                     width: "9cm",
                     left: "6cm",
-                    top: "10cm",
+                    top: "7cm",
                     backgroundColor: "rgb(209,211,211)",
                     border: "2px solid black",
                     opacity: "1",

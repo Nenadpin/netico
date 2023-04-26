@@ -35,7 +35,7 @@ const Ispitivanje = () => {
       if (localStorage.getItem("currExamine"))
         setExamine(JSON.parse(localStorage.getItem("currExamine")));
     } catch (error) {
-      console.log(error.message);
+      alert("Greska na serveru");
     } finally {
       let labelS = [0];
       for (let i = 0; i < 500; i++) {
@@ -80,7 +80,7 @@ const Ispitivanje = () => {
         console.log(jsonData);
         setStructure(jsonData);
       } catch (error) {
-        console.log(error.message);
+        alert("greska na serveru");
       }
     }
   };
@@ -124,7 +124,6 @@ const Ispitivanje = () => {
   };
 
   const submitIsp = async () => {
-    console.log(examine);
     if (
       window.confirm(
         "Sigurni ste da upisujemo ove rezultate? Elementi koji nisu oznaceni bojom ce biti bez napona?"
@@ -159,7 +158,7 @@ const Ispitivanje = () => {
           return;
         }
       } catch (error) {
-        console.log(error.message);
+        alert("greska na serveru");
       }
     }
   };
@@ -215,7 +214,7 @@ const Ispitivanje = () => {
         setChartDataIsp(sd);
       } else alert("Greska u citanju fajla...");
     } catch (error) {
-      console.log(error.message);
+      alert("greska na serveru");
     }
   };
 
@@ -248,7 +247,7 @@ const Ispitivanje = () => {
       sd.lub = f;
       setChartDataIsp(sd);
     } catch (error) {
-      console.log(error.message);
+      alert("Greska na serveru");
     }
   };
   useMemo(() => {
@@ -268,13 +267,13 @@ const Ispitivanje = () => {
     >
       <div
         className="modal"
-        style={{ display: modal ? "block" : "none" }}
+        style={{ display: modal ? "block" : "none", zIndex: "1" }}
       ></div>
       {modal ? (
         <div
           style={{
             display: "flex",
-            position: "absolute",
+            position: "fixed",
             flexDirection: "column",
             padding: "5px",
             width: "12cm",
@@ -283,7 +282,7 @@ const Ispitivanje = () => {
             backgroundColor: "rgb(209,211,211)",
             border: "2px solid black",
             opacity: "1",
-            zIndex: "100",
+            zIndex: "2",
             borderRadius: "10px",
           }}
         >
@@ -310,29 +309,6 @@ const Ispitivanje = () => {
         {!ispEls ? (
           <button onClick={() => populateEls()}>Сви елементи</button>
         ) : null}
-        {/* {structure
-          ? Object.keys(structure)
-              .filter((b) => {
-                return b.includes("Base");
-              })
-              .map((f, indf) => {
-                return (
-                  <div key={indf}>
-                    {structure[f].map((el, iel) => {
-                      return (
-                        <p
-                          style={{ color: "red", cursor: "pointer" }}
-                          key={iel}
-                          onClick={() => displayBase(el)}
-                        >
-                          {el}
-                        </p>
-                      );
-                    })}
-                  </div>
-                );
-              })
-          : null} */}
         {trafoStanica.napon.map((el, index) => {
           return (
             <div key={index}>
@@ -382,7 +358,7 @@ const Ispitivanje = () => {
                                 </span>
                                 <span
                                   onClick={() => {
-                                    console.log(structure);
+                                    console.log(elpn);
                                     if (ispEls?.includes(elpn.moja_sifra)) {
                                       setCurrentEl({
                                         element: elpn.el_skraceno,
@@ -395,7 +371,6 @@ const Ispitivanje = () => {
                                       if (
                                         localStorage.getItem(elpn.moja_sifra)
                                       ) {
-                                        console.log(elpn);
                                         setChartDataIsp((ch) => ({
                                           ...JSON.parse(
                                             localStorage.getItem(
@@ -406,7 +381,6 @@ const Ispitivanje = () => {
                                       } else {
                                         setModal(true);
                                         setFileTree(elpn.us.substring(5, 12));
-                                        console.log(fileTree);
                                       }
                                     }
                                   }}

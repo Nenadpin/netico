@@ -49,6 +49,7 @@ select {
   display: flex;
   flex-direction: column;
   width: 21cm;
+  height: 100%;
 }
 .newOrder {
   display: flex;
@@ -179,6 +180,7 @@ button:active {
 .modal {
   display: block;
   position: fixed;
+  top: 0;
   left: 0;
   width: 21cm;
   opacity: 0.5;
@@ -314,7 +316,7 @@ button {
   display: block;
   position: relative;
   width: 21cm;
-  height: 29.7cm;
+  height: 29.5cm;
   font-family: Arial, Helvetica, sans-serif;
   margin: auto;
   background-color: white;
@@ -392,6 +394,12 @@ button {
     visibility: hidden;
   }
   .page-break {
+    break-inside: avoid;
+  }
+  .footer {
+    break-after: always;
+  }
+  .report {
     break-inside: avoid;
   }
 }

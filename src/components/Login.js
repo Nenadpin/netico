@@ -14,7 +14,7 @@ const Login = () => {
       console.log(jsonData);
       setUsers(jsonData);
     } catch (err) {
-      console.error(err.message);
+      alert("greska na serveru");
     }
   };
 
