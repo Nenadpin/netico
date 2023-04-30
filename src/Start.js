@@ -58,9 +58,11 @@ const Start = () => {
 
   const getStart = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/trafo_stanice`);
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
+      );
       const jsonData = await response.json();
-      console.log(jsonData);
+      // console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -82,11 +84,14 @@ const Start = () => {
     })[0];
     if (editZap) {
       try {
-        const response = await fetch(`http://localhost:5000/izmena_zap`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(nar),
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/izmena_zap`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nar),
+          }
+        );
         if (response.status === 210) {
           alert("Zapisnik je potrebno ponoviti...");
           window.location.reload();
@@ -99,10 +104,10 @@ const Start = () => {
     let ts_no = nar.sifra_ts;
     try {
       const response = await fetch(
-        `http://localhost:5000/detalji_stanice${ts_no}`
+        `${process.env.REACT_APP_SERVER_URL}/detalji_stanice${ts_no}`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
+      // console.log(jsonData);
       setPolja(jsonData.fields);
       setExamine(jsonData.els);
       setReports(jsonData.izv);
@@ -138,7 +143,7 @@ const Start = () => {
     let sif = ispList.filter((i) => {
       return i.sifra_ts === ts_no;
     })[0]?.r_br;
-    console.log(sif);
+    // console.log(sif);
     if (!narudzbenica) setTipPrikaza(2);
   };
 
@@ -163,7 +168,7 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-    console.log(temp1);
+    // console.log(temp1);
     setHistory(temp1);
     setTipPrikaza(1);
   };
@@ -328,7 +333,7 @@ const Start = () => {
               onClick={() => {
                 setUpload(false);
                 filterTS("nova");
-                console.log(filter, narudzbenica?.operativno);
+                // console.log(filter, narudzbenica?.operativno);
               }}
             >
               Nalog

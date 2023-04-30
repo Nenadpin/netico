@@ -27,10 +27,10 @@ const Ispitivanje = () => {
   const getElements = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/isp_elementi${narudzbenica.broj_narudzbenice}`
+        `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
+      // console.log(jsonData);
       setIspEls(jsonData.elementi);
       if (localStorage.getItem("currExamine"))
         setExamine(JSON.parse(localStorage.getItem("currExamine")));
@@ -74,10 +74,10 @@ const Ispitivanje = () => {
     if (sifraIspitivanja) {
       try {
         const response = await fetch(
-          `http://localhost:5000/struktura${sifraIspitivanja}`
+          `${process.env.REACT_APP_SERVER_URL}/struktura${sifraIspitivanja}`
         );
         const jsonData = await response.json();
-        console.log(jsonData);
+        // console.log(jsonData);
         setStructure(jsonData);
       } catch (error) {
         alert("greska na serveru");
@@ -142,13 +142,16 @@ const Ispitivanje = () => {
         brI: brIzv.current.value,
         dat: datRef.current.value,
       };
-      console.log(dataIsp);
+      // console.log(dataIsp);
       try {
-        const response2 = await fetch("http://localhost:5000/stanje", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dataIsp),
-        });
+        const response2 = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/stanje`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dataIsp),
+          }
+        );
         if (response2.status === 210) {
           alert("primljeno");
           localStorage.clear();
@@ -164,17 +167,20 @@ const Ispitivanje = () => {
   };
 
   const displayFile = async (f) => {
-    console.log(f);
+    // console.log(f);
     const fileData = {
       dir: `ISP${sifraIspitivanja}`,
       fName: f,
     };
     try {
-      const response = await fetch(`http://localhost:5000/route${fileData}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fileData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/route${fileData}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fileData),
+        }
+      );
       const jsonData = await response.json();
       const text = jsonData;
       let dF = [null],
@@ -207,7 +213,7 @@ const Ispitivanje = () => {
           }
         }
         dT.pop();
-        console.log(dT);
+        // console.log(dT);
         let sd = { ...chartDataIsp };
         sd.ut.data = dT;
         sd.lt = f + " (Frequency " + b;
@@ -219,17 +225,20 @@ const Ispitivanje = () => {
   };
 
   const displayBase = async (f) => {
-    console.log(f);
+    // console.log(f);
     const fileData = {
       dir: `ISP${sifraIspitivanja}`,
       fName: f,
     };
     try {
-      const response = await fetch(`http://localhost:5000/route${fileData}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fileData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/route${fileData}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fileData),
+        }
+      );
       const jsonData = await response.json();
       const text = jsonData;
       let d = [null];
@@ -358,7 +367,7 @@ const Ispitivanje = () => {
                                 </span>
                                 <span
                                   onClick={() => {
-                                    console.log(elpn);
+                                    // console.log(elpn);
                                     if (ispEls?.includes(elpn.moja_sifra)) {
                                       setCurrentEl({
                                         element: elpn.el_skraceno,

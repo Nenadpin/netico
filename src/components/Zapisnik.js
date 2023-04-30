@@ -362,13 +362,15 @@ const Zapisnik = () => {
       zap: zapisnikDetails,
       temp: tempRef.current.value,
     };
-    console.log(dataZap);
     try {
-      const response2 = await fetch("http://localhost:5000/zapisnik", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataZap),
-      });
+      const response2 = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/zapisnik`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataZap),
+        }
+      );
       if (response2.status === 210) {
         alert("primljeno");
         setZapisnikDetails(null);

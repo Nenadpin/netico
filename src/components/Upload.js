@@ -25,10 +25,13 @@ const Upload = () => {
       formData.append(myFiles.item(key).name, myFiles.item(key));
     });
     const isp = "ISP" + sifra;
-    const response = await fetch(`http://localhost:5000/upload${isp}`, {
-      method: "POST",
-      body: formData,
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_SERVER_URL}/upload${isp}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     const json = await response.json();
     if (json.status === "success") {
       alert("Primljeno!");

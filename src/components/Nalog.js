@@ -26,22 +26,24 @@ const Nalog = () => {
     setTim(tmp);
   };
   const handleNalog = async () => {
-    console.log(narudzbenica);
     if (!datumIsp.current.value) datumIsp.current.value = "";
     if (tim.r && tim.i1 && sifraIsp) {
       try {
-        const response = await fetch("http://localhost:5000/nalog", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify([
-            narudzbenica.broj_narudzbenice,
-            parseInt(sifraIsp.current.value),
-            tim.r,
-            tim.i1,
-            tim.i2,
-            datumIsp.current.value,
-          ]),
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/nalog`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify([
+              narudzbenica.broj_narudzbenice,
+              parseInt(sifraIsp.current.value),
+              tim.r,
+              tim.i1,
+              tim.i2,
+              datumIsp.current.value,
+            ]),
+          }
+        );
         if (response.status === 210) {
           alert("primljeno");
           window.location.reload();

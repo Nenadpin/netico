@@ -12,7 +12,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
     if (no) {
       let total = Math.ceil(no / 43);
       for (let i = 0; i < total; i++) str.push(8 + i);
-      console.log(str);
+      // console.log(str);
     }
   }, [no]);
 

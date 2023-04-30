@@ -9,9 +9,9 @@ const Login = () => {
 
   const getUsers = async () => {
     try {
-      const response = await fetch("http://localhost:5000/users");
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/users`);
       const jsonData = await response.json();
-      console.log(jsonData);
+      // console.log(jsonData);
       setUsers(jsonData);
     } catch (err) {
       alert("greska na serveru");
@@ -22,11 +22,14 @@ const Login = () => {
     e.preventDefault();
     try {
       const body = { name, pass };
-      const loginRes = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const loginRes = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
       const loginData = await loginRes.json();
       if (loginRes.status === 403) alert("pogresna lozinka...");
       else setRole(loginData.role);

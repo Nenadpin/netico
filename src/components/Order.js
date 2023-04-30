@@ -65,24 +65,27 @@ const Order = () => {
       datumNar.current.value
     ) {
       try {
-        const response2 = await fetch("http://localhost:5000/order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify([
-            brNarudz.current.value,
-            trafoStanica.sifra_ts,
-            total * 1.2,
-            "nova",
-            datumNar.current.value,
-            ugovor ? ugovor.oznaka : narudzbenica.sifra_ugovora,
-            orderDetails,
-            mesto,
-            datumNar2.current.value,
-            brSap.current.value,
-            zavodniBr.current.value,
-            role,
-          ]),
-        });
+        const response2 = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/order`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify([
+              brNarudz.current.value,
+              trafoStanica.sifra_ts,
+              total * 1.2,
+              "nova",
+              datumNar.current.value,
+              ugovor ? ugovor.oznaka : narudzbenica.sifra_ugovora,
+              orderDetails,
+              mesto,
+              datumNar2.current.value,
+              brSap.current.value,
+              zavodniBr.current.value,
+              role,
+            ]),
+          }
+        );
         if (response2.status === 210) {
           alert("primljeno");
           window.location.reload();

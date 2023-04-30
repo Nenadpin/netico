@@ -11,7 +11,6 @@ const NewReport = () => {
   let r_br = 0;
 
   const view = (h) => {
-    console.log(h);
     let labelS = [0];
     for (let i = 0; i < 500; i++) {
       labelS.push((500 + i * 19) / 10);
@@ -70,7 +69,6 @@ const NewReport = () => {
       ch.us.dataH = h[3].chart?.us.dataF;
       ch.ut.data4 = h[3].chart?.ut.data;
     }
-    console.log(ch);
     setChartData(ch);
   };
 

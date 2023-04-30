@@ -36,11 +36,14 @@ const NewTS = () => {
     //  alert("Vec postoji ta sifra TS!");
     if (newTS.sifra && newTS.naziv && newTS.napon) {
       try {
-        const response = await fetch("http://localhost:5000/nova_ts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newTS),
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/nova_ts`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTS),
+          }
+        );
         if (response.status === 210) {
           alert("primljeno");
           window.location.reload();

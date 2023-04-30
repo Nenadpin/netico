@@ -55,7 +55,7 @@ const Report = () => {
     count += 1;
     if (count === 2) {
       setLoading(true);
-      console.log("loaded");
+      // console.log("loaded");
     }
   }, []);
   useMemo(() => {
@@ -75,7 +75,7 @@ const Report = () => {
             return Object.keys(history).includes(e.moja_sifra);
           });
         }
-        console.log(f);
+        // console.log(f);
         for (let i = 0; i < f.length; i++) {
           if (f[i].element && f[i].element.length) {
             acc += f[i].element.length;
@@ -198,7 +198,7 @@ const Report = () => {
           Слика 1. Једнополна шема постројења
         </p>
         <img
-          src={`http://localhost:5000/ISP${sifraIspitivanja}/sema.jpg`}
+          src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema.jpg`}
           style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
         />
         <FooterSema str="5" pageCount={pageCount} />

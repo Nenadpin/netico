@@ -21,7 +21,7 @@ const Zakljucak = ({
   const { history } = useContext(ReportContext);
 
   useMemo(() => {
-    console.log(history);
+    // console.log(history);
     if (ispPolja) {
       let f = [],
         g = [];
@@ -46,7 +46,7 @@ const Zakljucak = ({
           }
         }
       }
-      console.log(f, g);
+      // console.log(f, g);
       setZuto(f);
       setCrveno(g);
     }
