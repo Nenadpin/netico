@@ -52,11 +52,8 @@ const Report = () => {
   const dateRef2 = useRef();
 
   useEffect(() => {
-    count += 1;
-    if (count === 2) {
-      setLoading(true);
-      // console.log("loaded");
-    }
+    setLoading(true);
+    // console.log("loaded");
   }, []);
   useMemo(() => {
     if (narudzbenica?.stavke && polja && history) {
