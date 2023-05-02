@@ -34,7 +34,7 @@ const Login = () => {
       if (loginRes.status === 403) alert("pogresna lozinka...");
       else setRole(loginData.role);
     } catch (err) {
-      alert("Pogresna lozinka!");
+      alert("Greska na serveru!");
     }
   };
 
