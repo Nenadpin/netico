@@ -25,18 +25,22 @@ const Upload = () => {
       formData.append(myFiles.item(key).name, myFiles.item(key));
     });
     const isp = "ISP" + sifra;
-    const response = await fetch(
-      `${process.env.REACT_APP_SERVER_URL}/upload${isp}`,
-      {
-        method: "POST",
-        body: formData,
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/upload${isp}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const json = await response.json();
+      if (json.status === "success") {
+        alert("Primljeno!");
+        window.location.reload();
       }
-    );
-    const json = await response.json();
-    if (json.status === "success") {
-      alert("Primljeno!");
-      window.location.reload();
-    } else alert("greska na serveru");
+    } catch (error) {
+      alert("greska na serveru");
+    }
   };
 
   return (
