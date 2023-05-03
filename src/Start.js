@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import Order from "./components/Order";
 import NewReport from "./components/NewReport";
 import ReportContext from "./Context";
@@ -13,9 +13,11 @@ import Upload from "./components/Upload";
 
 const Start = () => {
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
-
+  const passRef = useRef();
+  const confirm = useRef();
   const {
     role,
+    neticoUser,
     trafoStanica,
     ispList,
     narudzbenica,
@@ -46,6 +48,7 @@ const Start = () => {
   const [editOrd, setEdit] = useState(false);
   const [upload, setUpload] = useState(false);
   const [editZap, setEditZap] = useState(false);
+  const [changePass, setChangePass] = useState(false);
   // Na ucitavanju stranice, prikuplja podatke
   // sa backenda o svim TS i ispitivanjima
   useEffect(() => {
@@ -140,10 +143,6 @@ const Start = () => {
     });
     newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
     setTrafoStanica({ ...newTS[0] });
-    let sif = ispList.filter((i) => {
-      return i.sifra_ts === ts_no;
-    })[0]?.r_br;
-    // console.log(sif);
     if (!narudzbenica) setTipPrikaza(2);
   };
 
@@ -265,6 +264,33 @@ const Start = () => {
     if (!ispOrders.length) setTipPrikaza(2);
     setFilter(true);
   };
+  const changePassword = async () => {
+    if (
+      passRef.current.value &&
+      passRef.current.value === confirm.current.value
+    )
+      try {
+        const name = neticoUser;
+        const pass = passRef.current.value;
+        const body = { name, pass };
+        const loginRes = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/change`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        );
+        if (loginRes.status === 501) alert("pogresna lozinka...");
+        else if (loginRes.status === 210) {
+          alert("Lozinka je uspesno promenjena");
+          setChangePass(false);
+        }
+      } catch (err) {
+        alert("Greska na serveru!");
+      }
+    else alert("Unesite i potvrdite novu lozinku");
+  };
 
   return (
     <>
@@ -276,6 +302,63 @@ const Start = () => {
       >
         <img src={logo} alt="logotip"></img>
         <h2>Parcijalna praznjenja</h2>
+        {neticoUser ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "baseline",
+            }}
+          >
+            <h6
+              style={{
+                marginBottom: "1rem",
+                cursor: role ? "pointer" : "not-allowed",
+              }}
+              onClick={() => {
+                if (role) setChangePass(true);
+              }}
+            >
+              User: {neticoUser}
+            </h6>
+            {changePass ? (
+              <>
+                <input
+                  style={{
+                    height: "1.5rem",
+                    width: "3cm",
+                    marginLeft: "0.5cm",
+                  }}
+                  type="password"
+                  ref={passRef}
+                  placeholder="Nova lozinka"
+                ></input>
+                <input
+                  style={{
+                    height: "1.5rem",
+                    width: "3cm",
+                    marginLeft: "0.5cm",
+                  }}
+                  type="password"
+                  ref={confirm}
+                  placeholder="Ponovi lozinku"
+                ></input>
+                <button
+                  style={{ backgroundColor: "green" }}
+                  onClick={changePassword}
+                >
+                  DA
+                </button>
+                <button
+                  style={{ color: "red" }}
+                  onClick={() => setChangePass(false)}
+                >
+                  NE
+                </button>
+              </>
+            ) : null}
+          </div>
+        ) : null}
         {!role ? <Login /> : null}
         {role === "admin" ? (
           <div>
@@ -283,6 +366,7 @@ const Start = () => {
               onClick={() => {
                 setTrafoStanica({});
                 setNarudzbenica(null);
+                setChangePass(false);
                 setPrev([]);
                 setEdit(false);
                 filterTS("new");
@@ -295,6 +379,7 @@ const Start = () => {
                 setTrafoStanica({});
                 setPrev([]);
                 setEdit(true);
+                setChangePass(false);
                 filterTS("current");
               }}
             >
@@ -303,11 +388,17 @@ const Start = () => {
           </div>
         ) : role === "operator" ? (
           <div>
-            <button onClick={() => filterTS("nalog")}>
+            <button
+              onClick={() => {
+                setChangePass(false);
+                filterTS("nalog");
+              }}
+            >
               Zapisnik sa terena
             </button>
             <button
               onClick={() => {
+                setChangePass(false);
                 filterTS("upload");
                 setUpload(true);
               }}
@@ -316,6 +407,7 @@ const Start = () => {
             </button>
             <button
               onClick={() => {
+                setChangePass(false);
                 filterTS("upload");
                 setEditZap(true);
               }}
@@ -325,12 +417,20 @@ const Start = () => {
           </div>
         ) : role === "expert" ? (
           <div>
-            <button onClick={() => filterTS("isp")}>Analiza</button>
+            <button
+              onClick={() => {
+                setChangePass(false);
+                filterTS("isp");
+              }}
+            >
+              Analiza
+            </button>
           </div>
         ) : role === "tech" ? (
           <div>
             <button
               onClick={() => {
+                setChangePass(false);
                 setUpload(false);
                 filterTS("nova");
                 // console.log(filter, narudzbenica?.operativno);
@@ -340,6 +440,7 @@ const Start = () => {
             </button>
             <button
               onClick={() => {
+                setChangePass(false);
                 setFilter(false);
                 setUpload(false);
                 setTipPrikaza(0);
@@ -403,6 +504,7 @@ const Start = () => {
                 <p key={idx}>
                   <span
                     onClick={() => {
+                      setChangePass(false);
                       setSifraIspitivanja(x.r_br);
                       setNarudzbenica(
                         orders.filter(
@@ -425,7 +527,10 @@ const Start = () => {
                   color: "green",
                   marginLeft: "1cm",
                 }}
-                onClick={() => izvestaj()}
+                onClick={() => {
+                  setChangePass(false);
+                  izvestaj();
+                }}
               >
                 Stampanje izvestaja za isptitivanje br: {sifraIspitivanja}
               </p>
@@ -435,7 +540,10 @@ const Start = () => {
         {editOrd && trafoStanica?.sifra_ts ? (
           <p
             style={{ cursor: "pointer", color: "blue" }}
-            onClick={() => setTipPrikaza(2)}
+            onClick={() => {
+              setChangePass(false);
+              setTipPrikaza(2);
+            }}
           >
             Izmena narudzbenice
           </p>
@@ -445,7 +553,10 @@ const Start = () => {
             {narudzbenica?.operativno === "nova" && filter ? (
               <h4
                 style={{ cursor: "pointer", color: "blue" }}
-                onClick={() => setTipPrikaza(3)}
+                onClick={() => {
+                  setChangePass(false);
+                  setTipPrikaza(3);
+                }}
               >
                 Nalog
               </h4>
@@ -453,6 +564,7 @@ const Start = () => {
               <h4
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
+                  setChangePass(false);
                   if (ispList.length) {
                     let sifra = ispList.filter((i) => {
                       return i.narudzbenica === narudzbenica.broj_narudzbenice;
@@ -468,6 +580,7 @@ const Start = () => {
               <h4
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
+                  setChangePass(false);
                   let sifra = ispList.filter((i) => {
                     return i.narudzbenica === narudzbenica.broj_narudzbenice;
                   })[0].r_br;

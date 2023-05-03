@@ -23,6 +23,7 @@ export const ReportProvider = ({ children }) => {
   const [pageCount, setPageCount] = useState(0);
   const [prev, setPrev] = useState([]); // Lokalna lista prethodnih ispitivanja
   const [role, setRole] = useState(null);
+  const [neticoUser, setNeticoUser] = useState(null);
 
   return (
     <ReportContext.Provider
@@ -47,6 +48,8 @@ export const ReportProvider = ({ children }) => {
         history,
         pageCount,
         role,
+        neticoUser,
+        setNeticoUser,
         setRole,
         setPrev,
         setTsList,

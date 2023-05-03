@@ -36,7 +36,6 @@ const Report = () => {
     history,
     sifraIspitivanja,
   } = useContext(ReportContext);
-  let count = 0;
 
   const [pageCount, setPageCount] = useState(0);
   const [no, setNo] = useState(0);
@@ -197,10 +196,11 @@ const Report = () => {
         <img
           src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema.jpg`}
           style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
+          alt=""
         />
         <FooterSema str="5" pageCount={pageCount} />
       </div>
-      {loading ? (
+      {loading && (
         <div id="test" ref={printRef} style={{ overflow: "scroll" }}>
           <div id="pg1" className="report">
             <img
@@ -1028,9 +1028,8 @@ const Report = () => {
             ) : null}
           </div>
         </div>
-      ) : (
-        <p>Loading...</p>
       )}
+      {!loading && <p>Loading...</p>}
     </>
   );
 };

@@ -2,16 +2,15 @@ import React, { useEffect, useState, useContext } from "react";
 import ReportContext from "../Context";
 
 const Login = () => {
-  const { setRole } = useContext(ReportContext);
+  const { setRole, neticoUser, setNeticoUser } = useContext(ReportContext);
   const [users, setUsers] = useState([]);
-  const [name, setName] = useState("");
   const [pass, setPass] = useState("");
 
   const getUsers = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/users`);
       const jsonData = await response.json();
-      // console.log(jsonData);
+      //console.log(jsonData);
       setUsers(jsonData);
     } catch (err) {
       alert("greska na serveru");
@@ -20,6 +19,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    const name = neticoUser;
     try {
       const body = { name, pass };
       const loginRes = await fetch(
@@ -31,10 +31,9 @@ const Login = () => {
         }
       );
       const loginData = await loginRes.json();
-      if (loginRes.status === 403) alert("pogresna lozinka...");
-      else setRole(loginData.role);
+      if (loginData.role) setRole(loginData.role);
     } catch (err) {
-      alert("Greska na serveru!");
+      alert("Greska na serveru ili je lozinka pogresna!");
     }
   };
 
@@ -61,8 +60,8 @@ const Login = () => {
           }}
           autoFocus
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={neticoUser ? neticoUser : ""}
+          onChange={(e) => setNeticoUser(e.target.value)}
         >
           <option disabled={true} value="">
             --USER--
