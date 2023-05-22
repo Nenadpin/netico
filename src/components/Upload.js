@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRef } from "react";
 import { useContext } from "react";
 import ReportContext from "../Context";
+import Spinner from "./Spinner";
 
 const Upload = () => {
   const { narudzbenica, ispList } = useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
+  const [loadData, setLoadData] = useState(false);
   useMemo(() => {
     if (narudzbenica) {
       let sif = ispList.filter((i) => {
@@ -20,31 +22,38 @@ const Upload = () => {
 
   const sendFiles = async () => {
     const myFiles = document.getElementById("myFiles").files;
-    const formData = new FormData();
-    Object.keys(myFiles).forEach((key) => {
-      formData.append(myFiles.item(key).name, myFiles.item(key));
-    });
-    const isp = "ISP" + sifra;
-    try {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER_URL}/upload${isp}`,
-        {
-          method: "POST",
-          body: formData,
+    console.log(myFiles.length);
+    if (myFiles.length > 0) {
+      const formData = new FormData();
+      setLoadData(true);
+      Object.keys(myFiles).forEach((key) => {
+        formData.append(myFiles.item(key).name, myFiles.item(key));
+      });
+      const isp = "ISP" + sifra;
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/upload${isp}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const json = await response.json();
+        if (json.status === "success") {
+          alert("Primljeno!");
+          setLoadData(false);
+          window.location.reload();
         }
-      );
-      const json = await response.json();
-      if (json.status === "success") {
-        alert("Primljeno!");
-        window.location.reload();
+      } catch (error) {
+        alert("greska na serveru");
+        setLoadData(false);
       }
-    } catch (error) {
-      alert("greska na serveru");
-    }
+    } else alert("Niste ucitali nijedan fajl...");
   };
 
   return (
     <>
+      {loadData && <Spinner />}
       {sifra ? (
         <div>
           <p
@@ -60,13 +69,15 @@ const Upload = () => {
             }}
           >
             <input
-              style={{ fontSize: "1.5rem" }}
+              style={{ fontSize: "1.2rem", padding: "5px", height: "2.5rem" }}
               type="file"
               id="myFiles"
               accept="*"
               multiple
             />
-            <button>Submit</button>
+            <button className="block-btn" style={{ marginLeft: "0" }}>
+              Submit
+            </button>
           </form>
         </div>
       ) : null}

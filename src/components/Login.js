@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import ReportContext from "../Context";
 
-const Login = () => {
+const Login = ({ setLoadData }) => {
   const { setRole, neticoUser, setNeticoUser } = useContext(ReportContext);
   const [users, setUsers] = useState([]);
   const [pass, setPass] = useState("");
@@ -18,6 +18,7 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
+    setLoadData(true);
     e.preventDefault();
     const name = neticoUser;
     try {
@@ -31,9 +32,13 @@ const Login = () => {
         }
       );
       const loginData = await loginRes.json();
-      if (loginData.role) setRole(loginData.role);
+      if (loginData.role) {
+        setRole(loginData.role);
+        setLoadData(false);
+      }
     } catch (err) {
       alert("Greska na serveru ili je lozinka pogresna!");
+      setLoadData(false);
     }
   };
 
@@ -43,18 +48,9 @@ const Login = () => {
 
   return (
     <form onSubmit={handleLogin}>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "600px",
-          margin: "auto",
-        }}
-      >
+      <div className="form-row">
         <select
-          style={{ margin: "0" }}
+          style={{ width: "100%" }}
           onFocus={(e) => {
             e.target.selectedIndex = 0;
           }}
@@ -74,11 +70,13 @@ const Login = () => {
         </select>
         <input
           type="password"
-          style={{ height: "2rem" }}
+          style={{ height: "2rem", width: "100%" }}
           value={pass}
           onChange={(e) => setPass(e.target.value)}
         />
-        <button style={{ padding: "5px", margin: "0" }}>Login</button>
+        <button style={{ marginLeft: "0" }} className="block-btn">
+          Login
+        </button>
       </div>
     </form>
   );

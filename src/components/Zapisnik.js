@@ -2,6 +2,7 @@ import React, { useContext, useMemo, useState } from "react";
 import { useRef } from "react";
 import serbianTransliteration from "serbian-transliteration";
 import ReportContext from "../Context";
+import Spinner from "./Spinner";
 
 const Zapisnik = () => {
   let dataNar = {
@@ -46,10 +47,12 @@ const Zapisnik = () => {
   const [elpn, setElpn] = useState(null);
   const [modal, setModal] = useState(false);
   const [chEl, setChEl] = useState(null);
+  const [loadData, setLoadData] = useState(false);
 
   useMemo(() => {
     if (narudzbenica !== null) {
       setTotalEl(0);
+      setLoadData(true);
       for (let s = 0; s < narudzbenica.stavke.length; s++) {
         if (narudzbenica.stavke[s].pos === 5) {
           dataNar.MT110 += parseInt(narudzbenica.stavke[s].kol);
@@ -101,6 +104,7 @@ const Zapisnik = () => {
       setTotalEl(parseInt(JSON.parse(localStorage.getItem("total"))));
       setZapisnikDetails(JSON.parse(localStorage.getItem("zapisnik")));
     }
+    setLoadData(false);
   }, [narudzbenica]);
 
   useMemo(() => {
@@ -362,6 +366,7 @@ const Zapisnik = () => {
       zap: zapisnikDetails,
       temp: tempRef.current.value,
     };
+    setLoadData(true);
     try {
       const response2 = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/zapisnik`,
@@ -374,15 +379,18 @@ const Zapisnik = () => {
       if (response2.status === 210) {
         alert("primljeno");
         setZapisnikDetails(null);
+        setLoadData(false);
         //localStorage.removeItem("zapisnik");
         //localStorage.removeItem("total");
         // window.location.reload();
       } else {
         alert("neka greska...");
+        setLoadData(false);
         return;
       }
     } catch (error) {
       alert("Greska na serveru");
+      setLoadData(false);
     }
   };
   const handleDetails = (id) => {
@@ -399,6 +407,7 @@ const Zapisnik = () => {
 
   return (
     <div className="zapisnik">
+      {loadData && <Spinner />}
       {naruceno ? (
         <>
           <div className="zapisnikEl">
@@ -542,8 +551,12 @@ const Zapisnik = () => {
                 style={{
                   width: "3cm",
                   marginTop: "5px",
+                  marginBottom: "5px",
                   marginLeft: "-2px",
-                  backgroundColor: "orangered",
+                  color: "white",
+                  fontWeight: "bold",
+                  padding: "3px",
+                  backgroundColor: "hsl(360, 67%, 44%)",
                 }}
                 onClick={() => handleItem()}
               >
@@ -554,7 +567,11 @@ const Zapisnik = () => {
                   style={{
                     width: "3cm",
                     marginLeft: "-2px",
-                    backgroundColor: "green",
+                    marginBottom: "5px",
+                    padding: "3px",
+                    color: "white",
+                    fontWeight: "bold",
+                    backgroundColor: "hsl(125, 67%, 44%)",
                   }}
                   onClick={() => {
                     if (totalEl <= 0) submitZapisnik();
@@ -860,7 +877,12 @@ const Zapisnik = () => {
                     }}
                   >
                     <button
-                      style={{ width: "5cm", borderBottom: "none" }}
+                      className="block-btn"
+                      style={{
+                        width: "320px",
+                        borderBottom: "none",
+                        marginLeft: "0",
+                      }}
                       onClick={() => {
                         handleFieldDetails(chEl);
                       }}

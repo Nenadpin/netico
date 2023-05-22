@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import { useContext, useState } from "react";
 import ReportContext from "../Context";
 import PrintGraph from "./PrintGraph";
+import Spinner from "./Spinner";
 
 const Ispitivanje = () => {
   const {
@@ -19,6 +20,7 @@ const Ispitivanje = () => {
   const [baseFile, setBaseFile] = useState(null);
   const [fileTree, setFileTree] = useState(null);
   const [chartDataIsp, setChartDataIsp] = useState(null);
+  const [loadData, setLoadData] = useState(false);
   const brIzv = useRef();
   const datRef = useRef();
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Анализа"];
@@ -26,6 +28,7 @@ const Ispitivanje = () => {
 
   const getElements = async () => {
     try {
+      setLoadData(true);
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
@@ -36,6 +39,7 @@ const Ispitivanje = () => {
         setExamine(JSON.parse(localStorage.getItem("currExamine")));
     } catch (error) {
       alert("Greska na serveru");
+      setLoadData(false);
     } finally {
       let labelS = [0];
       for (let i = 0; i < 500; i++) {
@@ -60,6 +64,7 @@ const Ispitivanje = () => {
         },
       });
     }
+    setLoadData(false);
   };
 
   const populateEls = () => {
@@ -72,6 +77,7 @@ const Ispitivanje = () => {
 
   const getStructure = async () => {
     if (sifraIspitivanja) {
+      setLoadData(true);
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/struktura${sifraIspitivanja}`
@@ -79,8 +85,10 @@ const Ispitivanje = () => {
         const jsonData = await response.json();
         // console.log(jsonData);
         setStructure(jsonData);
+        setLoadData(false);
       } catch (error) {
         alert("greska na serveru");
+        setLoadData(false);
       }
     }
   };
@@ -129,6 +137,7 @@ const Ispitivanje = () => {
         "Sigurni ste da upisujemo ove rezultate? Elementi koji nisu oznaceni bojom ce biti bez napona?"
       )
     ) {
+      setLoadData(true);
       let dataExam = examine.map((d) => {
         d = { ...d, chart: JSON.parse(localStorage.getItem(d.moja_sifra)) };
         return d;
@@ -156,12 +165,15 @@ const Ispitivanje = () => {
           alert("primljeno");
           localStorage.clear();
           window.location.reload();
+          setLoadData(false);
         } else {
           alert("neka greska...");
+          setLoadData(false);
           return;
         }
       } catch (error) {
         alert("greska na serveru");
+        setLoadData(false);
       }
     }
   };
@@ -172,6 +184,7 @@ const Ispitivanje = () => {
       dir: `ISP${sifraIspitivanja}`,
       fName: f,
     };
+    setLoadData(true);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/route${fileData}`,
@@ -218,9 +231,14 @@ const Ispitivanje = () => {
         sd.ut.data = dT;
         sd.lt = f + " (Frequency " + b;
         setChartDataIsp(sd);
-      } else alert("Greska u citanju fajla...");
+        setLoadData(false);
+      } else {
+        alert("Greska u citanju fajla...");
+        setLoadData(false);
+      }
     } catch (error) {
       alert("greska na serveru");
+      setLoadData(false);
     }
   };
 
@@ -230,6 +248,7 @@ const Ispitivanje = () => {
       dir: `ISP${sifraIspitivanja}`,
       fName: f,
     };
+    setLoadData(true);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/route${fileData}`,
@@ -255,8 +274,10 @@ const Ispitivanje = () => {
       sd.us.dataB = d;
       sd.lub = f;
       setChartDataIsp(sd);
+      setLoadData(false);
     } catch (error) {
       alert("Greska na serveru");
+      setLoadData(false);
     }
   };
   useMemo(() => {
@@ -274,6 +295,7 @@ const Ispitivanje = () => {
         columnGap: "50px",
       }}
     >
+      {loadData && <Spinner />}
       <div
         className="modal"
         style={{ display: modal ? "block" : "none", zIndex: "1" }}
@@ -455,32 +477,33 @@ const Ispitivanje = () => {
             style={{ width: "110px", backgroundColor: "green" }}
             onClick={() => promeni(currentEl?.sifra, 1)}
           >
-            Зелено
+            Zeleno
           </button>
           <button
             style={{ width: "110px", backgroundColor: "yellow" }}
             onClick={() => promeni(currentEl?.sifra, 2)}
           >
-            Жуто
+            Žuto
           </button>
           <button
             style={{ width: "110px", backgroundColor: "red" }}
             onClick={() => promeni(currentEl?.sifra, 3)}
           >
-            Црвено
+            Crveno
           </button>
           <button
             style={{ width: "110px", backgroundColor: "white" }}
             onClick={() => resetData()}
           >
-            Ресетуј
+            Resetuj
           </button>
         </div>
         <button
-          style={{ cursor: "pointer", width: "400px", alignSelf: "center" }}
+          className="block-btn"
+          style={{ width: "480px", alignSelf: "center" }}
           onClick={() => submitIsp()}
         >
-          Упиши у базу
+          Upiši u bazu
         </button>
       </div>
       <div></div>

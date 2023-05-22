@@ -6,7 +6,19 @@
 #test::-webkit-scrollbar {
   display: none;
 }
-
+:root {
+  --grey-300: #81858b;
+  --borderRadius: 0.25rem;
+  --spacing: 0.1rem;
+  --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --primary-500: #645cff;
+  --primary-600: #554ed9;
+  --primary-700: #4640b3;
+  --clr-grey-3: hsl(209, 34%, 30%);
+  --clr-primary-5: hsl(205, 78%, 60%);
+  --clr-primary-8: hsl(205, 86%, 81%);
+  --transition: all 0.3s linear;
+}
 h2 {
   padding: 10px 0;
 }
@@ -15,10 +27,58 @@ h2 {
   background-color: #efefef;
   font-family: Arial, Helvetica, sans-serif;
   height: 100%;
+  min-height: 100vh;
   display: block;
   align-items: center;
 }
-
+ul {
+  list-style-type: none;
+  display: flex;
+}
+li {
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--clr-grey-3);
+  font-size: 1rem;
+  text-transform: capitalize;
+  letter-spacing: var(--spacing);
+  display: block;
+  padding: 0.5rem 1rem;
+  transition: var(--transition);
+}
+li:hover {
+  color: var(--clr-primary-5);
+  padding-left: 1.5rem;
+}
+form {
+  max-width: 600px;
+  background: white;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-2);
+  padding: 2rem 2.5rem;
+  display: block;
+  margin: auto;
+  margin-top: 5rem;
+}
+.nav-center {
+  max-width: 1170px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+.nav-header {
+  background: white;
+  width: 100%;
+  height: 80px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
 .header {
   position: fixed;
   top: 0;
@@ -37,12 +97,29 @@ h2 {
   font-size: calc(10px + 2vmin);
   padding-bottom: 10px;
 }
+input,
 select {
   height: 2rem;
+  padding: 0.175rem 0.75rem;
+  border-radius: var(--borderRadius);
+  background: var(--grey-50);
+  border-color: transparent;
+  border: 1px solid var(--grey-300);
+  letter-spacing: var(--spacing);
   font-size: large;
   font-weight: bold;
   padding-left: 5px;
   margin-bottom: 15px;
+}
+.zapisnikEl * {
+  height: initial;
+  padding: initial;
+  background: initial;
+  border-color: initial;
+  letter-spacing: initial;
+  font-size: initial;
+  font-weight: initial;
+  margin-bottom: initial;
 }
 .order {
   margin: auto;
@@ -58,7 +135,7 @@ select {
   font-family: Arial, Helvetica, sans-serif;
   background-color: white;
 }
-.newOrder input {
+.newOrder > input {
   border: none;
   margin: 0;
   min-width: 20px;
@@ -88,7 +165,7 @@ select {
 .orderInfo {
   display: grid;
   width: 21cm;
-  grid-template-columns: 100px 400px 130px 170px;
+  grid-template-columns: 100px 700px;
   text-align: left;
 }
 .newOrderChoice {
@@ -96,6 +173,23 @@ select {
   width: 21cm;
   grid-template-columns: 100px 600px 100px;
   text-align: left;
+}
+.block-btn {
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  color: white;
+  background: var(--primary-500);
+  border: none;
+  border-radius: var(--borderRadius);
+  letter-spacing: var(--letterSpacing);
+  padding: 0.375rem 0.75rem;
+  box-shadow: var(--shadow-1);
+  transition: var(--transition);
+  text-transform: capitalize;
+}
+.block-btn:hover {
+  background: #4640b3;
 }
 button {
   height: 2rem;
@@ -274,6 +368,10 @@ th {
   border: none;
   font-size: 14px;
 }
+.tblZ input {
+  height: initial;
+  margin-bottom: initial;
+}
 .newReportMain {
   display: grid;
   width: 19cm;
@@ -331,6 +429,9 @@ button {
   margin: auto;
   background-color: white;
   overflow: hidden;
+}
+.logo {
+  height: 40px;
 }
 .coverLogo {
   display: block;

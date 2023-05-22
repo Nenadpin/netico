@@ -194,7 +194,13 @@ const Nalog = () => {
           ></input>
         </span>
       </div>
-      <button onClick={handleNalog}>Upisi u bazu!</button>
+      <button
+        className="block-btn"
+        style={{ marginLeft: "0", width: "375px" }}
+        onClick={handleNalog}
+      >
+        Upisi u bazu!
+      </button>
     </div>
   );
 };

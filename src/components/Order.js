@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import serbianTransliteration from "serbian-transliteration";
 import { useContext } from "react";
 import ReportContext from "../Context";
+import Spinner from "./Spinner";
 
 const Order = () => {
   const {
@@ -26,8 +27,10 @@ const Order = () => {
   const [kdStavka, setKdStavka] = useState(0);
   const [orderDetails, setOrderDetails] = useState([]);
   const [total, setTotal] = useState(0);
+  const [loadData, setLoadData] = useState(false);
 
   useMemo(() => {
+    console.log(trafoStanica);
     if (narudzbenica) {
       setOrderDetails(narudzbenica.stavke);
       setTotal(narudzbenica.iznos / 1.2);
@@ -65,6 +68,7 @@ const Order = () => {
       datumNar.current.value
     ) {
       try {
+        setLoadData(true);
         const response2 = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/order`,
           {
@@ -91,10 +95,12 @@ const Order = () => {
           window.location.reload();
         } else {
           alert("neka greska...");
+          setLoadData(false);
           return;
         }
       } catch (error) {
         alert("greska na serveru");
+        setLoadData(false);
       }
     } else alert("Niste popunili sve podatke!");
   };
@@ -102,6 +108,7 @@ const Order = () => {
   return (
     <div className="order">
       <>
+        {loadData ? <Spinner /> : null}
         <div className="orderInfo">
           <span style={{ marginTop: "7px" }}>
             <strong>Уговор: </strong>
@@ -265,10 +272,15 @@ const Order = () => {
       </>
       <div>
         <button
+          className="block-btn"
           onClick={handleOrder}
-          style={{ display: "inline-block", marginTop: "10px" }}
+          style={{
+            display: "inline-block",
+            marginTop: "10px",
+            marginLeft: "0",
+          }}
         >
-          Upisi u bazu
+          S a c u v a j
         </button>
       </div>
       <div className="newOrder">
