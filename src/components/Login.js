@@ -3,7 +3,7 @@ import ReportContext from "../Context";
 
 const Login = ({ setLoadData }) => {
   const { setRole, neticoUser, setNeticoUser } = useContext(ReportContext);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(null);
   const [pass, setPass] = useState("");
 
   const getUsers = async () => {
@@ -60,9 +60,9 @@ const Login = ({ setLoadData }) => {
           onChange={(e) => setNeticoUser(e.target.value)}
         >
           <option disabled={true} value="">
-            --USER--
+            {users ? "--USER--" : "Contacting server..."}
           </option>
-          {users.map((user, index) => (
+          {users?.map((user, index) => (
             <option key={index} value={user.ime}>
               {user.ime}
             </option>
