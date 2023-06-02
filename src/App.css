@@ -121,6 +121,12 @@ select {
   font-weight: initial;
   margin-bottom: initial;
 }
+.report * {
+  height: initial;
+  padding: initial;
+  letter-spacing: initial;
+  font-size: initial;
+}
 .order {
   margin: auto;
   display: flex;

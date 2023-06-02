@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState, useRef } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import ReportContext from "../Context";
 import TextareaAutosize from "react-textarea-autosize";
 import Header from "./Header";
@@ -16,8 +16,6 @@ const Zakljucak = ({
   const [zuto, setZuto] = useState(null);
   const [crveno, setCrveno] = useState(null);
   const [dummy, setDummy] = useState(0);
-  const bodyRef = useRef();
-
   const { history } = useContext(ReportContext);
 
   useMemo(() => {
@@ -251,16 +249,20 @@ const Zakljucak = ({
                             minRows={6}
                             defaultValue={`${zakljucakText?.zadovoljavajuce[0]} мерних трансформатора кабловских завршница, потпорних изолатора ${zakljucakText.zadovoljavajuce[1]}`}
                           />
-                          <p
+                          <TextareaAutosize
                             style={{
-                              margin: "1rem 0",
+                              border: "none",
+                              width: "18cm",
+                              textAlign: "justify",
+                              marginRight: "1.5cm",
+                              marginTop: "1rem",
+                              fontFamily: "arial",
+                              fontSize: "0.9rem",
                               fontWeight: "bold",
                               fontStyle: "italic",
-                              fontSize: "0.9rem",
                             }}
-                          >
-                            {zakljucakText.zadovoljavajuce[2]}
-                          </p>
+                            defaultValue={zakljucakText.zadovoljavajuce[2]}
+                          />
                           {zuto?.filter((z) => {
                             return z.napon === pn;
                           })?.length > 0 ? (
@@ -324,16 +326,20 @@ const Zakljucak = ({
                                 Препоручује се пооштрена контрола стања
                                 изолационих система испитиване опреме.
                               </p>
-                              <p
+                              <TextareaAutosize
                                 style={{
-                                  margin: "1rem 0",
+                                  border: "none",
+                                  width: "18cm",
+                                  textAlign: "justify",
+                                  marginRight: "1.5cm",
+                                  marginTop: "1rem",
+                                  fontFamily: "arial",
+                                  fontSize: "0.9rem",
                                   fontWeight: "bold",
                                   fontStyle: "italic",
-                                  fontSize: "0.9rem",
                                 }}
-                              >
-                                {zakljucakText.delimicna[2]}
-                              </p>
+                                defaultValue={zakljucakText.delimicna[2]}
+                              />
                             </div>
                           ) : null}
                           {crveno?.filter((z) => {

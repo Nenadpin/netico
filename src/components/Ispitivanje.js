@@ -319,7 +319,10 @@ const Ispitivanje = () => {
         >
           <p
             style={{ right: "0.5cm", cursor: "pointer" }}
-            onClick={() => setModal(false)}
+            onClick={() => {
+              setLoadData(false);
+              setModal(false);
+            }}
           >
             X
           </p>
@@ -389,7 +392,7 @@ const Ispitivanje = () => {
                                 </span>
                                 <span
                                   onClick={() => {
-                                    // console.log(elpn);
+                                    console.log(elpn);
                                     if (ispEls?.includes(elpn.moja_sifra)) {
                                       setCurrentEl({
                                         element: elpn.el_skraceno,

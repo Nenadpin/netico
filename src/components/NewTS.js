@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { useRef, useContext } from "react";
-import ReportContext from "../Context";
+import React from "react";
+import { useRef } from "react";
 import serbianTransliteration from "serbian-transliteration";
 
 const NewTS = ({ tsList }) => {

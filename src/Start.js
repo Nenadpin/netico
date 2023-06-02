@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Order from "./components/Order";
 import NewReport from "./components/NewReport";
 import ReportContext from "./Context";
@@ -12,14 +12,14 @@ import Login from "./components/Login";
 import Upload from "./components/Upload";
 import Spinner from "./components/Spinner";
 import Navbar from "./components/Navbar";
+import EditUser from "./components/EditUser";
 
 const Start = () => {
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
   const [loadData, setLoadData] = useState(false);
-  const passRef = useRef();
-  const confirm = useRef();
   const {
     role,
+    setRole,
     neticoUser,
     trafoStanica,
     ispList,
@@ -45,6 +45,7 @@ const Start = () => {
     setReports,
     setUgovor,
     setHistory,
+    setNeticoUser,
   } = useContext(ReportContext);
   const [filter, setFilter] = useState(false);
   const [dispOrd, setDispOrd] = useState(null);
@@ -69,7 +70,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
-      //console.log(jsonData);
+      console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -104,7 +105,11 @@ const Start = () => {
         );
         if (response.status === 210) {
           alert("Zapisnik je potrebno ponoviti...");
+          let oldZap = localStorage.getItem("zapisnik");
+          localStorage.clear();
+          localStorage.setItem("zapisnik", JSON.stringify(oldZap));
           window.location.reload();
+          return;
         } else if (response.status === 501) alert("Greska na serveru");
       } catch (err) {
         console.log(err);
@@ -225,9 +230,14 @@ const Start = () => {
         }
       }
       case "upload": {
-        ispOrders = ispOrders.filter((o) => {
-          return o.operativno === "upisano";
-        });
+        if (editZap)
+          ispOrders = ispOrders.filter((o) => {
+            return o.operativno === "uploaded";
+          });
+        else
+          ispOrders = ispOrders.filter((o) => {
+            return o.operativno === "upisano";
+          });
         setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else {
@@ -294,39 +304,6 @@ const Start = () => {
     }
     setFilter(true);
   };
-  const changePassword = async () => {
-    setLoadData(true);
-    if (
-      passRef.current.value &&
-      passRef.current.value === confirm.current.value
-    )
-      try {
-        const name = neticoUser;
-        const pass = passRef.current.value;
-        const body = { name, pass };
-        const loginRes = await fetch(
-          `${process.env.REACT_APP_SERVER_URL}/change`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }
-        );
-        if (loginRes.status === 501) alert("pogresna lozinka...");
-        else if (loginRes.status === 210) {
-          alert("Lozinka je uspesno promenjena");
-          setChangePass(false);
-          setLoadData(false);
-        }
-      } catch (err) {
-        alert("Greska na serveru!");
-        setLoadData(false);
-      }
-    else {
-      alert("Unesite i potvrdite novu lozinku");
-      setLoadData(false);
-    }
-  };
 
   return (
     <>
@@ -366,58 +343,50 @@ const Start = () => {
               alignItems: "baseline",
             }}
           >
-            <h4
-              style={{
-                marginTop: "1rem",
-                marginBottom: "1rem",
-                cursor: role ? "pointer" : "not-allowed",
-              }}
-              onClick={() => {
-                if (role) setChangePass(true);
-              }}
-            >
-              User: {neticoUser}
-            </h4>
+            <>
+              <h4
+                style={{
+                  marginTop: "1rem",
+                  marginBottom: "1rem",
+                  cursor: role ? "pointer" : "not-allowed",
+                }}
+                onClick={() => {
+                  if (role) setChangePass(true);
+                }}
+              >
+                User: {neticoUser}
+              </h4>
+              {role && (
+                <span
+                  style={{
+                    marginLeft: "2rem",
+                    color: "red",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setRole(null);
+                    setChangePass(false);
+                    setUpload(false);
+                    setNeticoUser(null);
+                  }}
+                >
+                  Logout
+                </span>
+              )}
+            </>
             {changePass ? (
-              <>
-                <input
-                  style={{
-                    height: "1.5rem",
-                    width: "6cm",
-                    marginLeft: "0.5cm",
-                  }}
-                  type="password"
-                  ref={passRef}
-                  placeholder="Nova lozinka"
-                ></input>
-                <input
-                  style={{
-                    height: "1.5rem",
-                    width: "6cm",
-                    marginLeft: "0.5cm",
-                  }}
-                  type="password"
-                  ref={confirm}
-                  placeholder="Ponovi lozinku"
-                ></input>
-                <button
-                  style={{ backgroundColor: "green" }}
-                  onClick={changePassword}
-                >
-                  DA
-                </button>
-                <button
-                  style={{ color: "red" }}
-                  onClick={() => setChangePass(false)}
-                >
-                  NE
-                </button>
-              </>
+              <EditUser
+                role={role}
+                neticoUser={neticoUser}
+                setChangePass={setChangePass}
+                setLoadData={setLoadData}
+                setNeticoUser={setNeticoUser}
+              />
             ) : null}
           </div>
         ) : null}
 
-        {dispOrd?.length && filter ? (
+        {dispOrd?.length && filter && role && !changePass ? (
           <select
             onFocus={(e) => {
               setTipPrikaza(null);
@@ -442,7 +411,7 @@ const Start = () => {
             ))}
           </select>
         ) : null}
-        {role === "tech" && !dispOrd ? (
+        {role === "tech" && !dispOrd && !changePass ? (
           <select
             onFocus={(e) => {
               setTipPrikaza(null);
@@ -504,7 +473,7 @@ const Start = () => {
             ) : null}
           </>
         ) : null}
-        {editOrd && trafoStanica?.sifra_ts ? (
+        {editOrd && trafoStanica?.sifra_ts && role ? (
           <>
             <p
               style={{ cursor: "pointer", color: "blue", marginBottom: "5px" }}
@@ -527,7 +496,10 @@ const Start = () => {
             </p>
           </>
         ) : null}
-        {trafoStanica.sifra_ts && role !== "admin" && tipPrikaza !== 0 ? (
+        {trafoStanica.sifra_ts &&
+        role !== "admin" &&
+        tipPrikaza !== 0 &&
+        role ? (
           <span>
             {narudzbenica?.operativno === "nova" && filter ? (
               <h4
@@ -574,22 +546,22 @@ const Start = () => {
         ) : null}
       </div>
       {!role ? <Login setLoadData={setLoadData} /> : null}
-      {tipPrikaza === 1 && trafoStanica.sifra_ts ? (
+      {tipPrikaza === 1 && trafoStanica.sifra_ts && role ? (
         <NewReport />
-      ) : tipPrikaza === 2 && trafoStanica.sifra_ts ? (
+      ) : tipPrikaza === 2 && trafoStanica.sifra_ts && role ? (
         <Order />
-      ) : tipPrikaza === 3 && trafoStanica.sifra_ts ? (
+      ) : tipPrikaza === 3 && trafoStanica.sifra_ts && role ? (
         <Nalog />
-      ) : tipPrikaza === 4 && trafoStanica.sifra_ts ? (
+      ) : tipPrikaza === 4 && trafoStanica.sifra_ts && role ? (
         <Zapisnik />
-      ) : tipPrikaza === 5 && trafoStanica.sifra_ts ? (
+      ) : tipPrikaza === 5 && trafoStanica.sifra_ts && role ? (
         <Ispitivanje />
-      ) : tipPrikaza === 6 && trafoStanica.sifra_ts ? (
+      ) : tipPrikaza === 6 && trafoStanica.sifra_ts && role ? (
         <Report />
-      ) : tipPrikaza === 0 && tsList ? (
+      ) : tipPrikaza === 0 && tsList && role ? (
         <NewTS tsList={tsList} />
       ) : null}
-      {upload && trafoStanica.sifra_ts ? <Upload /> : null}
+      {upload && trafoStanica.sifra_ts && role ? <Upload /> : null}
     </>
   );
 };

@@ -382,7 +382,7 @@ const Zapisnik = () => {
         setLoadData(false);
         //localStorage.removeItem("zapisnik");
         //localStorage.removeItem("total");
-        // window.location.reload();
+        window.location.reload();
       } else {
         alert("neka greska...");
         setLoadData(false);
@@ -394,12 +394,12 @@ const Zapisnik = () => {
     }
   };
   const handleDetails = (id) => {
-    for (let i = 0; i < zapisnikDetails[id].elementi.length; i++) {
-      spratPolja.current[i].checked = zapisnikDetails[id].elementi[i].sprat;
-      napomenaPolja.current[i].value = zapisnikDetails[id].elementi[i].napomena
-        ? zapisnikDetails[id].elementi[i].napomena
-        : "";
-    }
+    // for (let i = 0; i < zapisnikDetails[id].elementi.length; i++) {
+    //   spratPolja.current[i].checked = zapisnikDetails[id].elementi[i].sprat;
+    //   napomenaPolja.current[i].value = zapisnikDetails[id].elementi[i].napomena
+    //     ? zapisnikDetails[id].elementi[i].napomena
+    //     : "";
+    // }
     setElpn(() => zapisnikDetails[id]);
     setChEl(id);
     setModal(true);
