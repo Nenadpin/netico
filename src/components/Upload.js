@@ -22,7 +22,7 @@ const Upload = () => {
 
   const sendFiles = async () => {
     const myFiles = document.getElementById("myFiles").files;
-    console.log(myFiles.length);
+    //console.log(myFiles.length);
     if (myFiles.length > 0) {
       const formData = new FormData();
       setLoadData(true);

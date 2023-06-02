@@ -70,7 +70,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
+      //console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);

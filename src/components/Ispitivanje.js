@@ -414,7 +414,7 @@ const Ispitivanje = () => {
                                         }));
                                       } else {
                                         setModal(true);
-                                        setFileTree(elpn.us.substring(5, 12));
+                                        setFileTree(elpn.us.substring(9, 12));
                                       }
                                     }
                                   }}
