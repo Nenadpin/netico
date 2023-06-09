@@ -13,11 +13,16 @@ import Upload from "./components/Upload";
 import Spinner from "./components/Spinner";
 import Navbar from "./components/Navbar";
 import EditUser from "./components/EditUser";
+import Dialog from "./components/Dialog";
+import NewContract from "./components/NewContract";
+import UserNew from "./components/UserNew";
 
 const Start = () => {
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
   const [loadData, setLoadData] = useState(false);
   const {
+    message,
+    setMessage,
     role,
     setRole,
     neticoUser,
@@ -46,13 +51,17 @@ const Start = () => {
     setUgovor,
     setHistory,
     setNeticoUser,
+    setModal,
+    logout,
+    upload,
+    setUpload,
+    changePass,
+    setChangePass,
   } = useContext(ReportContext);
   const [filter, setFilter] = useState(false);
   const [dispOrd, setDispOrd] = useState(null);
   const [editOrd, setEdit] = useState(false);
-  const [upload, setUpload] = useState(false);
   const [editZap, setEditZap] = useState(false);
-  const [changePass, setChangePass] = useState(false);
   // Na ucitavanju stranice, prikuplja podatke
   // sa backenda o svim TS i ispitivanjima
   useEffect(() => {
@@ -70,7 +79,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
-      //console.log(jsonData);
+      console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -79,8 +88,10 @@ const Start = () => {
       setEmplList(jsonData.empl);
       setLoadData(false);
     } catch (err) {
-      alert("greska na serveru");
       setLoadData(false);
+      setModal(true);
+      setMessage("Greska na serveru...");
+      return;
     }
   };
 
@@ -104,13 +115,12 @@ const Start = () => {
           }
         );
         if (response.status === 210) {
-          alert("Zapisnik je potrebno ponoviti...");
-          let oldZap = localStorage.getItem("zapisnik");
-          localStorage.clear();
-          localStorage.setItem("zapisnik", JSON.stringify(oldZap));
-          window.location.reload();
+          localStorage.removeItem("total");
+          localStorage.removeItem("zapisnik");
+          setEditZap(false);
+          logout();
           return;
-        } else if (response.status === 501) alert("Greska na serveru");
+        } else if (response.status === 501) setMessage("Greska na serveru");
       } catch (err) {
         console.log(err);
       }
@@ -127,11 +137,11 @@ const Start = () => {
       setExamine(jsonData.els);
       setReports(jsonData.izv);
     } catch (err) {
-      alert("Greska na serveru...");
+      setMessage("Greska na serveru...");
       setLoadData(false);
     }
     let tmp = [...ispList];
-    if (role === "admin")
+    if (role === "admin" || role === "tech")
       tmp = tmp.filter((ex) => {
         return ex.sifra_ts === ts_no;
       });
@@ -225,7 +235,7 @@ const Start = () => {
         setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else {
-          alert("Nisu uploadovani fajlovi za nijednu TS!");
+          setMessage("Nisu uploadovani fajlovi za nijednu TS!");
           return;
         }
       }
@@ -241,7 +251,8 @@ const Start = () => {
         setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else {
-          alert("Nije uradjen zapisnik!");
+          setMessage("Nije uradjen zapisnik!");
+          setEditZap(false);
           return;
         }
       }
@@ -250,10 +261,12 @@ const Start = () => {
           return o.operativno === "nova";
         });
         setDispOrd([...ispOrders]);
+        setFilter(true);
         if (ispOrders.length) break;
         else {
-          alert("Nema nove narudzbenice!");
+          setMessage("Nema nove narudzbenice!");
           setDispOrd(null);
+          setFilter(false);
           return;
         }
       }
@@ -264,7 +277,7 @@ const Start = () => {
         setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else {
-          alert("Nije izdat novi nalog!");
+          setMessage("Nije izdat novi nalog!");
           return;
         }
       }
@@ -295,7 +308,18 @@ const Start = () => {
         setDispOrd([...ispOrders]);
         if (ispOrders.length) break;
         else {
-          alert("Nema tekucih ispitivanja!");
+          setMessage("Nema tekucih ispitivanja!");
+          return;
+        }
+      }
+      case "operator": {
+        ispOrders = ispOrders.filter((o) => {
+          return o.operativno === "upisano" || o.operativno === "uploaded";
+        });
+        setDispOrd([...ispOrders]);
+        if (ispOrders.length) break;
+        else {
+          setMessage("Nema tekucih ispitivanja!");
           return;
         }
       }
@@ -308,6 +332,7 @@ const Start = () => {
   return (
     <>
       {loadData && <Spinner />}
+      {message ? <Dialog /> : null}
       <div
         className="nav-center"
         style={{
@@ -316,7 +341,9 @@ const Start = () => {
         }}
       >
         <div className="nav-header">
-          <img src={logo} alt="logotip"></img>
+          {role === "tech" && tipPrikaza === 1 ? null : (
+            <img src={logo} alt="logotip"></img>
+          )}
           {neticoUser ? (
             <Navbar
               role={role}
@@ -327,9 +354,9 @@ const Start = () => {
               filterTS={filterTS}
               setNarudzbenica={setNarudzbenica}
               setChangePass={setChangePass}
-              setEditZap={setEditZap}
               setFilter={setFilter}
               setPrev={setPrev}
+              setEditZap={setEditZap}
             />
           ) : (
             <h2>Parcijalna praznjenja</h2>
@@ -363,12 +390,7 @@ const Start = () => {
                     color: "red",
                     cursor: "pointer",
                   }}
-                  onClick={() => {
-                    setRole(null);
-                    setChangePass(false);
-                    setUpload(false);
-                    setNeticoUser(null);
-                  }}
+                  onClick={() => logout()}
                 >
                   Logout
                 </span>
@@ -411,7 +433,7 @@ const Start = () => {
             ))}
           </select>
         ) : null}
-        {role === "tech" && !dispOrd && !changePass ? (
+        {role === "tech" && !dispOrd && !changePass && filter ? (
           <select
             onFocus={(e) => {
               setTipPrikaza(null);
@@ -432,7 +454,11 @@ const Start = () => {
             ))}
           </select>
         ) : null}
-        {prev.length && tipPrikaza !== 5 && role === "admin" && !editOrd ? (
+        {prev.length &&
+        tipPrikaza !== 5 &&
+        (role === "admin" || role === "tech") &&
+        !editOrd &&
+        trafoStanica.sifra_ts ? (
           <>
             <h4>Prethodna ispitivanja:</h4>
             {prev.map((x, idx) => {
@@ -456,7 +482,9 @@ const Start = () => {
                 </p>
               );
             })}
-            {narudzbenica?.operativno === "zavrseno" && narudzbenica.stavke ? (
+            {narudzbenica?.operativno === "zavrseno" &&
+            narudzbenica.stavke &&
+            sifraIspitivanja ? (
               <p
                 style={{
                   cursor: "pointer",
@@ -525,9 +553,14 @@ const Start = () => {
                   setTipPrikaza(4);
                 }}
               >
-                Zapisnik sa terena
+                {tipPrikaza !== 4 && role === "operator"
+                  ? "Zapisnik sa terena"
+                  : null}
               </h4>
-            ) : narudzbenica?.operativno === "uploaded" && filter && !upload ? (
+            ) : narudzbenica?.operativno === "uploaded" &&
+              filter &&
+              !upload &&
+              role === "expert" ? (
               <h4
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
@@ -558,8 +591,12 @@ const Start = () => {
         <Ispitivanje />
       ) : tipPrikaza === 6 && trafoStanica.sifra_ts && role ? (
         <Report />
-      ) : tipPrikaza === 0 && tsList && role ? (
+      ) : tipPrikaza === 0 && tsList && role === "tech" ? (
         <NewTS tsList={tsList} />
+      ) : tipPrikaza === 7 && sviUgovori && role === "tech" ? (
+        <NewContract />
+      ) : tipPrikaza === 8 && role === "tech" ? (
+        <UserNew />
       ) : null}
       {upload && trafoStanica.sifra_ts && role ? <Upload /> : null}
     </>

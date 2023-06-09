@@ -7,7 +7,7 @@ import ReportContext from "../Context";
 import Spinner from "./Spinner";
 
 const Upload = () => {
-  const { narudzbenica, ispList } = useContext(ReportContext);
+  const { narudzbenica, ispList, setMessage } = useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
   const [loadData, setLoadData] = useState(false);
   useMemo(() => {
@@ -40,15 +40,14 @@ const Upload = () => {
         );
         const json = await response.json();
         if (json.status === "success") {
-          alert("Primljeno!");
+          setMessage("Primljeno!");
           setLoadData(false);
-          window.location.reload();
         }
       } catch (error) {
-        alert("greska na serveru");
+        setMessage("greska na serveru");
         setLoadData(false);
       }
-    } else alert("Niste ucitali nijedan fajl...");
+    } else setMessage("Niste ucitali nijedan fajl...");
   };
 
   return (

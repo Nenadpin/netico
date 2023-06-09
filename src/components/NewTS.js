@@ -1,8 +1,10 @@
 import React from "react";
-import { useRef } from "react";
+import { useRef, useContext } from "react";
 import serbianTransliteration from "serbian-transliteration";
+import ReportContext from "../Context";
 
 const NewTS = ({ tsList }) => {
+  const { setMessage } = useContext(ReportContext);
   const sifraRef = useRef();
   const nazivRef = useRef();
   const naponRef = useRef();
@@ -27,7 +29,7 @@ const NewTS = ({ tsList }) => {
         return t.sifra_ts === newTS.sifra;
       }).length
     ) {
-      alert("Vec postoji ta sifra TS!");
+      setMessage("Vec postoji ta sifra TS!");
       return;
     }
     if (newTS.sifra && newTS.naziv && newTS.napon) {
@@ -41,14 +43,13 @@ const NewTS = ({ tsList }) => {
           }
         );
         if (response.status === 210) {
-          alert("primljeno");
-          window.location.reload();
+          setMessage("primljeno");
         } else {
-          alert("Greska servera...");
+          setMessage("Greska servera...");
           return;
         }
       } catch (error) {
-        alert("Greska na serveru");
+        setMessage("Greska na serveru");
       }
     }
   };

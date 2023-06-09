@@ -2,8 +2,9 @@ import React, { useEffect, useState, useContext } from "react";
 import ReportContext from "../Context";
 
 const Login = ({ setLoadData }) => {
-  const { setRole, neticoUser, setNeticoUser } = useContext(ReportContext);
-  const [users, setUsers] = useState(null);
+  const { users, setRole, neticoUser, setNeticoUser, setMessage, setUsers } =
+    useContext(ReportContext);
+
   const [pass, setPass] = useState("");
 
   const getUsers = async () => {
@@ -13,7 +14,7 @@ const Login = ({ setLoadData }) => {
       //console.log(jsonData);
       setUsers(jsonData);
     } catch (err) {
-      alert("greska na serveru");
+      setMessage("Greska na serveru, ne mogu se ucitati korisnici...");
     }
   };
 
@@ -37,7 +38,7 @@ const Login = ({ setLoadData }) => {
         setLoadData(false);
       }
     } catch (err) {
-      alert("Greska na serveru ili je lozinka pogresna!");
+      setMessage("Greska na serveru ili je lozinka pogresna!");
       setLoadData(false);
     }
   };

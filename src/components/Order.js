@@ -15,6 +15,7 @@ const Order = () => {
     ugovor,
     setMesto,
     setUgovor,
+    setMessage,
   } = useContext(ReportContext);
   const zavodniBr = useRef();
   const brNarudz = useRef();
@@ -91,18 +92,17 @@ const Order = () => {
           }
         );
         if (response2.status === 210) {
-          alert("primljeno");
-          window.location.reload();
+          setMessage("primljeno");
         } else {
-          alert("neka greska...");
+          setMessage("neka greska...");
           setLoadData(false);
           return;
         }
       } catch (error) {
-        alert("greska na serveru");
+        setMessage("greska na serveru");
         setLoadData(false);
       }
-    } else alert("Niste popunili sve podatke!");
+    } else setMessage("Niste popunili sve podatke!");
   };
 
   return (

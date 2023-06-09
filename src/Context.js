@@ -24,10 +24,36 @@ export const ReportProvider = ({ children }) => {
   const [prev, setPrev] = useState([]); // Lokalna lista prethodnih ispitivanja
   const [role, setRole] = useState(null);
   const [neticoUser, setNeticoUser] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [ispEls, setIspEls] = useState(null);
+  const [users, setUsers] = useState(null);
+  const [upload, setUpload] = useState(false);
+  const [changePass, setChangePass] = useState(false);
+
+  const logout = () => {
+    setRole(null);
+    setChangePass(false);
+    setUpload(false);
+    setNeticoUser(null);
+    setTipPrikaza(null);
+    setTrafoStanica({});
+    window.location.reload();
+  };
 
   return (
     <ReportContext.Provider
       value={{
+        changePass,
+        setChangePass,
+        setUpload,
+        upload,
+        users,
+        setUsers,
+        modal,
+        ispEls,
+        setIspEls,
+        setModal,
         prev,
         tsList,
         trafoStanica,
@@ -49,6 +75,8 @@ export const ReportProvider = ({ children }) => {
         pageCount,
         role,
         neticoUser,
+        message,
+        setMessage,
         setNeticoUser,
         setRole,
         setPrev,
@@ -70,6 +98,7 @@ export const ReportProvider = ({ children }) => {
         setReports,
         setHistory,
         setPageCount,
+        logout,
       }}
     >
       {children}

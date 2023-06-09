@@ -102,7 +102,7 @@ select {
   height: 2rem;
   padding: 0.175rem 0.75rem;
   border-radius: var(--borderRadius);
-  background: var(--grey-50);
+
   border-color: transparent;
   border: 1px solid var(--grey-300);
   letter-spacing: var(--spacing);
@@ -114,7 +114,7 @@ select {
 .zapisnikEl * {
   height: initial;
   padding: initial;
-  background: initial;
+
   border-color: initial;
   letter-spacing: initial;
   font-size: initial;
@@ -125,7 +125,9 @@ select {
   height: initial;
   padding: initial;
   letter-spacing: initial;
-  font-size: initial;
+}
+.report input {
+  font-size: 1rem;
 }
 .order {
   margin: auto;
@@ -282,7 +284,7 @@ button:active {
   position: fixed;
   top: 0;
   left: 0;
-  width: 21cm;
+  width: 100vw;
   opacity: 0.5;
   height: 100%;
   background-color: white;
@@ -352,6 +354,12 @@ textarea {
 th {
   line-height: 40px;
   background-color: #d1d3d3;
+}
+.newContainer table {
+  font-weight: bold;
+}
+.newContainer table td {
+  vertical-align: middle;
 }
 .tbl1 {
   width: 16cm;
@@ -483,6 +491,20 @@ button {
 .tb3 > span {
   background-color: white;
   padding-left: 5px;
+}
+.dialog {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  padding: 5px;
+  width: 9cm;
+  left: 6cm;
+  top: 7cm;
+  background-color: white;
+  border: 2px solid black;
+  opacity: 1;
+  z-index: 100;
+  border-radius: 10px;
 }
 @media print {
   html,

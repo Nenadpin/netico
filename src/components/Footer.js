@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
-import ReportContext from "../Context";
 
-const Footer = ({ pad, str, pageCount, z }) => {
-  const { sifraIspitivanja } = useContext(ReportContext);
+const Footer = ({ pad, str, pageCount, z, sifra }) => {
   return (
     <div
       style={{
@@ -28,7 +26,7 @@ const Footer = ({ pad, str, pageCount, z }) => {
           marginTop: "0cm",
         }}
       >
-        ISP{sifraIspitivanja}
+        ISP{sifra}
         {pageCount ? (
           <span style={{ color: "black", fontStyle: "normal" }}>
             Страница <strong>{str}</strong> od <strong>{pageCount}</strong>

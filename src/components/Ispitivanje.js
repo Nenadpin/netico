@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import ReportContext from "../Context";
 import PrintGraph from "./PrintGraph";
 import Spinner from "./Spinner";
+import { useEffect } from "react";
 
 const Ispitivanje = () => {
   const {
@@ -12,6 +13,8 @@ const Ispitivanje = () => {
     examine,
     setExamine,
     sifraIspitivanja,
+    message,
+    setMessage,
   } = useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
   const [ispEls, setIspEls] = useState(null);
@@ -21,6 +24,7 @@ const Ispitivanje = () => {
   const [fileTree, setFileTree] = useState(null);
   const [chartDataIsp, setChartDataIsp] = useState(null);
   const [loadData, setLoadData] = useState(false);
+  const [ispPolja, setIspPolja] = useState(null);
   const brIzv = useRef();
   const datRef = useRef();
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Анализа"];
@@ -33,13 +37,12 @@ const Ispitivanje = () => {
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
-      // console.log(jsonData);
       setIspEls(jsonData.elementi);
       if (localStorage.getItem("currExamine"))
         setExamine(JSON.parse(localStorage.getItem("currExamine")));
     } catch (error) {
-      alert("Greska na serveru");
       setLoadData(false);
+      setMessage("Greska na serveru...");
     } finally {
       let labelS = [0];
       for (let i = 0; i < 500; i++) {
@@ -67,13 +70,20 @@ const Ispitivanje = () => {
     setLoadData(false);
   };
 
-  const populateEls = () => {
-    let newEl = [];
-    for (let i = 0; i < examine?.length; i++) {
-      newEl.push(examine[i].moja_sifra);
+  useEffect(() => {
+    if (ispEls) {
+      const filteredPolja = polja
+        .map((item) => ({
+          ...item,
+          element: item.element?.filter((ele) =>
+            ispEls.includes(ele.moja_sifra)
+          ),
+        }))
+        .filter((item) => item.element?.length > 0);
+      setIspPolja(filteredPolja);
+      console.log(examine);
     }
-    setIspEls(newEl);
-  };
+  }, [ispEls]);
 
   const getStructure = async () => {
     if (sifraIspitivanja) {
@@ -87,7 +97,7 @@ const Ispitivanje = () => {
         setStructure(jsonData);
         setLoadData(false);
       } catch (error) {
-        alert("greska na serveru");
+        setMessage("greska na serveru");
         setLoadData(false);
       }
     }
@@ -162,17 +172,16 @@ const Ispitivanje = () => {
           }
         );
         if (response2.status === 210) {
-          alert("primljeno");
+          setMessage("primljeno");
           localStorage.clear();
-          window.location.reload();
           setLoadData(false);
         } else {
-          alert("neka greska...");
+          setMessage("neka greska...");
           setLoadData(false);
           return;
         }
       } catch (error) {
-        alert("greska na serveru");
+        setMessage("greska na serveru");
         setLoadData(false);
       }
     }
@@ -233,11 +242,11 @@ const Ispitivanje = () => {
         setChartDataIsp(sd);
         setLoadData(false);
       } else {
-        alert("Greska u citanju fajla...");
+        setMessage("Greska u citanju fajla...");
         setLoadData(false);
       }
     } catch (error) {
-      alert("greska na serveru");
+      setMessage("greska na serveru");
       setLoadData(false);
     }
   };
@@ -276,13 +285,13 @@ const Ispitivanje = () => {
       setChartDataIsp(sd);
       setLoadData(false);
     } catch (error) {
-      alert("Greska na serveru");
+      setMessage("Greska na serveru");
       setLoadData(false);
     }
   };
   useMemo(() => {
     if (baseFile) {
-      let file = structure[`Base${baseFile}.pdsx`][0];
+      let file = structure[`${baseFile}.pdsx`][0];
       displayBase(file);
     }
   }, [baseFile]);
@@ -339,136 +348,150 @@ const Ispitivanje = () => {
           })}
         </div>
       ) : null}
-      <div className="newContainer">
-        {!ispEls ? (
-          <button onClick={() => populateEls()}>Сви елементи</button>
-        ) : null}
-        {trafoStanica.napon.map((el, index) => {
-          return (
-            <div key={index}>
-              <h3>Polja sa naponom {el} kV</h3>
-              {polja
-                .filter((x) => {
-                  r_br = 1;
-                  return parseInt(x.napon) === parseInt(el) && x.element;
-                })
-                .map((polje, idxP) => {
-                  return (
-                    <div className="newReportMain" key={idxP}>
-                      <div
-                        style={{ margin: "auto", width: "99%", height: "98%" }}
-                      >
+      {ispPolja ? (
+        <div className="newContainer">
+          {trafoStanica.napon.map((el, index) => {
+            return (
+              <div key={index}>
+                <h3>Polja sa naponom {el} kV</h3>
+                {ispPolja
+                  .filter((x) => {
+                    r_br = 1;
+                    return parseInt(x.napon) === parseInt(el) && x.element;
+                  })
+                  .map((polje, idxP) => {
+                    return (
+                      <div className="newReportMain" key={idxP}>
                         <div
                           style={{
-                            display: "flex",
-                            backgroundColor: "white",
-                            height: "100%",
-                            width: "100%",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            margin: "auto",
+                            width: "99%",
+                            height: "98%",
                           }}
                         >
-                          <span>
-                            {polje.celija_oznaka}, {polje.celija_naziv}
-                          </span>
+                          <div
+                            style={{
+                              display: "flex",
+                              backgroundColor: "white",
+                              height: "100%",
+                              width: "100%",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <span>
+                              {polje.celija_oznaka}, {polje.celija_naziv}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          {examine
+                            .filter((e) => {
+                              return (
+                                e.broj_polja === polje.broj_polja &&
+                                ispEls.includes(e.moja_sifra)
+                              );
+                            })
+                            .map((elpn, idxE) => {
+                              return (
+                                <div className="newReportSub" key={idxE}>
+                                  <span>
+                                    {elpn.el_skraceno.trim()}, {elpn.faza_opis}
+                                  </span>
+                                  <span>{`Sprat: ${elpn.moja_sifra.substring(
+                                    8,
+                                    9
+                                  )}   Pozicija: ${elpn.moja_sifra.substring(
+                                    15
+                                  )}`}</span>
+                                  <span
+                                    style={{
+                                      position: "absolute",
+                                      left: "15px",
+                                    }}
+                                  >
+                                    {r_br++}
+                                  </span>
+                                  <span
+                                    onClick={() => {
+                                      console.log(elpn);
+                                      if (ispEls?.includes(elpn.moja_sifra)) {
+                                        setCurrentEl({
+                                          element: elpn.el_skraceno,
+                                          naponEl: el,
+                                          oznakaEl: polje.celija_oznaka,
+                                          sifra: elpn.moja_sifra,
+                                          fazaEl: elpn.faza_opis,
+                                          izolacija: elpn.isp,
+                                        });
+                                        if (
+                                          localStorage.getItem(elpn.moja_sifra)
+                                        ) {
+                                          setChartDataIsp((ch) => ({
+                                            ...JSON.parse(
+                                              localStorage.getItem(
+                                                elpn.moja_sifra
+                                              )
+                                            ),
+                                          }));
+                                        } else {
+                                          setModal(true);
+                                          setFileTree(elpn.us.substring(9, 12));
+                                        }
+                                      }
+                                    }}
+                                    onDoubleClick={() => {
+                                      localStorage.removeItem(elpn.moja_sifra);
+                                      promeni(currentEl?.sifra, 5);
+                                    }}
+                                    style={{
+                                      backgroundColor:
+                                        elpn.isp === 1
+                                          ? "green"
+                                          : elpn.isp === 2
+                                          ? "yellow"
+                                          : elpn.isp === 3
+                                          ? "red"
+                                          : elpn.moja_sifra === currentEl?.sifra
+                                          ? "blue"
+                                          : "white",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    {ispEls?.includes(elpn.moja_sifra)
+                                      ? colors[elpn.isp]
+                                      : ""}
+                                  </span>
+                                </div>
+                              );
+                            })}
                         </div>
                       </div>
-                      <div>
-                        {examine
-                          .filter((e) => {
-                            return e.broj_polja === polje.broj_polja;
-                          })
-                          .map((elpn, idxE) => {
-                            return (
-                              <div className="newReportSub" key={idxE}>
-                                <span>
-                                  {elpn.el_skraceno.trim()}, {elpn.faza_opis}
-                                </span>
-                                <span>{elpn.tip}</span>
-                                <span
-                                  style={{ position: "absolute", left: "15px" }}
-                                >
-                                  {r_br++}
-                                </span>
-                                <span
-                                  onClick={() => {
-                                    console.log(elpn);
-                                    if (ispEls?.includes(elpn.moja_sifra)) {
-                                      setCurrentEl({
-                                        element: elpn.el_skraceno,
-                                        naponEl: el,
-                                        oznakaEl: polje.celija_oznaka,
-                                        sifra: elpn.moja_sifra,
-                                        fazaEl: elpn.faza_opis,
-                                        izolacija: elpn.isp,
-                                      });
-                                      if (
-                                        localStorage.getItem(elpn.moja_sifra)
-                                      ) {
-                                        setChartDataIsp((ch) => ({
-                                          ...JSON.parse(
-                                            localStorage.getItem(
-                                              elpn.moja_sifra
-                                            )
-                                          ),
-                                        }));
-                                      } else {
-                                        setModal(true);
-                                        setFileTree(elpn.us.substring(9, 12));
-                                      }
-                                    }
-                                  }}
-                                  onDoubleClick={() => {
-                                    localStorage.removeItem(elpn.moja_sifra);
-                                    promeni(currentEl?.sifra, 5);
-                                  }}
-                                  style={{
-                                    backgroundColor:
-                                      elpn.isp === 1
-                                        ? "green"
-                                        : elpn.isp === 2
-                                        ? "yellow"
-                                        : elpn.isp === 3
-                                        ? "red"
-                                        : elpn.moja_sifra === currentEl?.sifra
-                                        ? "blue"
-                                        : "white",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  {ispEls?.includes(elpn.moja_sifra)
-                                    ? colors[elpn.isp]
-                                    : ""}
-                                </span>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          );
-        })}
-        <div
-          style={{
-            marginTop: "0.5cm",
-            marginBottom: "1cm",
-            width: "21cm",
-            display: "grid",
-            gridTemplateColumns: "5cm 5cm 5cm 5cm",
-          }}
-        >
-          <span>Broj izvestaja</span>
-          <input
-            ref={brIzv}
-            defaultValue={trafoStanica.naponski_nivo}
-            style={{ width: "3cm" }}
-          ></input>
-          <span>Datum ispitivanja</span>
-          <input style={{ width: "3cm" }} ref={datRef}></input>
+                    );
+                  })}
+              </div>
+            );
+          })}
+          <div
+            style={{
+              marginTop: "0.5cm",
+              marginBottom: "1cm",
+              width: "21cm",
+              display: "grid",
+              gridTemplateColumns: "5cm 5cm 5cm 5cm",
+            }}
+          >
+            <span>Broj izvestaja</span>
+            <input
+              ref={brIzv}
+              defaultValue={trafoStanica.naponski_nivo}
+              style={{ width: "3cm" }}
+            ></input>
+            <span>Datum ispitivanja</span>
+            <input style={{ width: "3cm" }} ref={datRef}></input>
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className="diagram">
         <div style={{ color: "blue", fontWeight: "bold" }}>
           Поље {currentEl?.oznakaEl}, {currentEl?.element} Фаза{" "}
@@ -509,7 +532,6 @@ const Ispitivanje = () => {
           Upiši u bazu
         </button>
       </div>
-      <div></div>
     </div>
   );
 };

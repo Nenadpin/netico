@@ -22,7 +22,15 @@ const Zapisnik = () => {
     PI2010: 0,
   };
   const tipIzvoda = ["водно", "трафо", "мерно", "спојна", "резерва"];
-  const { trafoStanica, narudzbenica, polja } = useContext(ReportContext);
+  const {
+    trafoStanica,
+    narudzbenica,
+    polja,
+    modal,
+    setModal,
+    setMessage,
+    ispList,
+  } = useContext(ReportContext);
   const oznakaPolja = useRef();
   const nazivPolja = useRef();
   const smtciPolja = useRef();
@@ -45,7 +53,6 @@ const Zapisnik = () => {
   const [zapisnikDetails, setZapisnikDetails] = useState([]);
   const [ukl, setUkl] = useState("");
   const [elpn, setElpn] = useState(null);
-  const [modal, setModal] = useState(false);
   const [chEl, setChEl] = useState(null);
   const [loadData, setLoadData] = useState(false);
 
@@ -100,9 +107,16 @@ const Zapisnik = () => {
       }
       setNaruceno(dataNar);
     }
+    let currZap = ispList.filter(
+      (z) => z.narudzbenica === narudzbenica.broj_narudzbenice
+    );
     if (localStorage.getItem("zapisnik")) {
       setTotalEl(parseInt(JSON.parse(localStorage.getItem("total"))));
       setZapisnikDetails(JSON.parse(localStorage.getItem("zapisnik")));
+    } else if (currZap.length) {
+      setTotalEl(currZap[0]?.zapisnik[0].no);
+      setZapisnikDetails(currZap[0]?.zapisnik[0]?.data);
+      console.log(currZap);
     }
     setLoadData(false);
   }, [narudzbenica]);
@@ -305,7 +319,7 @@ const Zapisnik = () => {
       setElpn(tempPolje);
       setChEl(zapisnikDetails.length);
       setModal(true);
-    } else alert("Morate uneti Oznaku polja, napon i tip polja...");
+    } else setMessage("Morate uneti Oznaku polja, napon i tip polja...");
     return;
   };
 
@@ -322,7 +336,7 @@ const Zapisnik = () => {
       );
     }
     if (ctrl.size !== temp[x].elementi.length) {
-      alert("Ne mogu biti vise elemenata na istoj fazi i poziciji!");
+      setMessage("Ne mogu biti vise elemenata na istoj fazi i poziciji!");
       return;
     }
     setZapisnikDetails(temp);
@@ -377,29 +391,54 @@ const Zapisnik = () => {
         }
       );
       if (response2.status === 210) {
-        alert("primljeno");
+        setMessage("primljeno");
         setZapisnikDetails(null);
         setLoadData(false);
         //localStorage.removeItem("zapisnik");
         //localStorage.removeItem("total");
-        window.location.reload();
       } else {
-        alert("neka greska...");
+        setMessage("neka greska...");
         setLoadData(false);
         return;
       }
     } catch (error) {
-      alert("Greska na serveru");
+      setMessage("Greska na serveru");
+      setLoadData(false);
+    }
+  };
+  const saveZapisnik = async () => {
+    const tempZap = {
+      nar: narudzbenica.broj_narudzbenice,
+      data: zapisnikDetails,
+      no: totalEl,
+    };
+    setLoadData(true);
+    try {
+      const response2 = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/temp_zapisnik`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tempZap),
+        }
+      );
+      if (response2.status === 210) {
+        setMessage("primljeno");
+        setZapisnikDetails(null);
+        setLoadData(false);
+        localStorage.removeItem("zapisnik");
+        localStorage.removeItem("total");
+      } else {
+        setMessage("neka greska...");
+        setLoadData(false);
+        return;
+      }
+    } catch (error) {
+      setMessage("Greska na serveru");
       setLoadData(false);
     }
   };
   const handleDetails = (id) => {
-    // for (let i = 0; i < zapisnikDetails[id].elementi.length; i++) {
-    //   spratPolja.current[i].checked = zapisnikDetails[id].elementi[i].sprat;
-    //   napomenaPolja.current[i].value = zapisnikDetails[id].elementi[i].napomena
-    //     ? zapisnikDetails[id].elementi[i].napomena
-    //     : "";
-    // }
     setElpn(() => zapisnikDetails[id]);
     setChEl(id);
     setModal(true);
@@ -574,7 +613,7 @@ const Zapisnik = () => {
                     backgroundColor: "hsl(125, 67%, 44%)",
                   }}
                   onClick={() => {
-                    if (totalEl <= 0) submitZapisnik();
+                    saveZapisnik();
                   }}
                 >
                   {`SNIMI`}
@@ -895,6 +934,15 @@ const Zapisnik = () => {
             </div>
           </div>
         </>
+      ) : null}
+      {totalEl <= 0 ? (
+        <button
+          className="block-btn"
+          style={{ marginLeft: "0" }}
+          onClick={() => submitZapisnik()}
+        >
+          Zapisnik gotov, snimi u bazu...
+        </button>
       ) : null}
     </div>
   );

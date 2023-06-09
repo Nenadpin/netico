@@ -1,14 +1,25 @@
 import React, { useRef, useState } from "react";
 import { useContext } from "react";
 import ReportContext from "../Context";
+import { useEffect } from "react";
 
 const Nalog = () => {
-  const sifraIsp = useRef();
   const datumIsp = useRef();
-
+  const sifraIsp = useRef();
   const [tim, setTim] = useState({ r: "", i1: "", i2: "" });
-  const { trafoStanica, narudzbenica, emplList, ispList } =
+  const { trafoStanica, narudzbenica, emplList, ispList, setMessage } =
     useContext(ReportContext);
+  useEffect(() => {
+    if (ispList && narudzbenica) {
+      let sifra = "001";
+      const noIsp = ispList.filter(
+        (i) => i.ugovor?.trim() === narudzbenica.sifra_ugovora.trim()
+      );
+      if (noIsp.length > 0)
+        sifra = (noIsp.length + 1).toString().padStart(3, "0");
+      sifraIsp.current.value = sifra;
+    }
+  }, []);
 
   const rukovodilac = (x) => {
     let tmp = tim;
@@ -35,8 +46,10 @@ const Nalog = () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify([
+              ispList.length + 1,
               narudzbenica.broj_narudzbenice,
-              parseInt(sifraIsp.current.value),
+              narudzbenica.sifra_ugovora,
+              sifraIsp.current.value,
               tim.r,
               tim.i1,
               tim.i2,
@@ -45,14 +58,13 @@ const Nalog = () => {
           }
         );
         if (response.status === 210) {
-          alert("primljeno");
-          window.location.reload();
+          setMessage("primljeno");
         } else {
-          alert("neka greska...");
+          setMessage("neka greska...");
           return;
         }
       } catch (error) {
-        alert("greska na serveru");
+        setMessage("greska na serveru");
       }
     }
   };
@@ -68,18 +80,17 @@ const Nalog = () => {
     >
       <h2>Nalog za ispitivanje trafo stanice!</h2>
       <h4>
-        Na osnovu narudzbenice br: {narudzbenica.broj_narudzbenice} izdaje se
-        nalog za izradu zapisnika u trafostanici{" "}
-        {trafoStanica.naponski_nivo.trim()} kV {trafoStanica.naziv}
+        Na osnovu narudzbenice br: {narudzbenica.broj_narudzbenice} po ugovoru{" "}
+        {narudzbenica.sifra_ugovora} izdaje se nalog za izradu zapisnika u
+        trafostanici {trafoStanica.naponski_nivo.trim()} kV {trafoStanica.naziv}
       </h4>
       <br />
       <div className="nalog">
-        <h4>Broj ispitivanja:</h4>
+        <h4>Broj ispitivanja:({narudzbenica.sifra_ugovora})</h4>
         <span>
           <input
             type="text"
             ref={sifraIsp}
-            defaultValue={ispList.length + 1}
             style={{
               fontSize: "large",
               marginBottom: "5px",

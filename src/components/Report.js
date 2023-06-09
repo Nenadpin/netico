@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useMemo } from "react";
+import React, { useContext, useState, useRef, useMemo, useEffect } from "react";
 import ReportContext from "../Context";
 import { useReactToPrint } from "react-to-print";
 import logo from "../logo.png";
@@ -10,7 +10,7 @@ import Sadrzaj from "./Sadrzaj";
 import ReportTable from "./ReportTable";
 import Zakljucak from "./Zakljucak";
 import Listovi from "./Listovi";
-import { useEffect } from "react";
+
 const months = [
   "Јануар",
   "Фебруар",
@@ -35,6 +35,7 @@ const Report = () => {
     narudzbenica,
     history,
     sifraIspitivanja,
+    setMessage,
   } = useContext(ReportContext);
 
   const [pageCount, setPageCount] = useState(0);
@@ -116,12 +117,12 @@ const Report = () => {
     content: () => printRef.current,
     documentTitle:
       izvBr?.broj_izvestaja + " " + new Date().toLocaleDateString("en-US"),
-    onAfterPrint: () => alert("uspesno"),
+    onAfterPrint: () => setMessage("uspesno"),
   });
   const printSema = useReactToPrint({
     content: () => a3Ref.current,
     documentTitle: "sema-A3",
-    onAfterPrint: () => alert("uspesno"),
+    onAfterPrint: () => setMessage("uspesno"),
   });
 
   const insertDate = (d) => {
@@ -151,7 +152,7 @@ const Report = () => {
         months[parseInt(d.target.value.split(".")[1]) - 1] +
         " " +
         d.target.value.split(".")[2];
-    } else alert("Unesite ispravan datum izvestaja!");
+    } else setMessage("Unesite ispravan datum izvestaja!");
   };
   if (!loading)
     return (
@@ -204,7 +205,11 @@ const Report = () => {
           style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
           alt=""
         />
-        <FooterSema str="5" pageCount={pageCount} />
+        <FooterSema
+          str="5"
+          pageCount={pageCount}
+          sifra={ispCurr[0]?.ugovor_ispitivanje.substr(-3)}
+        />
       </div>
       <div id="test" ref={printRef} style={{ overflow: "scroll" }}>
         <div id="pg1" className="report">
@@ -675,7 +680,7 @@ const Report = () => {
               <span ref={dateRef2}></span> год.
             </p>
           </div>
-          <Footer />
+          <Footer sifra={ispCurr[0]?.ugovor_ispitivanje.substr(-3)} />
         </div>
         <Sadrzaj
           napIzv={napIzv}
@@ -769,7 +774,11 @@ const Report = () => {
             }}
             defaultValue={`Испитивања су спроведена "On Line", односно у погону. На основу резултата испитивања дате су препоруке за даље коришћење и контроле испитиваних елемената.`}
           ></textarea>
-          <Footer str="4" pageCount={pageCount} />
+          <Footer
+            str="4"
+            pageCount={pageCount}
+            sifra={ispCurr[0]?.ugovor_ispitivanje.substr(-3)}
+          />
         </div>
         <div id="pg6" className="report">
           <Header izvBr={izvBr} />
@@ -867,7 +876,11 @@ const Report = () => {
           UHF метода је бесконтактна и заснива се на поређењу сигнала референтног мерења снимљеног у близини ТС (сигнал позадинских сметњи - Baseline) и сигнала снимљеног у близини испитиваног елемента. У случају постојања парцијалних пражњења уочава се значајније одступање поређених сигнала. Постоје два мода за анализу UHF мерења, спектрални и временски, на основу којих се са сигурношћу може утврдити да ли је парцијално пражњење присутно унутар изолационог система испитиваног елемента.
           Акустична метода се примењује на елементе код којих је UHF испитивањем дијагностификована појава парцијалних пражњења. Акустично испитивање врши се тако што се пиезоелектрични сензори помоћу изолационог штапа под напоном прислањају на испитивани елеменат. Елементи се испитују у неколико карактеристичних тачака. Постоје два мода за анализу акустичних мерења на основу којих се може проценити амплитуда напона парцијалног пражњења као и изглед “patern”-а парцијалних пражњења. Акустичним испитивањем може се потврдити појава парцијалног пражњења. Такође је могуће испитати елементе у свакој од фаза и на тај начин утврдити тачно на ком елементу и на којој фази постоји парцијално пражњење. Мерна метода је неинвезивна и омогућава лоцирање парцијалних пражњења унутар изолационог система испитиваних елемената као и процену нивоа парцијалних пражњења или нивоа деградираности изолационог система у погонским условима.`}
           ></textarea>
-          <Footer str="6" pageCount={pageCount} />
+          <Footer
+            str="6"
+            pageCount={pageCount}
+            sifra={ispCurr[0]?.ugovor_ispitivanje.substr(-3)}
+          />
         </div>
         <div id="pg7" className="report">
           <Header izvBr={izvBr} />
@@ -990,7 +1003,11 @@ const Report = () => {
           <p style={{ textAlign: "left" }}>КЗ – кабловкса завршница</p>
           <p style={{ textAlign: "left" }}>НМТ – напонски мерни трансофматор</p>
           <p style={{ textAlign: "left" }}>СМТ – струјни мерни трансформатор</p>
-          <Footer str="7" pageCount={pageCount} />
+          <Footer
+            str="7"
+            pageCount={pageCount}
+            sifra={ispCurr[0]?.ugovor_ispitivanje.substr(-3)}
+          />
         </div>
         <div id="pg6" className="reportTable">
           <ReportTable

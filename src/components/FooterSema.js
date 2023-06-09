@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import ReportContext from "../Context";
 
-const FooterSema = ({ str, pageCount }) => {
-  const { sifraIspitivanja } = useContext(ReportContext);
+const FooterSema = ({ str, pageCount, sifra }) => {
   return (
     <div
       style={{
@@ -28,7 +27,7 @@ const FooterSema = ({ str, pageCount }) => {
           marginTop: "0cm",
         }}
       >
-        ISP{sifraIspitivanja}
+        ISP{sifra}
         {pageCount ? (
           <span style={{ color: "black", fontStyle: "normal" }}>
             Страница <strong>{str}</strong> od <strong>{pageCount}</strong>

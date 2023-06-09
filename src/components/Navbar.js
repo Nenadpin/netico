@@ -10,8 +10,8 @@ const Navbar = ({
   setEdit,
   filterTS,
   setUpload,
-  setEditZap,
   setFilter,
+  setEditZap,
 }) => {
   return (
     <ul>
@@ -29,17 +29,6 @@ const Navbar = ({
           >
             Zavrseno
           </li>
-          <li
-            onClick={() => {
-              setTrafoStanica({});
-              setPrev([]);
-              setEdit(true);
-              setChangePass(false);
-              filterTS("current");
-            }}
-          >
-            U Toku
-          </li>
         </>
       ) : role === "operator" ? (
         <>
@@ -54,20 +43,20 @@ const Navbar = ({
           <li
             onClick={() => {
               setChangePass(false);
-              filterTS("upload");
-              setUpload(true);
+              filterTS("operator");
+              setEditZap(true);
             }}
           >
-            Unos fajlova
+            Izmena zapisnika
           </li>
           <li
             onClick={() => {
               setChangePass(false);
               filterTS("upload");
-              setEditZap(true);
+              setUpload(true);
             }}
           >
-            Ispravka zapisnika
+            Unos fajlova
           </li>
         </>
       ) : role === "expert" ? (
@@ -85,17 +74,43 @@ const Navbar = ({
         <>
           <li
             onClick={() => {
+              setTrafoStanica({});
+              setNarudzbenica(null);
+              setChangePass(false);
+              setPrev([]);
+              setEdit(false);
+              filterTS("finished");
+            }}
+          >
+            Izvestaj
+          </li>
+          <li
+            onClick={() => {
+              setTrafoStanica({});
+              setPrev([]);
+              setEdit(true);
+              setChangePass(false);
+              filterTS("current");
+            }}
+          >
+            U Toku
+          </li>
+          <li
+            onClick={() => {
+              setTrafoStanica({});
               setChangePass(false);
               setUpload(false);
               filterTS("all");
               setNarudzbenica(null);
               setTipPrikaza(2);
+              setFilter(true);
             }}
           >
             Narudzbenica
           </li>
           <li
             onClick={() => {
+              setTrafoStanica({});
               setChangePass(false);
               setUpload(false);
               filterTS("nova");
@@ -105,6 +120,7 @@ const Navbar = ({
           </li>
           <li
             onClick={() => {
+              setTrafoStanica({});
               setChangePass(false);
               setFilter(false);
               setUpload(false);
@@ -112,6 +128,28 @@ const Navbar = ({
             }}
           >
             Nova TS
+          </li>
+          <li
+            onClick={() => {
+              setTrafoStanica({});
+              setChangePass(false);
+              setFilter(false);
+              setUpload(false);
+              setTipPrikaza(7);
+            }}
+          >
+            Ugovori
+          </li>
+          <li
+            onClick={() => {
+              setTrafoStanica({});
+              setChangePass(false);
+              setFilter(false);
+              setUpload(false);
+              setTipPrikaza(8);
+            }}
+          >
+            Korisnici
           </li>
         </>
       ) : null}
