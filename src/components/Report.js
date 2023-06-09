@@ -201,7 +201,7 @@ const Report = () => {
           Слика 1. Једнополна шема постројења
         </p>
         <img
-          src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema.jpg`}
+          src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema/sema.jpg`}
           style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
           alt=""
         />
