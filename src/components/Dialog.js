@@ -2,14 +2,13 @@ import React, { useState, useContext } from "react";
 import ReportContext from "../Context";
 
 const Dialog = () => {
-  const { message, setMessage, setModal, logout } = useContext(ReportContext);
+  const { message, setMessage, setModal } = useContext(ReportContext);
   const [showDialog, setShowDialog] = useState(true);
 
   const handleClose = () => {
     setShowDialog(false);
     setModal(false);
     setMessage(null);
-    logout();
   };
 
   return (

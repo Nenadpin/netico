@@ -30,6 +30,7 @@ const Zapisnik = () => {
     setModal,
     setMessage,
     ispList,
+    logout,
   } = useContext(ReportContext);
   const oznakaPolja = useRef();
   const nazivPolja = useRef();
@@ -113,10 +114,9 @@ const Zapisnik = () => {
     if (localStorage.getItem("zapisnik")) {
       setTotalEl(parseInt(JSON.parse(localStorage.getItem("total"))));
       setZapisnikDetails(JSON.parse(localStorage.getItem("zapisnik")));
-    } else if (currZap.length) {
-      setTotalEl(currZap[0]?.zapisnik[0].no);
-      setZapisnikDetails(currZap[0]?.zapisnik[0]?.data);
-      console.log(currZap);
+    } else if (currZap.length && currZap[0].zapisnik) {
+      setTotalEl(currZap[0].zapisnik[0].no);
+      setZapisnikDetails(currZap[0].zapisnik[0].data);
     }
     setLoadData(false);
   }, [narudzbenica]);
@@ -394,6 +394,7 @@ const Zapisnik = () => {
         setMessage("primljeno");
         setZapisnikDetails(null);
         setLoadData(false);
+        setTimeout(() => logout(), 2000);
         //localStorage.removeItem("zapisnik");
         //localStorage.removeItem("total");
       } else {
@@ -423,11 +424,12 @@ const Zapisnik = () => {
         }
       );
       if (response2.status === 210) {
-        setMessage("primljeno");
+        setMessage("Sacuvan backup uradjenog zapisnika!");
         setZapisnikDetails(null);
         setLoadData(false);
         localStorage.removeItem("zapisnik");
         localStorage.removeItem("total");
+        setTimeout(() => logout(), 3000);
       } else {
         setMessage("neka greska...");
         setLoadData(false);
@@ -601,24 +603,22 @@ const Zapisnik = () => {
               >
                 {`UPISI (${totalEl})`}
               </button>
-              {totalEl <= 0 ? (
-                <button
-                  style={{
-                    width: "3cm",
-                    marginLeft: "-2px",
-                    marginBottom: "5px",
-                    padding: "3px",
-                    color: "white",
-                    fontWeight: "bold",
-                    backgroundColor: "hsl(125, 67%, 44%)",
-                  }}
-                  onClick={() => {
-                    saveZapisnik();
-                  }}
-                >
-                  {`SNIMI`}
-                </button>
-              ) : null}
+              <button
+                style={{
+                  width: "3cm",
+                  marginLeft: "-2px",
+                  marginBottom: "5px",
+                  padding: "3px",
+                  color: "white",
+                  fontWeight: "bold",
+                  backgroundColor: "hsl(125, 67%, 44%)",
+                }}
+                onClick={() => {
+                  saveZapisnik();
+                }}
+              >
+                {`BACK-UP`}
+              </button>
               <span>
                 Temp <input ref={tempRef} style={{ width: "1cm" }}></input> °C
               </span>

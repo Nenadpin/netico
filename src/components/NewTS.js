@@ -4,7 +4,7 @@ import serbianTransliteration from "serbian-transliteration";
 import ReportContext from "../Context";
 
 const NewTS = ({ tsList }) => {
-  const { setMessage } = useContext(ReportContext);
+  const { setMessage, logout } = useContext(ReportContext);
   const sifraRef = useRef();
   const nazivRef = useRef();
   const naponRef = useRef();
@@ -44,6 +44,7 @@ const NewTS = ({ tsList }) => {
         );
         if (response.status === 210) {
           setMessage("primljeno");
+          setTimeout(() => logout(), 2000);
         } else {
           setMessage("Greska servera...");
           return;

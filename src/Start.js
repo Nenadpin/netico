@@ -24,7 +24,6 @@ const Start = () => {
     message,
     setMessage,
     role,
-    setRole,
     neticoUser,
     trafoStanica,
     ispList,
@@ -57,10 +56,10 @@ const Start = () => {
     setUpload,
     changePass,
     setChangePass,
+    setGreska,
   } = useContext(ReportContext);
   const [filter, setFilter] = useState(false);
   const [dispOrd, setDispOrd] = useState(null);
-  const [editOrd, setEdit] = useState(false);
   const [editZap, setEditZap] = useState(false);
   // Na ucitavanju stranice, prikuplja podatke
   // sa backenda o svim TS i ispitivanjima
@@ -79,7 +78,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
+      //console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -122,17 +121,17 @@ const Start = () => {
           return;
         } else if (response.status === 501) setMessage("Greska na serveru");
       } catch (err) {
-        console.log(err);
+        setMessage(err.message);
       }
     }
-    if (role !== "admin" || editOrd) setNarudzbenica({ ...nar });
+    if (role !== "admin") setNarudzbenica({ ...nar });
     let ts_no = nar.sifra_ts;
     try {
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/detalji_stanice${ts_no}`
       );
       const jsonData = await response.json();
-      // console.log(jsonData);
+      //console.log(jsonData);
       setPolja(jsonData.fields);
       setExamine(jsonData.els);
       setReports(jsonData.izv);
@@ -141,7 +140,7 @@ const Start = () => {
       setLoadData(false);
     }
     let tmp = [...ispList];
-    if (role === "admin" || role === "tech")
+    if (role === "admin")
       tmp = tmp.filter((ex) => {
         return ex.sifra_ts === ts_no;
       });
@@ -249,8 +248,10 @@ const Start = () => {
             return o.operativno === "upisano";
           });
         setDispOrd([...ispOrders]);
-        if (ispOrders.length) break;
-        else {
+        if (ispOrders.length) {
+          setUpload(true);
+          break;
+        } else {
           setMessage("Nije uradjen zapisnik!");
           setEditZap(false);
           return;
@@ -306,9 +307,11 @@ const Start = () => {
           return o.operativno !== "zavrseno" && o.operativno !== "greska";
         });
         setDispOrd([...ispOrders]);
+        setFilter(true);
         if (ispOrders.length) break;
         else {
           setMessage("Nema tekucih ispitivanja!");
+          setFilter(false);
           return;
         }
       }
@@ -320,7 +323,8 @@ const Start = () => {
         if (ispOrders.length) break;
         else {
           setMessage("Nema tekucih ispitivanja!");
-          return;
+          setEditZap(false);
+          break;
         }
       }
       default:
@@ -349,7 +353,6 @@ const Start = () => {
               role={role}
               setTipPrikaza={setTipPrikaza}
               setTrafoStanica={setTrafoStanica}
-              setEdit={setEdit}
               setUpload={setUpload}
               filterTS={filterTS}
               setNarudzbenica={setNarudzbenica}
@@ -456,11 +459,10 @@ const Start = () => {
         ) : null}
         {prev.length &&
         tipPrikaza !== 5 &&
-        (role === "admin" || role === "tech") &&
-        !editOrd &&
+        role === "admin" &&
         trafoStanica.sifra_ts ? (
           <>
-            <h4>Prethodna ispitivanja:</h4>
+            <h4>Prethodna ispitivanja: {filter}</h4>
             {prev.map((x, idx) => {
               return (
                 <p key={idx} style={{ marginBottom: "5px" }}>
@@ -501,26 +503,29 @@ const Start = () => {
             ) : null}
           </>
         ) : null}
-        {editOrd && trafoStanica?.sifra_ts && role ? (
+        {trafoStanica?.sifra_ts &&
+        role === "tech" &&
+        narudzbenica?.operativno !== "zavrseno" &&
+        narudzbenica?.operativno !== "greska" ? (
           <>
             <p
               style={{ cursor: "pointer", color: "blue", marginBottom: "5px" }}
               onClick={() => {
                 setChangePass(false);
+                setGreska(true);
                 setTipPrikaza(2);
               }}
             >
-              Izmena narudzbenice
+              Greska u narudzbenici
             </p>
             <p
               style={{ cursor: "pointer", color: "blue" }}
               onClick={() => {
                 setChangePass(false);
                 setUpload(true);
-                console.log(narudzbenica);
               }}
             >
-              Upload obradjene seme
+              Upload ostalih fajlova
             </p>
           </>
         ) : null}
@@ -567,7 +572,7 @@ const Start = () => {
                   setChangePass(false);
                   let sifra = ispList.filter((i) => {
                     return i.narudzbenica === narudzbenica.broj_narudzbenice;
-                  })[0].r_br;
+                  })[0]?.r_br;
                   setSifraIspitivanja(sifra);
                   setTipPrikaza(5);
                 }}

@@ -7,7 +7,6 @@ const Navbar = ({
   setTipPrikaza,
   setPrev,
   setChangePass,
-  setEdit,
   filterTS,
   setUpload,
   setFilter,
@@ -23,7 +22,6 @@ const Navbar = ({
               setNarudzbenica(null);
               setChangePass(false);
               setPrev([]);
-              setEdit(false);
               filterTS("finished");
             }}
           >
@@ -36,6 +34,7 @@ const Navbar = ({
             onClick={() => {
               setChangePass(false);
               filterTS("nalog");
+              setEditZap(false);
             }}
           >
             Zapisnik sa terena
@@ -52,8 +51,8 @@ const Navbar = ({
           <li
             onClick={() => {
               setChangePass(false);
+              setEditZap(false);
               filterTS("upload");
-              setUpload(true);
             }}
           >
             Unos fajlova
@@ -75,20 +74,7 @@ const Navbar = ({
           <li
             onClick={() => {
               setTrafoStanica({});
-              setNarudzbenica(null);
-              setChangePass(false);
               setPrev([]);
-              setEdit(false);
-              filterTS("finished");
-            }}
-          >
-            Izvestaj
-          </li>
-          <li
-            onClick={() => {
-              setTrafoStanica({});
-              setPrev([]);
-              setEdit(true);
               setChangePass(false);
               filterTS("current");
             }}

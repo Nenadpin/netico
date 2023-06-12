@@ -30,6 +30,7 @@ export const ReportProvider = ({ children }) => {
   const [users, setUsers] = useState(null);
   const [upload, setUpload] = useState(false);
   const [changePass, setChangePass] = useState(false);
+  const [greska, setGreska] = useState(false);
 
   const logout = () => {
     setRole(null);
@@ -45,6 +46,8 @@ export const ReportProvider = ({ children }) => {
     <ReportContext.Provider
       value={{
         changePass,
+        greska,
+        setGreska,
         setChangePass,
         setUpload,
         upload,

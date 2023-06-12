@@ -13,7 +13,7 @@ const Ispitivanje = () => {
     examine,
     setExamine,
     sifraIspitivanja,
-    message,
+    logout,
     setMessage,
   } = useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
@@ -81,7 +81,6 @@ const Ispitivanje = () => {
         }))
         .filter((item) => item.element?.length > 0);
       setIspPolja(filteredPolja);
-      console.log(examine);
     }
   }, [ispEls]);
 
@@ -109,6 +108,54 @@ const Ispitivanje = () => {
       getStructure();
     }
   }, [narudzbenica]);
+
+  const backupIsp = async () => {
+    const localStorageData = { ...localStorage };
+    const jsonData = JSON.stringify(localStorageData);
+    setLoadData(true);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/isp_backup${sifraIspitivanja}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: jsonData,
+        }
+      );
+      if (response.status === 210) {
+        setMessage("Backup ispitivanja je sacuvan");
+        localStorageData.clear();
+        setLoadData(false);
+        setTimeout(() => logout(), 3000);
+      } else {
+        setMessage("Greska na serveru");
+        setLoadData(false);
+      }
+    } catch (error) {
+      setMessage(error.message);
+      setLoadData(false);
+    }
+  };
+  const loadBackup = async () => {
+    try {
+      setLoadData(true);
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
+      );
+      const jsonData = await response.json();
+      const storage = jsonData.analiza;
+      Object.keys(storage).forEach((key) => {
+        localStorage.setItem(key, storage[key]);
+      });
+      setMessage("Ucitan je backUp iz baze");
+      setTimeout(() => logout(), 3000);
+    } catch (error) {
+      setLoadData(false);
+      setMessage("Greska na serveru...");
+    }
+  };
 
   const resetData = () => {
     setModal(false);
@@ -175,6 +222,7 @@ const Ispitivanje = () => {
           setMessage("primljeno");
           localStorage.clear();
           setLoadData(false);
+          setTimeout(() => logout(), 2000);
         } else {
           setMessage("neka greska...");
           setLoadData(false);
@@ -414,7 +462,6 @@ const Ispitivanje = () => {
                                   </span>
                                   <span
                                     onClick={() => {
-                                      console.log(elpn);
                                       if (ispEls?.includes(elpn.moja_sifra)) {
                                         setCurrentEl({
                                           element: elpn.el_skraceno,
@@ -524,13 +571,32 @@ const Ispitivanje = () => {
             Resetuj
           </button>
         </div>
-        <button
-          className="block-btn"
-          style={{ width: "480px", alignSelf: "center" }}
-          onClick={() => submitIsp()}
-        >
-          Upiši u bazu
-        </button>
+        <div>
+          {localStorage.getItem("currExamine") ? (
+            <button
+              className="block-btn"
+              style={{ width: "235px", alignSelf: "center" }}
+              onClick={() => backupIsp()}
+            >
+              Back-up
+            </button>
+          ) : (
+            <button
+              className="block-btn"
+              style={{ width: "235px", alignSelf: "center" }}
+              onClick={() => loadBackup()}
+            >
+              Ucitaj Back-up
+            </button>
+          )}
+          <button
+            className="block-btn"
+            style={{ width: "235px", alignSelf: "center" }}
+            onClick={() => submitIsp()}
+          >
+            Upiši u bazu
+          </button>
+        </div>
       </div>
     </div>
   );

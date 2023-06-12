@@ -7,7 +7,7 @@ const Nalog = () => {
   const datumIsp = useRef();
   const sifraIsp = useRef();
   const [tim, setTim] = useState({ r: "", i1: "", i2: "" });
-  const { trafoStanica, narudzbenica, emplList, ispList, setMessage } =
+  const { trafoStanica, narudzbenica, emplList, ispList, setMessage, logout } =
     useContext(ReportContext);
   useEffect(() => {
     if (ispList && narudzbenica) {
@@ -59,6 +59,7 @@ const Nalog = () => {
         );
         if (response.status === 210) {
           setMessage("primljeno");
+          setTimeout(() => logout(), 2000);
         } else {
           setMessage("neka greska...");
           return;

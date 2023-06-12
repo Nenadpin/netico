@@ -4,7 +4,7 @@ import ReportContext from "../Context";
 import serbianTransliteration from "serbian-transliteration";
 
 const NewContract = () => {
-  const { sviUgovori, setMessage } = useContext(ReportContext);
+  const { sviUgovori, setMessage, logout } = useContext(ReportContext);
   const sifraCon = useRef();
   const brKorRef = useRef();
   const opisRef = useRef();
@@ -38,6 +38,7 @@ const NewContract = () => {
         );
         if (response.status === 210) {
           setMessage("primljeno");
+          setTimeout(() => logout(), 2000);
         } else {
           setMessage("Greska servera...");
           return;

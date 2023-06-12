@@ -16,6 +16,9 @@ const Order = () => {
     setMesto,
     setUgovor,
     setMessage,
+    logout,
+    greska,
+    setGreska,
   } = useContext(ReportContext);
   const zavodniBr = useRef();
   const brNarudz = useRef();
@@ -31,7 +34,6 @@ const Order = () => {
   const [loadData, setLoadData] = useState(false);
 
   useMemo(() => {
-    console.log(trafoStanica);
     if (narudzbenica) {
       setOrderDetails(narudzbenica.stavke);
       setTotal(narudzbenica.iznos / 1.2);
@@ -93,6 +95,7 @@ const Order = () => {
         );
         if (response2.status === 210) {
           setMessage("primljeno");
+          setTimeout(() => logout(), 2000);
         } else {
           setMessage("neka greska...");
           setLoadData(false);
@@ -103,6 +106,33 @@ const Order = () => {
         setLoadData(false);
       }
     } else setMessage("Niste popunili sve podatke!");
+  };
+  const handleQuit = async () => {
+    if (narudzbenica) {
+      setLoadData(true);
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/greska_nar`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(narudzbenica),
+          }
+        );
+        if (response.status === 210) {
+          setLoadData(false);
+          setMessage("Ova narudzbenica vise nije aktivna");
+          setTimeout(() => logout(), 3000);
+          return;
+        } else if (response.status === 501) {
+          setMessage("Greska na serveru!");
+          setLoadData(false);
+        }
+      } catch (err) {
+        setMessage(err.message);
+        setLoadData(false);
+      }
+    }
   };
 
   return (
@@ -271,17 +301,31 @@ const Order = () => {
         </div>
       </>
       <div>
-        <button
-          className="block-btn"
-          onClick={handleOrder}
-          style={{
-            display: "inline-block",
-            marginTop: "10px",
-            marginLeft: "0",
-          }}
-        >
-          S a c u v a j
-        </button>
+        {!greska ? (
+          <button
+            className="block-btn"
+            onClick={handleOrder}
+            style={{
+              display: "inline-block",
+              marginTop: "10px",
+              marginLeft: "0",
+            }}
+          >
+            S a c u v a j
+          </button>
+        ) : (
+          <button
+            className="block-btn"
+            onClick={handleQuit}
+            style={{
+              display: "inline-block",
+              marginTop: "10px",
+              marginLeft: "0",
+            }}
+          >
+            Odustani od narudzbenice (greska u narudzbenici)
+          </button>
+        )}
       </div>
       <div className="newOrder">
         <div className="orderDetails">

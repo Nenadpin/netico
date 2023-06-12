@@ -7,7 +7,8 @@ import ReportContext from "../Context";
 import Spinner from "./Spinner";
 
 const Upload = () => {
-  const { narudzbenica, ispList, setMessage } = useContext(ReportContext);
+  const { narudzbenica, ispList, setMessage, logout } =
+    useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
   const [loadData, setLoadData] = useState(false);
   useMemo(() => {
@@ -41,6 +42,7 @@ const Upload = () => {
         const json = await response.json();
         if (json.status === "success") {
           setMessage("Primljeno!");
+          setTimeout(() => logout(), 2000);
           setLoadData(false);
         }
       } catch (error) {
