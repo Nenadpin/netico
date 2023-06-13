@@ -25,6 +25,7 @@ const Ispitivanje = () => {
   const [chartDataIsp, setChartDataIsp] = useState(null);
   const [loadData, setLoadData] = useState(false);
   const [ispPolja, setIspPolja] = useState(null);
+  const [reportCount, setReportCount] = useState(null);
   const brIzv = useRef();
   const datRef = useRef();
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Анализа"];
@@ -38,6 +39,7 @@ const Ispitivanje = () => {
       );
       const jsonData = await response.json();
       setIspEls(jsonData.elementi);
+      setReportCount(jsonData.broj_izvestaja);
       if (localStorage.getItem("currExamine"))
         setExamine(JSON.parse(localStorage.getItem("currExamine")));
     } catch (error) {
@@ -153,7 +155,7 @@ const Ispitivanje = () => {
       setTimeout(() => logout(), 3000);
     } catch (error) {
       setLoadData(false);
-      setMessage("Greska na serveru...");
+      setMessage("Greska na serveru, ili ne postoji backUp ispitivanja");
     }
   };
 
@@ -531,7 +533,7 @@ const Ispitivanje = () => {
             <span>Broj izvestaja</span>
             <input
               ref={brIzv}
-              defaultValue={trafoStanica.naponski_nivo}
+              defaultValue={reportCount}
               style={{ width: "3cm" }}
             ></input>
             <span>Datum ispitivanja</span>
