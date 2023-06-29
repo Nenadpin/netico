@@ -1,70 +1,16 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+stampanje izvestaja moze se raditi samo u admin modu
+Moguce je dodavanje novih korisnika sa ulogama. Ako Andrijana radi i stampanje izvestaja
+neka dodeli sebe kao korisnika sa ulogom admin. Tako je preglednije jer tech uloga
+ima previse operacija pa da se ne garbag-uje UI
+U opciji upload dodatnih fajlova (meni opcija 'u toku') moze se uploadovati obradjena sema
+koja mora imati naziv 'sema.jpg' da bi se prikazala u izvestaju
+takodje se uz nju (ili naknadno, svejedno je) uploaduju pdf fajlovi izvestaja
+Nazivi pdf fajlova su programski definisani, gde je a3 sema uvek sa nazivom 'sema-a3.pdf'
+a glavni deo je broj_izvestaja + datum (moguce je da ih bude vise revizija jednog istog izvestaja pa da se
+razlikuju).
+Takodje, moguce je uploadovati pdsx i dfax fajlove (u slucaju da je osoba koja radi zapisnik to zaboravila da uradi
+iz svog dela programa). Kod uploada snimaka, neophodno je da se odjednom uploaduju svi snimci
+jer se na osnovu skupa tih fajlova kreira struktura za analizu, i definisu se elementi za ispitivanje.
+U slucaju da je neki snimak propusten, uploaduju se svi odjednom ponovo.
+Backend takes care o fajlovima koji se salju na server. Rasporedjuje ih u odgovarajuce foldere (snimci folder koji je potreban za analizu i sema folder potreban za izvestaj. Takodje spaja skup A4 stranica sa jednom a3 stranicom u zavrsni izvestaj uz pomoc biblioteke pdf-lib).Pozeljno je uploadovati oba pdf fajla odjednom, nisam testirao kada se jedan po jedan
+uploaduje.

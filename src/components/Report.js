@@ -64,7 +64,6 @@ const Report = () => {
       let tIsp = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       });
-      console.log(tIsp);
       setIspCurr(tIsp);
       if (polja.length) {
         let f = polja;
@@ -122,7 +121,7 @@ const Report = () => {
   });
   const printSema = useReactToPrint({
     content: () => a3Ref.current,
-    documentTitle: "sema-A3",
+    documentTitle: "sema-a3",
     onAfterPrint: () => setMessage("uspesno"),
   });
 
@@ -164,6 +163,54 @@ const Report = () => {
 
   return (
     <>
+      <div
+        id="pg5"
+        ref={a3Ref}
+        style={{
+          overflow: "hidden",
+          position: "relative",
+          width: "42cm",
+          height: "29.7cm",
+          border: "1px solid black",
+          backgroundColor: "white",
+        }}
+        onClick={printSema}
+      >
+        <HeaderSema izvBr={izvBr} />
+        <p
+          style={{
+            display: "block",
+            textAlign: "center",
+            fontFamily: "Arial",
+            fontSize: "1.1rem",
+            color: "#0073ce",
+            marginTop: "1cm",
+          }}
+        >
+          2 ЕЛЕКТРИЧНА ШЕМА ТРАНСФОРМАТОРСКЕ СТАНИЦЕ
+        </p>
+        <p
+          style={{
+            marginTop: "0.5cm",
+            marginBottom: "0.5cm",
+            fontWeight: "bold",
+            fontSize: "1.2rem",
+            textAlign: "center",
+          }}
+        >
+          Слика 1. Једнополна шема постројења
+        </p>
+        <img
+          src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema/sema.jpg`}
+          style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
+          alt=""
+        />
+        <FooterSema
+          str="5"
+          pageCount={pageCount}
+          sifra={ispCurr[0]?.sifra.substr(-3)}
+        />
+      </div>
       <div id="test" ref={printRef} style={{ overflow: "scroll" }}>
         <div id="pg1" className="report">
           <img
@@ -633,7 +680,7 @@ const Report = () => {
               <span ref={dateRef2}></span> год.
             </p>
           </div>
-          <Footer sifra={ispCurr[0]?.sifra} />
+          <Footer sifra={ispCurr[0]?.sifra.substr(-3)} />
         </div>
         <Sadrzaj
           napIzv={napIzv}
@@ -727,51 +774,11 @@ const Report = () => {
             }}
             defaultValue={`Испитивања су спроведена "On Line", односно у погону. На основу резултата испитивања дате су препоруке за даље коришћење и контроле испитиваних елемената.`}
           ></textarea>
-          <Footer str="4" pageCount={pageCount} sifra={ispCurr[0]?.sifra} />
-        </div>
-        <div
-          id="pg5"
-          ref={a3Ref}
-          style={{
-            overflow: "hidden",
-            position: "relative",
-            width: "42cm",
-            height: "29.7cm",
-            border: "1px solid black",
-            backgroundColor: "white",
-          }}
-          onClick={printSema}
-        >
-          <HeaderSema izvBr={izvBr} />
-          <p
-            style={{
-              display: "block",
-              textAlign: "center",
-              fontFamily: "Arial",
-              fontSize: "1.1rem",
-              color: "#0073ce",
-              marginTop: "1cm",
-            }}
-          >
-            2 ЕЛЕКТРИЧНА ШЕМА ТРАНСФОРМАТОРСКЕ СТАНИЦЕ
-          </p>
-          <p
-            style={{
-              marginTop: "0.5cm",
-              marginBottom: "0.5cm",
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              textAlign: "center",
-            }}
-          >
-            Слика 1. Једнополна шема постројења
-          </p>
-          <img
-            src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema/sema.jpg`}
-            style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
-            alt=""
+          <Footer
+            str="4"
+            pageCount={pageCount}
+            sifra={ispCurr[0]?.sifra.substr(-3)}
           />
-          <FooterSema str="5" pageCount={pageCount} sifra={ispCurr[0]?.sifra} />
         </div>
         <div id="pg6" className="report">
           <Header izvBr={izvBr} />
@@ -869,7 +876,11 @@ const Report = () => {
           UHF метода је бесконтактна и заснива се на поређењу сигнала референтног мерења снимљеног у близини ТС (сигнал позадинских сметњи - Baseline) и сигнала снимљеног у близини испитиваног елемента. У случају постојања парцијалних пражњења уочава се значајније одступање поређених сигнала. Постоје два мода за анализу UHF мерења, спектрални и временски, на основу којих се са сигурношћу може утврдити да ли је парцијално пражњење присутно унутар изолационог система испитиваног елемента.
           Акустична метода се примењује на елементе код којих је UHF испитивањем дијагностификована појава парцијалних пражњења. Акустично испитивање врши се тако што се пиезоелектрични сензори помоћу изолационог штапа под напоном прислањају на испитивани елеменат. Елементи се испитују у неколико карактеристичних тачака. Постоје два мода за анализу акустичних мерења на основу којих се може проценити амплитуда напона парцијалног пражњења као и изглед “patern”-а парцијалних пражњења. Акустичним испитивањем може се потврдити појава парцијалног пражњења. Такође је могуће испитати елементе у свакој од фаза и на тај начин утврдити тачно на ком елементу и на којој фази постоји парцијално пражњење. Мерна метода је неинвезивна и омогућава лоцирање парцијалних пражњења унутар изолационог система испитиваних елемената као и процену нивоа парцијалних пражњења или нивоа деградираности изолационог система у погонским условима.`}
           ></textarea>
-          <Footer str="6" pageCount={pageCount} sifra={ispCurr[0]?.sifra} />
+          <Footer
+            str="6"
+            pageCount={pageCount}
+            sifra={ispCurr[0]?.sifra.substr(-3)}
+          />
         </div>
         <div id="pg7" className="report">
           <Header izvBr={izvBr} />
@@ -992,17 +1003,21 @@ const Report = () => {
           <p style={{ textAlign: "left" }}>КЗ – кабловкса завршница</p>
           <p style={{ textAlign: "left" }}>НМТ – напонски мерни трансофматор</p>
           <p style={{ textAlign: "left" }}>СМТ – струјни мерни трансформатор</p>
-          <Footer str="7" pageCount={pageCount} sifra={ispCurr[0]?.sifra} />
+          <Footer
+            str="7"
+            pageCount={pageCount}
+            sifra={ispCurr[0]?.sifra.substr(-3)}
+          />
         </div>
         <div id="pg6" className="reportTable">
           <ReportTable
             izvBr={izvBr}
             no={no}
             ispPolja={ispPolja}
-            pageCount={pageCount}
+            pageCount={[pageCount]}
             napIzv={napIzv}
           />
-          {/* <Zakljucak
+          <Zakljucak
             napIzv={napIzv}
             str={(8 + Math.ceil(no / 43)).toString()}
             pageCount={pageCount}
@@ -1018,7 +1033,7 @@ const Report = () => {
               ispCurr={ispCurr}
               izvBr={izvBr}
             />
-          ) : null} */}
+          ) : null}
         </div>
       </div>
     </>
