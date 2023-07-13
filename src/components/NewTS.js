@@ -68,7 +68,7 @@ const NewTS = ({ tsList }) => {
           marginBottom: "20px",
         }}
       >
-        <h3>Sifra trafostanice</h3>
+        <h3>Sifra trafostanice (*)</h3>
         <input
           style={{
             fontFamily: "Arial",
@@ -77,9 +77,11 @@ const NewTS = ({ tsList }) => {
             textTransform: "uppercase",
           }}
           ref={sifraRef}
+          defaultValue={`TS${tsList.length + 1}`}
         ></input>
-        <h3>Naziv trafostanice</h3>
+        <h3>Naziv trafostanice (*)</h3>
         <input
+          autoFocus
           style={{
             fontFamily: "Arial",
             fontSize: "1.2rem",
@@ -87,13 +89,14 @@ const NewTS = ({ tsList }) => {
           }}
           ref={nazivRef}
         ></input>
-        <h3>Naponski nivo</h3>
+        <h3>Naponski nivo (*)</h3>
         <input
           style={{
             fontFamily: "Arial",
             fontSize: "1.2rem",
             fontWeight: "400",
           }}
+          placeholder="naponi odvojeni znakom /"
           ref={naponRef}
         ></input>
         <h3>ElektroDistribucija</h3>

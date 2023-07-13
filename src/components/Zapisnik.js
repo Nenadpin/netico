@@ -116,7 +116,7 @@ const Zapisnik = () => {
       setZapisnikDetails(JSON.parse(localStorage.getItem("zapisnik")));
     } else if (currZap.length && currZap[0].zapisnik) {
       setTotalEl(currZap[0].zapisnik[0].no);
-      setZapisnikDetails(currZap[0].zapisnik[0].data);
+      setZapisnikDetails(currZap[0].zapisnik[0].zap);
     }
     setLoadData(false);
   }, [narudzbenica]);
@@ -379,6 +379,7 @@ const Zapisnik = () => {
       nar: narudzbenica.broj_narudzbenice,
       zap: zapisnikDetails,
       temp: tempRef.current.value,
+      no: totalEl,
     };
     setLoadData(true);
     try {
@@ -410,7 +411,7 @@ const Zapisnik = () => {
   const saveZapisnik = async () => {
     const tempZap = {
       nar: narudzbenica.broj_narudzbenice,
-      data: zapisnikDetails,
+      zap: zapisnikDetails,
       no: totalEl,
     };
     setLoadData(true);

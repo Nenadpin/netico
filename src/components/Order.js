@@ -27,6 +27,7 @@ const Order = () => {
   const datumNar2 = useRef();
   const kolicina = useRef();
   const mestoRef = useRef();
+  const kdRef = useRef();
 
   const [kdStavka, setKdStavka] = useState(0);
   const [orderDetails, setOrderDetails] = useState([]);
@@ -50,7 +51,7 @@ const Order = () => {
     setTotal((prev) => prev + oneItem.cena * oneItem.kol);
     setOrderDetails([...orderDetails, oneItem]);
     kolicina.current.value = "";
-    kolicina.current.focus();
+    kdRef.current.focus();
   };
 
   const deleteItem = (x) => {
@@ -72,11 +73,15 @@ const Order = () => {
     ) {
       try {
         setLoadData(true);
+        const token = sessionStorage.getItem(role);
         const response2 = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/order`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              authorization: token,
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify([
               brNarudz.current.value,
               trafoStanica.sifra_ts,
@@ -89,7 +94,6 @@ const Order = () => {
               datumNar2.current.value,
               brSap.current.value,
               zavodniBr.current.value,
-              role,
             ]),
           }
         );
@@ -183,6 +187,7 @@ const Order = () => {
             <strong>Услуга: </strong>
           </span>
           <select
+            ref={kdRef}
             onFocus={(e) => {
               e.target.selectedIndex = 0;
             }}
@@ -213,8 +218,11 @@ const Order = () => {
             }}
             placeholder="Ком"
             ref={kolicina}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSubmit();
+            onKeyUp={(e) => {
+              if (e.key === "Enter" && parseInt(kolicina.current.value) > 0)
+                handleSubmit();
+              else if (e.key === "Enter")
+                setMessage("Unesite ispravnu kolicinu!");
             }}
           ></input>
         </div>
@@ -256,7 +264,7 @@ const Order = () => {
               style={{ height: "2rem", fontSize: "1rem", paddingLeft: "2px" }}
             ></input>
             <span style={{ marginTop: "7px", marginLeft: "2px" }}>
-              <strong>Broj narudz. (nzn):</strong>
+              <strong>Broj narudzbenice:</strong>
             </span>
             <input
               type="text"
@@ -266,32 +274,32 @@ const Order = () => {
               placeholder="broj narudzbenice..."
             ></input>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "4cm 6cm" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "5cm 5cm" }}>
             <span style={{ marginTop: "7px", marginLeft: "2px" }}>
-              <strong>SAP br:</strong>
+              <strong>Broj internog naloga:</strong>
             </span>
             <input
               type="text"
               ref={brSap}
               defaultValue={narudzbenica?.br_sap}
-              placeholder="Broj internog naloga (SAP broj)..."
+              placeholder="SAP br..."
               style={{ height: "2rem", fontSize: "1rem", paddingLeft: "2px" }}
             ></input>
             <span style={{ marginTop: "7px", marginLeft: "2px" }}>
-              <strong>Datum kreiranja:</strong>
+              <strong>Datum kreiranja narudzbenice:</strong>
             </span>
             <input
-              type="text"
+              type="date"
               ref={datumNar}
               defaultValue={narudzbenica?.datum}
               placeholder="datum kreiranja..."
               style={{ height: "2rem", fontSize: "1rem", paddingLeft: "2px" }}
             ></input>
             <span style={{ marginTop: "7px", marginLeft: "2px" }}>
-              <strong>Datum izdavanja:</strong>
+              <strong>Datum izdavanja narudzbenice:</strong>
             </span>
             <input
-              type="text"
+              type="date"
               defaultValue={narudzbenica?.datum2}
               ref={datumNar2}
               style={{ height: "2rem", fontSize: "1rem", paddingLeft: "2px" }}
@@ -328,6 +336,9 @@ const Order = () => {
         )}
       </div>
       <div className="newOrder">
+        <h4 style={{ margin: "0.6rem" }}>
+          Napomena: dupli klik na Redni Broj brise stavku...
+        </h4>
         <div className="orderDetails">
           <span>RBr</span>
           <span>KD</span>

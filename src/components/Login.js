@@ -33,6 +33,7 @@ const Login = ({ setLoadData }) => {
         }
       );
       const loginData = await loginRes.json();
+      sessionStorage.setItem(loginData.role, loginData.token);
       if (loginData.role) {
         setRole(loginData.role);
         setLoadData(false);
