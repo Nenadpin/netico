@@ -39,7 +39,15 @@ export const ReportProvider = ({ children }) => {
     setNeticoUser(null);
     setTipPrikaza(null);
     setTrafoStanica({});
+    sessionStorage.clear();
     window.location.reload();
+  };
+  const keepWorking = () => {
+    setChangePass(false);
+    setUpload(false);
+    setTipPrikaza(null);
+    setNarudzbenica(null);
+    setTrafoStanica({});
   };
 
   return (
@@ -102,6 +110,7 @@ export const ReportProvider = ({ children }) => {
         setHistory,
         setPageCount,
         logout,
+        keepWorking,
       }}
     >
       {children}

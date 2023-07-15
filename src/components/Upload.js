@@ -15,8 +15,9 @@ const Upload = () => {
     if (narudzbenica) {
       let sif = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
-      })[0]?.r_br;
-      setSifra(sif);
+      })[0];
+      console.log(sif);
+      setSifra(sif.ugovor + "_ISP" + sif.sifra + "_" + sif.r_br);
     }
   }, [narudzbenica]);
   const uploadForm = useRef();
@@ -30,10 +31,9 @@ const Upload = () => {
       Object.keys(myFiles).forEach((key) => {
         formData.append(myFiles.item(key).name, myFiles.item(key));
       });
-      const isp = "ISP" + sifra;
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_SERVER_URL}/upload${isp}`,
+          `${process.env.REACT_APP_SERVER_URL}/upload${sifra}`,
           {
             method: "POST",
             body: formData,
@@ -59,7 +59,15 @@ const Upload = () => {
         <div>
           <p
             style={{ fontSize: "1.5rem", margin: "15px" }}
-          >{`Ucitavanje snimaka na server za ispitivanje br:${sifra}`}</p>
+          >{`Ucitavanje snimaka na server za ispitivanje r.br: ${
+            sifra.split("_")[2]
+          }`}</p>
+          <p style={{ fontSize: "1.5rem", margin: "15px" }}>{`Sifra ugovora: ${
+            sifra.split("_")[0]
+          }`}</p>
+          <p
+            style={{ fontSize: "1.5rem", margin: "15px" }}
+          >{`Sifra ispitivanja: ${sifra.split("_")[1]}`}</p>
 
           <form
             ref={uploadForm}

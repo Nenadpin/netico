@@ -7,8 +7,15 @@ const Nalog = () => {
   const datumIsp = useRef();
   const sifraIsp = useRef();
   const [tim, setTim] = useState({ r: "", i1: "", i2: "" });
-  const { trafoStanica, narudzbenica, emplList, ispList, setMessage, logout } =
-    useContext(ReportContext);
+  const {
+    trafoStanica,
+    narudzbenica,
+    emplList,
+    ispList,
+    setMessage,
+    logout,
+    role,
+  } = useContext(ReportContext);
   useEffect(() => {
     if (ispList && narudzbenica) {
       let sifra = "001";
@@ -37,14 +44,18 @@ const Nalog = () => {
     setTim(tmp);
   };
   const handleNalog = async () => {
+    const token = sessionStorage.getItem(role);
     if (!datumIsp.current.value) datumIsp.current.value = "";
-    if (tim.r && tim.i1 && sifraIsp) {
+    if (tim.r && tim.i1 && sifraIsp && token) {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/nalog`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              authorization: token,
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify([
               ispList.length + 1,
               narudzbenica.broj_narudzbenice,
@@ -90,6 +101,7 @@ const Nalog = () => {
         <h4>Broj ispitivanja:({narudzbenica.sifra_ugovora})</h4>
         <span>
           <input
+            disabled
             type="text"
             ref={sifraIsp}
             style={{
@@ -192,7 +204,7 @@ const Nalog = () => {
             </select>
           ) : null}
         </span>
-        <h4>Datum:</h4>
+        <h4>Datum ispitivanja:</h4>
         <span>
           <input
             style={{
@@ -201,7 +213,7 @@ const Nalog = () => {
               height: "2rem",
               width: "100%",
             }}
-            type="text"
+            type="date"
             ref={datumIsp}
           ></input>
         </span>

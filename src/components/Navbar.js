@@ -11,6 +11,8 @@ const Navbar = ({
   setUpload,
   setFilter,
   setEditZap,
+  setExtra,
+  setGreska,
 }) => {
   return (
     <ul>
@@ -35,6 +37,8 @@ const Navbar = ({
               setChangePass(false);
               filterTS("nalog");
               setEditZap(false);
+              setUpload(false);
+              setTipPrikaza(null);
             }}
           >
             Zapisnik sa terena
@@ -44,6 +48,8 @@ const Navbar = ({
               setChangePass(false);
               filterTS("operator");
               setEditZap(true);
+              setUpload(false);
+              setTipPrikaza(null);
             }}
           >
             Izmena zapisnika
@@ -53,6 +59,7 @@ const Navbar = ({
               setChangePass(false);
               setEditZap(false);
               filterTS("upload");
+              setTipPrikaza(null);
             }}
           >
             Unos fajlova
@@ -77,6 +84,9 @@ const Navbar = ({
               setPrev([]);
               setChangePass(false);
               filterTS("current");
+              setExtra(true);
+              setGreska(false);
+              setUpload(false);
             }}
           >
             U Toku
@@ -90,6 +100,9 @@ const Navbar = ({
               setNarudzbenica(null);
               setTipPrikaza(2);
               setFilter(true);
+              setGreska(false);
+              setUpload(false);
+              setExtra(false);
             }}
           >
             Narudzbenica
@@ -100,6 +113,10 @@ const Navbar = ({
               setChangePass(false);
               setUpload(false);
               filterTS("nova");
+              setFilter(true);
+              setGreska(false);
+              setUpload(false);
+              setExtra(false);
             }}
           >
             Nalog
@@ -111,9 +128,12 @@ const Navbar = ({
               setFilter(false);
               setUpload(false);
               setTipPrikaza(0);
+              setGreska(false);
+              setUpload(false);
+              setExtra(false);
             }}
           >
-            Nova TS
+            Trafostanice
           </li>
           <li
             onClick={() => {
@@ -122,6 +142,9 @@ const Navbar = ({
               setFilter(false);
               setUpload(false);
               setTipPrikaza(7);
+              setGreska(false);
+              setUpload(false);
+              setExtra(false);
             }}
           >
             Ugovori
@@ -133,6 +156,9 @@ const Navbar = ({
               setFilter(false);
               setUpload(false);
               setTipPrikaza(8);
+              setGreska(false);
+              setUpload(false);
+              setExtra(false);
             }}
           >
             Korisnici

@@ -34,6 +34,7 @@ const Start = () => {
     prev,
     sviUgovori,
     sifraIspitivanja,
+    greska,
     setOrders,
     setPrev,
     setKd,
@@ -59,6 +60,7 @@ const Start = () => {
     setGreska,
   } = useContext(ReportContext);
   const [filter, setFilter] = useState(false);
+  const [extra, setExtra] = useState(false);
   const [dispOrd, setDispOrd] = useState(null);
   const [editZap, setEditZap] = useState(false);
   // Na ucitavanju stranice, prikuplja podatke
@@ -117,7 +119,8 @@ const Start = () => {
           localStorage.removeItem("total");
           localStorage.removeItem("zapisnik");
           setEditZap(false);
-          logout();
+          setMessage("Zapisnik je potrebno doraditi");
+          setTimeout(() => logout(), 2000);
           return;
         } else if (response.status === 501) setMessage("Greska na serveru");
       } catch (err) {
@@ -239,14 +242,14 @@ const Start = () => {
         }
       }
       case "upload": {
-        if (editZap)
-          ispOrders = ispOrders.filter((o) => {
-            return o.operativno === "uploaded";
-          });
-        else
-          ispOrders = ispOrders.filter((o) => {
-            return o.operativno === "upisano";
-          });
+        // if (editZap)
+        //   ispOrders = ispOrders.filter((o) => {
+        //     return o.operativno === "uploaded";
+        //   });
+        // else
+        ispOrders = ispOrders.filter((o) => {
+          return o.operativno === "upisano";
+        });
         setDispOrd([...ispOrders]);
         if (ispOrders.length) {
           setUpload(true);
@@ -258,6 +261,7 @@ const Start = () => {
         }
       }
       case "nova": {
+        //console.log(orders);
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "nova";
         });
@@ -360,6 +364,8 @@ const Start = () => {
               setFilter={setFilter}
               setPrev={setPrev}
               setEditZap={setEditZap}
+              setExtra={setExtra}
+              setGreska={setGreska}
             />
           ) : (
             <h2>Parcijalna praznjenja</h2>
@@ -425,11 +431,11 @@ const Start = () => {
             <option disabled={true} value="">
               --NARUDZBENICA--
             </option>
-            {dispOrd.map((ord, index) => (
+            {dispOrd?.map((ord, index) => (
               <option key={index} value={ord.broj_narudzbenice}>
                 {ord.sifra_ts} - {ord.naziv.substring(0, 30)}{" "}
                 {ord.operativno !== "zavrseno"
-                  ? `нзн: ${ord.broj_narudzbenice?.substring(0, 10)} `
+                  ? ` - ${ord.broj_narudzbenice?.substring(0, 10)} `
                   : ""}
                 {ord.operativno !== "zavrseno" ? ord.operativno : ""}
               </option>
@@ -506,27 +512,38 @@ const Start = () => {
         {trafoStanica?.sifra_ts &&
         role === "tech" &&
         narudzbenica?.operativno !== "zavrseno" &&
-        narudzbenica?.operativno !== "greska" ? (
+        narudzbenica?.operativno !== "greska" &&
+        extra ? (
           <>
-            <p
-              style={{ cursor: "pointer", color: "blue", marginBottom: "5px" }}
-              onClick={() => {
-                setChangePass(false);
-                setGreska(true);
-                setTipPrikaza(2);
-              }}
-            >
-              Greska u narudzbenici
-            </p>
-            <p
-              style={{ cursor: "pointer", color: "blue" }}
-              onClick={() => {
-                setChangePass(false);
-                setUpload(true);
-              }}
-            >
-              Upload ostalih fajlova
-            </p>
+            {!greska ? (
+              <p
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  marginBottom: "5px",
+                }}
+                onClick={() => {
+                  setChangePass(false);
+                  setGreska(true);
+                  setTipPrikaza(2);
+                  setExtra(false);
+                }}
+              >
+                Greska u narudzbenici
+              </p>
+            ) : null}
+            {!upload ? (
+              <p
+                style={{ cursor: "pointer", color: "blue" }}
+                onClick={() => {
+                  setChangePass(false);
+                  setUpload(true);
+                  setExtra(false);
+                }}
+              >
+                Upload ostalih fajlova
+              </p>
+            ) : null}
           </>
         ) : null}
         {trafoStanica.sifra_ts &&
@@ -534,19 +551,28 @@ const Start = () => {
         tipPrikaza !== 0 &&
         role ? (
           <span>
-            {narudzbenica?.operativno === "nova" && filter ? (
-              <h4
-                style={{ cursor: "pointer", color: "blue" }}
+            {narudzbenica?.operativno === "nova" &&
+            filter &&
+            tipPrikaza !== 3 &&
+            !extra ? (
+              <button
+                className="block-btn"
+                style={{ marginLeft: "0", width: "375px" }}
                 onClick={() => {
                   setChangePass(false);
                   setTipPrikaza(3);
                 }}
               >
-                Nalog
-              </h4>
-            ) : narudzbenica?.operativno === "nalog" && filter ? (
-              <h4
-                style={{ cursor: "pointer", color: "blue" }}
+                Formiranje naloga (sifre ispitivanja)
+              </button>
+            ) : narudzbenica?.operativno === "nalog" &&
+              filter &&
+              role === "operator" &&
+              tipPrikaza !== 4 &&
+              !upload &&
+              !editZap ? (
+              <button
+                className="block-btn"
                 onClick={() => {
                   setChangePass(false);
                   if (ispList.length) {
@@ -558,16 +584,15 @@ const Start = () => {
                   setTipPrikaza(4);
                 }}
               >
-                {tipPrikaza !== 4 && role === "operator"
-                  ? "Zapisnik sa terena"
-                  : null}
-              </h4>
+                Izrada zapisnika sa terena
+              </button>
             ) : narudzbenica?.operativno === "uploaded" &&
               filter &&
               !upload &&
-              role === "expert" ? (
-              <h4
-                style={{ cursor: "pointer", color: "blue" }}
+              role === "expert" &&
+              tipPrikaza !== 5 ? (
+              <button
+                className="block-btn"
                 onClick={() => {
                   setChangePass(false);
                   let sifra = ispList.filter((i) => {
@@ -577,8 +602,8 @@ const Start = () => {
                   setTipPrikaza(5);
                 }}
               >
-                Pokreni
-              </h4>
+                Pokreni modul analize
+              </button>
             ) : null}
           </span>
         ) : null}
@@ -587,7 +612,7 @@ const Start = () => {
       {tipPrikaza === 1 && trafoStanica.sifra_ts && role ? (
         <NewReport />
       ) : tipPrikaza === 2 && trafoStanica.sifra_ts && role ? (
-        <Order />
+        <Order setFilter={setFilter} />
       ) : tipPrikaza === 3 && trafoStanica.sifra_ts && role ? (
         <Nalog />
       ) : tipPrikaza === 4 && trafoStanica.sifra_ts && role ? (
@@ -597,7 +622,7 @@ const Start = () => {
       ) : tipPrikaza === 6 && trafoStanica.sifra_ts && role ? (
         <Report />
       ) : tipPrikaza === 0 && tsList && role === "tech" ? (
-        <NewTS tsList={tsList} />
+        <NewTS tsList={tsList} setTsList={setTsList} />
       ) : tipPrikaza === 7 && sviUgovori && role === "tech" ? (
         <NewContract />
       ) : tipPrikaza === 8 && role === "tech" ? (

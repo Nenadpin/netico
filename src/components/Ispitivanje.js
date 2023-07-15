@@ -38,6 +38,7 @@ const Ispitivanje = () => {
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
+      //console.log(jsonData);
       setIspEls(jsonData.elementi);
       setReportCount(jsonData.broj_izvestaja);
       if (localStorage.getItem("currExamine"))
@@ -94,7 +95,6 @@ const Ispitivanje = () => {
           `${process.env.REACT_APP_SERVER_URL}/struktura${sifraIspitivanja}`
         );
         const jsonData = await response.json();
-        // console.log(jsonData);
         setStructure(jsonData);
         setLoadData(false);
       } catch (error) {
@@ -238,9 +238,9 @@ const Ispitivanje = () => {
   };
 
   const displayFile = async (f) => {
-    // console.log(f);
+    //console.log(f);
     const fileData = {
-      dir: `ISP${sifraIspitivanja}`,
+      dir: structure.dir,
       fName: f,
     };
     setLoadData(true);
@@ -304,7 +304,7 @@ const Ispitivanje = () => {
   const displayBase = async (f) => {
     // console.log(f);
     const fileData = {
-      dir: `ISP${sifraIspitivanja}`,
+      dir: structure.dir,
       fName: f,
     };
     setLoadData(true);

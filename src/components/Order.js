@@ -4,7 +4,7 @@ import { useContext } from "react";
 import ReportContext from "../Context";
 import Spinner from "./Spinner";
 
-const Order = () => {
+const Order = ({ setFilter }) => {
   const {
     role,
     trafoStanica,
@@ -13,12 +13,14 @@ const Order = () => {
     kd,
     sviUgovori,
     ugovor,
+    orders,
+    setOrders,
     setMesto,
     setUgovor,
     setMessage,
     logout,
     greska,
-    setGreska,
+    keepWorking,
   } = useContext(ReportContext);
   const zavodniBr = useRef();
   const brNarudz = useRef();
@@ -74,6 +76,20 @@ const Order = () => {
       try {
         setLoadData(true);
         const token = sessionStorage.getItem(role);
+        const tempOrder = {
+          broj_narudzbenice: brNarudz.current.value,
+          sifra_ts: trafoStanica.sifra_ts,
+          iznos: total * 1.2,
+          operativno: "nova",
+          datum: datumNar.current.value,
+          sifra_ugovora: ugovor ? ugovor.oznaka : narudzbenica.sifra_ugovora,
+          stavke: orderDetails,
+          mesto: mesto,
+          datum2: datumNar2.current.value,
+          br_sap: brSap.current.value,
+          zavodni_br: zavodniBr.current.value,
+          naziv: trafoStanica.naziv,
+        };
         const response2 = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/order`,
           {
@@ -82,24 +98,14 @@ const Order = () => {
               authorization: token,
               "Content-Type": "application/json",
             },
-            body: JSON.stringify([
-              brNarudz.current.value,
-              trafoStanica.sifra_ts,
-              total * 1.2,
-              "nova",
-              datumNar.current.value,
-              ugovor ? ugovor.oznaka : narudzbenica.sifra_ugovora,
-              orderDetails,
-              mesto,
-              datumNar2.current.value,
-              brSap.current.value,
-              zavodniBr.current.value,
-            ]),
+            body: JSON.stringify(Object.values(tempOrder)),
           }
         );
         if (response2.status === 210) {
           setMessage("primljeno");
-          setTimeout(() => logout(), 2000);
+          setFilter(false);
+          setTimeout(() => keepWorking(), 2000);
+          setOrders([...orders, tempOrder]);
         } else {
           setMessage("neka greska...");
           setLoadData(false);
@@ -114,12 +120,16 @@ const Order = () => {
   const handleQuit = async () => {
     if (narudzbenica) {
       setLoadData(true);
+      const token = sessionStorage.getItem(role);
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/greska_nar`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              authorization: token,
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify(narudzbenica),
           }
         );

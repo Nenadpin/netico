@@ -31,6 +31,7 @@ const Zapisnik = () => {
     setMessage,
     ispList,
     logout,
+    role,
   } = useContext(ReportContext);
   const oznakaPolja = useRef();
   const nazivPolja = useRef();
@@ -243,7 +244,7 @@ const Zapisnik = () => {
       }
       if (parseInt(tempPolje.nul)) {
         let no = parseEl(
-          parseInt(tempPolje.sul),
+          parseInt(tempPolje.nul),
           parseInt(tempPolje.nci)
             ? Math.floor(parseInt(tempPolje.nci) / 3) + 1
             : 0
@@ -383,11 +384,15 @@ const Zapisnik = () => {
     };
     setLoadData(true);
     try {
+      const token = sessionStorage.getItem(role);
       const response2 = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/zapisnik`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            authorization: token,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(dataZap),
         }
       );
@@ -416,11 +421,15 @@ const Zapisnik = () => {
     };
     setLoadData(true);
     try {
+      const token = sessionStorage.getItem(role);
       const response2 = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/temp_zapisnik`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            authorization: token,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(tempZap),
         }
       );
