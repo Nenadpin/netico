@@ -4,7 +4,7 @@ import ReportContext from "../Context";
 import serbianTransliteration from "serbian-transliteration";
 
 const NewContract = () => {
-  const { sviUgovori, setMessage, logout } = useContext(ReportContext);
+  const { role, sviUgovori, setMessage, logout } = useContext(ReportContext);
   const sifraCon = useRef();
   const brKorRef = useRef();
   const opisRef = useRef();
@@ -28,11 +28,15 @@ const NewContract = () => {
     }
     if (newCon.sifra && newCon.brojUg && newCon.opis && newCon.datum) {
       try {
+        const token = sessionStorage.getItem(role);
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/novi_ugovor`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token,
+            },
             body: JSON.stringify(newCon),
           }
         );

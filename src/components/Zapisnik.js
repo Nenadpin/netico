@@ -206,7 +206,7 @@ const Zapisnik = () => {
             faza: no[i].faza,
             opis: no[i].opis,
             sprat: no[i].sprat,
-            tipEl: "са чврстом изолацијом",
+            tipEl: tempPolje.napkV === "110" ? "" : "са чврстом изолацијом",
           });
         }
         diff += parseInt(tempPolje.sci);
@@ -237,7 +237,7 @@ const Zapisnik = () => {
             faza: no[i].faza,
             opis: no[i].opis,
             sprat: no[i].sprat,
-            tipEl: "са чврстом изолацијом",
+            tipEl: tempPolje.napkV === "110" ? "" : "са чврстом изолацијом",
           });
         }
         diff += parseInt(tempPolje.nci);

@@ -15,6 +15,7 @@ const Ispitivanje = () => {
     sifraIspitivanja,
     logout,
     setMessage,
+    role,
   } = useContext(ReportContext);
   const [currentEl, setCurrentEl] = useState(null);
   const [ispEls, setIspEls] = useState(null);
@@ -114,6 +115,7 @@ const Ispitivanje = () => {
   const backupIsp = async () => {
     const localStorageData = { ...localStorage };
     const jsonData = JSON.stringify(localStorageData);
+    const token = sessionStorage.getItem(role);
     setLoadData(true);
     try {
       const response = await fetch(
@@ -122,6 +124,7 @@ const Ispitivanje = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            authorization: token,
           },
           body: jsonData,
         }
@@ -210,13 +213,16 @@ const Ispitivanje = () => {
         brI: brIzv.current.value,
         dat: datRef.current.value,
       };
-      // console.log(dataIsp);
+      const token = sessionStorage.getItem(role);
       try {
         const response2 = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/stanje`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token,
+            },
             body: JSON.stringify(dataIsp),
           }
         );
@@ -244,12 +250,13 @@ const Ispitivanje = () => {
       fName: f,
     };
     setLoadData(true);
+    const token = sessionStorage.getItem(role);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/route${fileData}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: token },
           body: JSON.stringify(fileData),
         }
       );
@@ -308,12 +315,13 @@ const Ispitivanje = () => {
       fName: f,
     };
     setLoadData(true);
+    const token = sessionStorage.getItem(role);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/route${fileData}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", authorization: token },
           body: JSON.stringify(fileData),
         }
       );

@@ -5,11 +5,10 @@ import { useState } from "react";
 import serbianTransliteration from "serbian-transliteration";
 
 const UserNew = () => {
-  const { users, setMessage, setUsers } = useContext(ReportContext);
+  const { role, users, setMessage, setUsers } = useContext(ReportContext);
   const allRoles = ["admin", "operator", "expert", "tech"];
   const [newRole, setNewRole] = useState(null);
   const imeRef = useRef();
-  const roleRef = useRef();
   const telRef = useRef();
   const emailRef = useRef();
   const zvanjeRef = useRef();
@@ -33,11 +32,15 @@ const UserNew = () => {
     }
     if (newUser.ime && newUser.role && newUser.zvanje) {
       try {
+        const token = sessionStorage.getItem(role);
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/novi_user`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token,
+            },
             body: JSON.stringify(newUser),
           }
         );
@@ -58,10 +61,12 @@ const UserNew = () => {
   };
   const handleDelete = async (ime) => {
     try {
+      const token = sessionStorage.getItem(role);
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/del_user/${ime}`,
         {
           method: "DELETE",
+          headers: { authorization: token },
         }
       );
 

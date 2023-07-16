@@ -4,7 +4,7 @@ import serbianTransliteration from "serbian-transliteration";
 import ReportContext from "../Context";
 
 const NewTS = ({ tsList, setTsList }) => {
-  const { setMessage, keepWorking } = useContext(ReportContext);
+  const { role, setMessage, keepWorking } = useContext(ReportContext);
   const sifraRef = useRef();
   const nazivRef = useRef();
   const naponRef = useRef();
@@ -34,11 +34,15 @@ const NewTS = ({ tsList, setTsList }) => {
     }
     if (newTS.sifra_ts && newTS.naziv && newTS.naponski_nivo) {
       try {
+        const token = sessionStorage.getItem(role);
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/nova_ts`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token,
+            },
             body: JSON.stringify(newTS),
           }
         );
