@@ -76,7 +76,9 @@ const Ispitivanje = () => {
 
   useEffect(() => {
     if (ispEls) {
+      console.log(polja);
       const filteredPolja = polja
+        .filter((item) => item !== null) // Filter out null items
         .map((item) => ({
           ...item,
           element: item.element?.filter((ele) =>
@@ -84,6 +86,7 @@ const Ispitivanje = () => {
           ),
         }))
         .filter((item) => item.element?.length > 0);
+
       setIspPolja(filteredPolja);
     }
   }, [ispEls]);
@@ -96,6 +99,7 @@ const Ispitivanje = () => {
           `${process.env.REACT_APP_SERVER_URL}/struktura${sifraIspitivanja}`
         );
         const jsonData = await response.json();
+        console.log(jsonData);
         setStructure(jsonData);
         setLoadData(false);
       } catch (error) {
@@ -131,7 +135,7 @@ const Ispitivanje = () => {
       );
       if (response.status === 210) {
         setMessage("Backup ispitivanja je sacuvan");
-        localStorageData.clear();
+        localStorage.clear();
         setLoadData(false);
         setTimeout(() => logout(), 3000);
       } else {
@@ -375,8 +379,10 @@ const Ispitivanje = () => {
             flexDirection: "column",
             padding: "5px",
             width: "12cm",
+            maxHeight: "80vh",
+            overflowY: "hidden",
             left: "6cm",
-            top: "10cm",
+            top: "4cm",
             backgroundColor: "rgb(209,211,211)",
             border: "2px solid black",
             opacity: "1",
@@ -398,7 +404,10 @@ const Ispitivanje = () => {
               <p
                 style={{ color: "blue", cursor: "pointer" }}
                 key={indf}
-                onClick={() => displayFile(f)}
+                onClick={() => {
+                  console.log(currentEl);
+                  displayFile(f);
+                }}
               >
                 {f}
               </p>
@@ -545,7 +554,7 @@ const Ispitivanje = () => {
               style={{ width: "3cm" }}
             ></input>
             <span>Datum ispitivanja</span>
-            <input style={{ width: "3cm" }} ref={datRef}></input>
+            <input type="date" style={{ width: "3cm" }} ref={datRef}></input>
           </div>
         </div>
       ) : null}

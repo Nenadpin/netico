@@ -152,7 +152,7 @@ const Report = () => {
         months[parseInt(d.target.value.split(".")[1]) - 1] +
         " " +
         d.target.value.split(".")[2];
-    } else setMessage("Unesite ispravan datum izvestaja!");
+    } else setMessage("Unesite ispravan datum izvestaja u formatu dd.mm.yyyy!");
   };
   if (!loading)
     return (
@@ -201,7 +201,7 @@ const Report = () => {
           Слика 1. Једнополна шема постројења
         </p>
         <img
-          src={`${process.env.REACT_APP_SERVER_URL}/ISP${sifraIspitivanja}/sema/sema.jpg`}
+          src={`${process.env.REACT_APP_SERVER_URL}/${ugovor?.oznaka}/ISP${sifraIspitivanja}/sema/sema.jpg`}
           style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
           alt=""
         />

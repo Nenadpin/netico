@@ -80,7 +80,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
-      //console.log(jsonData);
+      console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -102,16 +102,21 @@ const Start = () => {
 
   const checkHistory = async (ord_no) => {
     setLoadData(true);
+    const token = sessionStorage.getItem(role);
     let nar = orders.filter((o) => {
       return o.broj_narudzbenice === ord_no;
     })[0];
+    console.log(nar);
     if (editZap) {
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/izmena_zap`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token,
+            },
             body: JSON.stringify(nar),
           }
         );
@@ -134,7 +139,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/detalji_stanice${ts_no}`
       );
       const jsonData = await response.json();
-      //console.log(jsonData);
+      console.log(jsonData);
       setPolja(jsonData.fields);
       setExamine(jsonData.els);
       setReports(jsonData.izv);
@@ -156,9 +161,11 @@ const Start = () => {
       setPrev([]);
     }
     let newTS = tsList.filter((e) => {
-      return e.sifra_ts === ts_no;
+      console.log(e.sifra_ts, ts_no);
+      return e.sifra_ts.trim() === ts_no.trim();
     });
-    newTS[0].napon = newTS[0].naponski_nivo.trim().split("/");
+    console.log(newTS);
+    newTS[0].napon = newTS[0]?.naponski_nivo.trim().split("/");
     setTrafoStanica({ ...newTS[0] });
     setLoadData(false);
   };
@@ -536,6 +543,7 @@ const Start = () => {
               <p
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
+                  console.log(narudzbenica.operativno);
                   setChangePass(false);
                   setUpload(true);
                   setExtra(false);

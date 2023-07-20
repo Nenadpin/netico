@@ -79,6 +79,7 @@ const NewTS = ({ tsList, setTsList }) => {
         >
           <h3>Sifra trafostanice (*)</h3>
           <input
+            disabled
             style={{
               fontFamily: "Arial",
               fontSize: "1.2rem",
@@ -86,7 +87,9 @@ const NewTS = ({ tsList, setTsList }) => {
               textTransform: "uppercase",
             }}
             ref={sifraRef}
-            defaultValue={`TS${tsList.length + 1}`}
+            defaultValue={`TS${(tsList.length + 1)
+              .toString()
+              .padStart(3, "0")}`}
           ></input>
           <h3>Naziv trafostanice (*)</h3>
           <input

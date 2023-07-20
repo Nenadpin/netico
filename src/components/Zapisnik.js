@@ -43,6 +43,7 @@ const Zapisnik = () => {
   const kzulPolja = useRef();
   const izPolja = useRef();
   const tempRef = useRef();
+  const izvodRef = useRef();
   const napomenaPolja = useRef([]);
   const spratPolja = useRef([]);
   const fazaPolja = useRef([]);
@@ -125,15 +126,15 @@ const Zapisnik = () => {
   useMemo(() => {
     if (elNapon > -1) {
       if (trafoStanica.napon[elNapon] === "110") {
-        smtulPolja.current.disabled = true;
-        nmtulPolja.current.disabled = true;
-        kzciPolja.current.disabled = true;
-        kzulPolja.current.disabled = true;
+        smtulPolja.current.style.visibility = "hidden";
+        nmtulPolja.current.style.visibility = "hidden";
+        kzciPolja.current.style.visibility = "hidden";
+        kzulPolja.current.style.visibility = "hidden";
       } else {
-        smtulPolja.current.disabled = false;
-        nmtulPolja.current.disabled = false;
-        kzciPolja.current.disabled = false;
-        kzulPolja.current.disabled = false;
+        smtulPolja.current.style.visibility = "visible";
+        nmtulPolja.current.style.visibility = "visible";
+        kzciPolja.current.style.visibility = "visible";
+        kzulPolja.current.style.visibility = "visible";
       }
     }
   }, [elNapon]);
@@ -327,17 +328,24 @@ const Zapisnik = () => {
   const handleFieldDetails = (x) => {
     let temp = zapisnikDetails;
     let ctrl = new Set();
+    temp[x].izvod = serbianTransliteration
+      .toCyrillic(izvodRef.current.value)
+      .replaceAll("кВ", "kV");
     for (let i = 0; i < temp[x].elementi.length; i++) {
-      temp[x].elementi[i].sprat = spratPolja.current[i].checked;
+      temp[x].elementi[i].sprat = spratPolja.current[i].checked ? "S" : "P";
       temp[x].elementi[i].napomena = napomenaPolja.current[i].value;
       temp[x].elementi[i].faza = fazaPolja.current[i].value.toUpperCase();
       temp[x].elementi[i].opis = pozPolja.current[i].value.toUpperCase();
       ctrl.add(
-        `${temp[x].elementi[i].oznaka}${temp[x].elementi[i].faza}${temp[x].elementi[i].opis}`
+        `${temp[x].elementi[i].oznaka}${temp[x].elementi[i].sprat}${temp[x].elementi[i].faza}${temp[x].elementi[i].opis}`
       );
     }
+    console.log(temp[x].elementi);
+    console.log(ctrl);
     if (ctrl.size !== temp[x].elementi.length) {
-      setMessage("Ne mogu biti vise elemenata na istoj fazi i poziciji!");
+      setMessage(
+        "Ne mogu biti vise elemenata na istoj fazi i poziciji iste spratnmosti!"
+      );
       return;
     }
     setZapisnikDetails(temp);
@@ -345,6 +353,7 @@ const Zapisnik = () => {
       napomenaPolja.current[i].value = "";
       spratPolja.current[i].checked = false;
     }
+    console.log(elpn);
     setElpn(null);
     setModal(false);
     localStorage.setItem("zapisnik", JSON.stringify(zapisnikDetails));
@@ -401,8 +410,8 @@ const Zapisnik = () => {
         setZapisnikDetails(null);
         setLoadData(false);
         setTimeout(() => logout(), 2000);
-        //localStorage.removeItem("zapisnik");
-        //localStorage.removeItem("total");
+        localStorage.removeItem("zapisnik");
+        localStorage.removeItem("total");
       } else {
         setMessage("neka greska...");
         setLoadData(false);
@@ -451,6 +460,7 @@ const Zapisnik = () => {
     }
   };
   const handleDetails = (id) => {
+    console.log(zapisnikDetails[id]);
     setElpn(() => zapisnikDetails[id]);
     setChEl(id);
     setModal(true);
@@ -637,6 +647,7 @@ const Zapisnik = () => {
           <div
             className="modal"
             onClick={() => {
+              console.log(elpn);
               setElpn(null);
               setModal(false);
               localStorage.setItem("zapisnik", JSON.stringify(zapisnikDetails));
@@ -833,7 +844,15 @@ const Zapisnik = () => {
                     borderRadius: "10px",
                   }}
                 >
-                  {elpn.ozn} -{elpn.napkV}kV
+                  <span>
+                    {elpn.ozn} -{elpn.napkV}kV
+                  </span>
+                  <input
+                    type="text"
+                    ref={izvodRef}
+                    defaultValue={elpn.izvod}
+                    style={{ marginBottom: "0", letterSpacing: "1px" }}
+                  ></input>
                   <table
                     className="tblZ"
                     style={{
@@ -889,7 +908,7 @@ const Zapisnik = () => {
                             <td>
                               <input
                                 type="checkbox"
-                                defaultChecked={e.sprat}
+                                defaultChecked={e.sprat === "S" ? true : false}
                                 ref={(ref) => {
                                   if (ref) spratPolja.current[ide] = ref;
                                 }}
@@ -933,6 +952,7 @@ const Zapisnik = () => {
                         marginLeft: "0",
                       }}
                       onClick={() => {
+                        console.log(chEl);
                         handleFieldDetails(chEl);
                       }}
                     >

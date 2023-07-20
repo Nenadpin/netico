@@ -16,8 +16,7 @@ const Upload = () => {
       let sif = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       })[0];
-      console.log(sif);
-      setSifra(sif.ugovor + "_ISP" + sif.sifra + "_" + sif.r_br);
+      setSifra(sif?.ugovor + "_ISP" + sif?.sifra + "_" + sif?.r_br);
     }
   }, [narudzbenica]);
   const uploadForm = useRef();

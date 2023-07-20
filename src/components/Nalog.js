@@ -45,6 +45,7 @@ const Nalog = () => {
   };
   const handleNalog = async () => {
     const token = sessionStorage.getItem(role);
+    console.log(ispList.length);
     if (!datumIsp.current.value) datumIsp.current.value = "";
     if (tim.r && tim.i1 && sifraIsp && token) {
       try {
