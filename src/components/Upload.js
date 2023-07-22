@@ -7,7 +7,7 @@ import ReportContext from "../Context";
 import Spinner from "./Spinner";
 
 const Upload = () => {
-  const { narudzbenica, ispList, setMessage, logout } =
+  const { narudzbenica, ispList, setMessage, logout, role } =
     useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
   const [loadData, setLoadData] = useState(false);
@@ -22,6 +22,7 @@ const Upload = () => {
   const uploadForm = useRef();
 
   const sendFiles = async () => {
+    const token = sessionStorage.getItem(role);
     const myFiles = document.getElementById("myFiles").files;
     //console.log(myFiles.length);
     if (myFiles.length > 0) {
@@ -35,6 +36,10 @@ const Upload = () => {
           `${process.env.REACT_APP_SERVER_URL}/upload${sifra}`,
           {
             method: "POST",
+            headers: {
+              authorization: token,
+              role: role,
+            },
             body: formData,
           }
         );
@@ -58,7 +63,7 @@ const Upload = () => {
         <div>
           <p
             style={{ fontSize: "1.5rem", margin: "15px" }}
-          >{`Ucitavanje snimaka na server za ispitivanje r.br: ${
+          >{`Ucitavanje fajlova na server za ispitivanje r.br: ${
             sifra.split("_")[2]
           }`}</p>
           <p style={{ fontSize: "1.5rem", margin: "15px" }}>{`Sifra ugovora: ${

@@ -36,6 +36,8 @@ const Report = () => {
     history,
     sifraIspitivanja,
     setMessage,
+    setUpload,
+    setTipPrikaza,
   } = useContext(ReportContext);
 
   const [pageCount, setPageCount] = useState(0);
@@ -117,12 +119,30 @@ const Report = () => {
     content: () => printRef.current,
     documentTitle:
       izvBr?.broj_izvestaja + " " + new Date().toLocaleDateString("en-US"),
-    onAfterPrint: () => setMessage("uspesno"),
+    onAfterPrint: () => {
+      if (
+        window.confirm(
+          "Da li saljemo pdf na server (sacuvana su oba dela izvestaja)?"
+        )
+      ) {
+        setTipPrikaza(null);
+        setUpload(true);
+      }
+    },
   });
   const printSema = useReactToPrint({
     content: () => a3Ref.current,
     documentTitle: "sema-a3",
-    onAfterPrint: () => setMessage("uspesno"),
+    onAfterPrint: () => {
+      if (
+        window.confirm(
+          "Da li saljemo pdf na server (sacuvana su oba dela izvestaja)?"
+        )
+      ) {
+        setTipPrikaza(null);
+        setUpload(true);
+      }
+    },
   });
 
   const insertDate = (d) => {
@@ -201,7 +221,9 @@ const Report = () => {
           Слика 1. Једнополна шема постројења
         </p>
         <img
-          src={`${process.env.REACT_APP_SERVER_URL}/${ugovor?.oznaka}/ISP${sifraIspitivanja}/sema/sema.jpg`}
+          src={`${process.env.REACT_APP_SERVER_URL}/${
+            ugovor?.oznaka
+          }/ISP${sifraIspitivanja.toString().padStart(3, "0")}/sema/sema.jpg`}
           style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
           alt=""
         />
