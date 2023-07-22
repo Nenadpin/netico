@@ -10,7 +10,8 @@ const NewReport = () => {
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
   let r_br = 0;
 
-  const view = (h) => {
+  const view = (element) => {
+    let h = element.filter((e) => e.stanje_izolacije !== 5);
     let labelS = [0];
     for (let i = 0; i < 500; i++) {
       labelS.push((500 + i * 19) / 10);
@@ -139,6 +140,8 @@ const NewReport = () => {
                             </td>
                             <td
                               onClick={() => {
+                                console.log(elpn);
+                                console.log(history);
                                 setCurrentEl({
                                   element: elpn.el_skraceno,
                                   naponEl: el,

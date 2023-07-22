@@ -181,11 +181,7 @@ const Start = () => {
 
   const prikazi = (y) => {
     setLoadData(true);
-    if (y < 10) {
-      y = "00" + y;
-    } else if (y < 100) {
-      y = "0" + y;
-    }
+
     let temp1 = {};
     let temp = examine
       .map((h) => {
@@ -201,7 +197,6 @@ const Start = () => {
         temp1[temp[i][0].us] = temp[i][0].stanje_izolacije;
       }
     }
-    // console.log(temp1);
     setLoadData(false);
     setHistory(temp1);
     setTipPrikaza(1);

@@ -560,7 +560,7 @@ const Ispitivanje = () => {
             <input
               ref={brIzv}
               defaultValue={reportCount}
-              style={{ width: "3cm" }}
+              style={{ width: "4cm" }}
             ></input>
             <span>Datum ispitivanja</span>
             <input type="date" style={{ width: "4cm" }} ref={datRef}></input>
