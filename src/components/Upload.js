@@ -15,7 +15,7 @@ const Upload = () => {
   if (role === "tech") {
     acceptedFileTypes = ".jpg";
   } else if (role === "operator") {
-    acceptedFileTypes = ".pdf, .pds, .dfax";
+    acceptedFileTypes = ".pdsx, .dfax";
   } else if (role === "admin") {
     acceptedFileTypes = ".pdf";
   }
