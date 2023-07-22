@@ -11,6 +11,14 @@ const Upload = () => {
     useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
   const [loadData, setLoadData] = useState(false);
+  let acceptedFileTypes = "";
+  if (role === "tech") {
+    acceptedFileTypes = ".jpg";
+  } else if (role === "operator") {
+    acceptedFileTypes = ".pdf, .pds, .dfax";
+  } else if (role === "admin") {
+    acceptedFileTypes = ".pdf";
+  }
   useMemo(() => {
     if (narudzbenica) {
       let sif = ispList.filter((i) => {
@@ -85,8 +93,8 @@ const Upload = () => {
               style={{ fontSize: "1.2rem", padding: "5px", height: "2.5rem" }}
               type="file"
               id="myFiles"
-              accept="*"
-              multiple
+              accept={acceptedFileTypes}
+              multiple={role === "operator" || role === "admin"}
             />
             <button className="block-btn" style={{ marginLeft: "0" }}>
               Submit
