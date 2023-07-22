@@ -206,7 +206,7 @@ const Zapisnik = () => {
             oznaka: "СМТ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: tempPolje.napkV === "110" ? "" : "са чврстом изолацијом",
           });
         }
@@ -224,7 +224,7 @@ const Zapisnik = () => {
             oznaka: "СМТ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: "са уљном изолацијом",
           });
         }
@@ -237,7 +237,7 @@ const Zapisnik = () => {
             oznaka: "НМТ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: tempPolje.napkV === "110" ? "" : "са чврстом изолацијом",
           });
         }
@@ -255,7 +255,7 @@ const Zapisnik = () => {
             oznaka: "НМТ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: "са уљном изолацијом",
           });
         }
@@ -268,7 +268,7 @@ const Zapisnik = () => {
             oznaka: "КЗ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: "са чврстом изолацијом",
           });
         }
@@ -286,7 +286,7 @@ const Zapisnik = () => {
             oznaka: "КЗ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: "са уљном изолацијом",
           });
         }
@@ -299,7 +299,7 @@ const Zapisnik = () => {
             oznaka: "ПИ",
             faza: no[i].faza,
             opis: no[i].opis,
-            sprat: no[i].sprat,
+            sprat: no[i].sprat ? "S" : "P",
             tipEl: "",
           });
         }

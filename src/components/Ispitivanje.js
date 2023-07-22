@@ -29,7 +29,14 @@ const Ispitivanje = () => {
   const [reportCount, setReportCount] = useState(null);
   const brIzv = useRef();
   const datRef = useRef();
-  const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "", "Анализа"];
+  const colors = [
+    "Без напона",
+    "Зелено",
+    "Жуто",
+    "Црвено",
+    "Љубичасто",
+    "Анализа",
+  ];
   let r_br = 0;
 
   const getElements = async () => {
@@ -39,7 +46,7 @@ const Ispitivanje = () => {
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
-      //console.log(jsonData);
+      console.log(jsonData);
       setIspEls(jsonData.elementi);
       setReportCount(jsonData.broj_izvestaja);
       if (localStorage.getItem("currExamine"))
@@ -380,7 +387,7 @@ const Ispitivanje = () => {
             padding: "5px",
             width: "12cm",
             maxHeight: "80vh",
-            overflowY: "hidden",
+            overflowY: "auto",
             left: "6cm",
             top: "4cm",
             backgroundColor: "rgb(209,211,211)",
@@ -518,6 +525,8 @@ const Ispitivanje = () => {
                                           ? "yellow"
                                           : elpn.isp === 3
                                           ? "red"
+                                          : elpn.isp === 4
+                                          ? "purple"
                                           : elpn.moja_sifra === currentEl?.sifra
                                           ? "blue"
                                           : "white",
@@ -554,12 +563,20 @@ const Ispitivanje = () => {
               style={{ width: "3cm" }}
             ></input>
             <span>Datum ispitivanja</span>
-            <input type="date" style={{ width: "3cm" }} ref={datRef}></input>
+            <input type="date" style={{ width: "4cm" }} ref={datRef}></input>
           </div>
         </div>
       ) : null}
-      <div className="diagram">
-        <div style={{ color: "blue", fontWeight: "bold" }}>
+      <div
+        className="diagram"
+        style={{ maxHeight: "100vh", overflowY: "auto" }}
+      >
+        <div
+          style={{
+            color: "blue",
+            fontWeight: "bold",
+          }}
+        >
           Поље {currentEl?.oznakaEl}, {currentEl?.element} Фаза{" "}
           {currentEl?.fazaEl}
         </div>
@@ -582,6 +599,16 @@ const Ispitivanje = () => {
             onClick={() => promeni(currentEl?.sifra, 3)}
           >
             Crveno
+          </button>
+          <button
+            style={{
+              width: "110px",
+              backgroundColor: "purple",
+              color: "white",
+            }}
+            onClick={() => promeni(currentEl?.sifra, 4)}
+          >
+            Љубичасто
           </button>
           <button
             style={{ width: "110px", backgroundColor: "white" }}

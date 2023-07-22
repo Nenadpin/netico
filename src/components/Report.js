@@ -402,7 +402,7 @@ const Report = () => {
                     Наруџбеница број
                   </td>
                   <td style={{ lineHeight: "40px", textAlign: "left" }}>
-                    нзн {narudzbenica.broj_narudzbenice}
+                    {narudzbenica.broj_narudzbenice}
                   </td>
                 </tr>
                 <tr>
@@ -422,7 +422,7 @@ const Report = () => {
                       type="text"
                       style={{
                         border: "none",
-                        width: "0.7cm",
+                        width: "1.5cm",
                         fontSize: "14px",
                         textAlign: "left",
                       }}
@@ -434,7 +434,15 @@ const Report = () => {
                   return (
                     <tr key={idp}>
                       <td style={{ textAlign: "left" }}>
-                        Постројење {post.trim()} kV
+                        <input
+                          style={{
+                            border: "none",
+                            fontSize: "14px",
+                            fontWeight: "normal",
+                            textAlign: "left",
+                          }}
+                          defaultValue={`Постројење ${post.trim()} kV`}
+                        ></input>
                       </td>
                       <td style={{ textAlign: "left" }}>
                         <input
@@ -478,7 +486,17 @@ const Report = () => {
                 <tr>
                   <td style={{ textAlign: "left" }}>Датум/период испитивања</td>
                   <td style={{ textAlign: "left" }}>
-                    {ispCurr[0]?.datum} - {ispCurr[0]?.datum_do}
+                    {ispCurr[0]?.datum.substring(8, 10) +
+                      "." +
+                      ispCurr[0]?.datum.substring(5, 7) +
+                      "." +
+                      ispCurr[0]?.datum.substring(0, 4)}{" "}
+                    -{" "}
+                    {ispCurr[0]?.datum_do.substring(8, 10) +
+                      "." +
+                      ispCurr[0]?.datum_do.substring(5, 7) +
+                      "." +
+                      ispCurr[0]?.datum_do.substring(0, 4)}{" "}
                   </td>
                 </tr>
                 <tr>
@@ -706,7 +724,7 @@ const Report = () => {
             style={{
               border: "none",
               width: "18cm",
-              textAlign: "left",
+              textAlign: "justify",
               marginTop: "1rem",
               marginRight: "1.5cm",
               fontFamily: "arial",
