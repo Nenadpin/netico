@@ -3,7 +3,7 @@ import ReportContext from "../Context";
 import Footer from "./Footer";
 import logo from "../headerLogo.png";
 
-const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
+const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv, sifra }) => {
   const { history } = useContext(ReportContext);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
   let r_br = 0;
@@ -213,6 +213,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv }) => {
                   pad={(28.5 + index * 29.5).toString() + "cm"}
                   str={page}
                   pageCount={pageCount}
+                  sifra={sifra}
                 />
               </>
             );

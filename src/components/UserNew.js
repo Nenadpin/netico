@@ -117,7 +117,11 @@ const UserNew = () => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      if (window.confirm("Sigurni ste da brisemo ovo polje?"))
+                      if (
+                        window.confirm(
+                          `Sigurni ste da brisemo korisnika ${user.ime}?`
+                        )
+                      )
                         handleDelete(users[indU].ime);
                     }}
                   >

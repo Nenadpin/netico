@@ -1,7 +1,7 @@
 import React from "react";
 import Footer from "./Footer";
 
-const Sadrzaj = ({ napIzv, strSad }) => {
+const Sadrzaj = ({ napIzv, strSad, sifra }) => {
   return (
     <div id="pg3" className="report">
       <p
@@ -106,7 +106,7 @@ const Sadrzaj = ({ napIzv, strSad }) => {
           </tr>
         </tbody>
       </table>
-      <Footer />
+      <Footer sifra={sifra} />
     </div>
   );
 };

@@ -29,6 +29,17 @@ const Navbar = ({
           >
             Zavrseno
           </li>
+          <li
+            onClick={() => {
+              setTrafoStanica({});
+              setNarudzbenica(null);
+              setChangePass(false);
+              setPrev([]);
+              setTipPrikaza(8);
+            }}
+          >
+            Izvestaji
+          </li>
         </>
       ) : role === "operator" ? (
         <>

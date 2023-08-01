@@ -4,7 +4,16 @@ import Header from "./Header";
 import ReportContext from "../Context";
 import PrintGraph from "./PrintGraph";
 
-const List = ({ pageCount, pageStr, ispCurr, izvBr, delay, polje, ele }) => {
+const List = ({
+  pageCount,
+  pageStr,
+  ispCurr,
+  izvBr,
+  delay,
+  polje,
+  ele,
+  sifra,
+}) => {
   const { trafoStanica, history, sifraIspitivanja } = useContext(ReportContext);
   const stanje = ["без напона", "зелено", "жуто", "црвено", "љубичасто"];
   const colors = ["white", "green", "yellow", "red", "purple"];
@@ -174,7 +183,7 @@ const List = ({ pageCount, pageStr, ispCurr, izvBr, delay, polje, ele }) => {
           {ispCurr[0].datum.replaceAll("/", ".")}
         </span>
       </p>
-      <Footer str={pageStr.toString()} pageCount={pageCount} />
+      <Footer str={pageStr.toString()} pageCount={pageCount} sifra={sifra} />
     </div>
   );
 };

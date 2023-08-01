@@ -1,5 +1,6 @@
 import { useMemo, useRef } from "react";
 import { useContext, useState } from "react";
+import { addObject, getAllObjects, getValue, deleteObject } from "./IndexDB";
 import ReportContext from "../Context";
 import PrintGraph from "./PrintGraph";
 import Spinner from "./Spinner";
@@ -37,6 +38,8 @@ const Ispitivanje = () => {
     "Љубичасто",
     "Анализа",
   ];
+  const dbName = "analiza";
+  const dbVersion = 1;
   let r_br = 0;
 
   const getElements = async () => {
@@ -49,9 +52,8 @@ const Ispitivanje = () => {
       console.log(jsonData);
       setIspEls(jsonData.elementi);
       setReportCount(jsonData.broj_izvestaja);
-      if (localStorage.getItem("currExamine"))
-        setExamine(JSON.parse(localStorage.getItem("currExamine")));
     } catch (error) {
+      console.log(error);
       setLoadData(false);
       setMessage("Greska na serveru...");
     } finally {
@@ -80,12 +82,26 @@ const Ispitivanje = () => {
     }
     setLoadData(false);
   };
+  const getStorage = async () => {
+    const store = `ISP${sifraIspitivanja}`;
+    const localData = await getAllObjects(dbName, dbVersion, store);
+    if (localData.length && examine) {
+      let tempel = [...examine];
+      for (const data of localData) {
+        tempel = tempel.map((e) => {
+          if (e.moja_sifra === data.moja_sifra) {
+            return { ...e, isp: data.isp };
+          } else return e;
+        });
+      }
+      setExamine(tempel);
+    }
+  };
 
   useEffect(() => {
     if (ispEls) {
-      console.log(polja);
       const filteredPolja = polja
-        .filter((item) => item !== null) // Filter out null items
+        .filter((item) => item !== null)
         .map((item) => ({
           ...item,
           element: item.element?.filter((ele) =>
@@ -93,8 +109,8 @@ const Ispitivanje = () => {
           ),
         }))
         .filter((item) => item.element?.length > 0);
-
       setIspPolja(filteredPolja);
+      getStorage();
     }
   }, [ispEls]);
 
@@ -124,8 +140,8 @@ const Ispitivanje = () => {
   }, [narudzbenica]);
 
   const backupIsp = async () => {
-    const localStorageData = { ...localStorage };
-    const jsonData = JSON.stringify(localStorageData);
+    const store = `ISP${sifraIspitivanja}`;
+    const localData = await getAllObjects(dbName, dbVersion, store);
     const token = sessionStorage.getItem(role);
     setLoadData(true);
     try {
@@ -137,12 +153,12 @@ const Ispitivanje = () => {
             "Content-Type": "application/json",
             authorization: token,
           },
-          body: jsonData,
+          body: JSON.stringify({ analiza: localData }),
         }
       );
       if (response.status === 210) {
         setMessage("Backup ispitivanja je sacuvan");
-        localStorage.clear();
+        indexedDB.deleteDatabase(dbName);
         setLoadData(false);
         setTimeout(() => logout(), 3000);
       } else {
@@ -161,13 +177,23 @@ const Ispitivanje = () => {
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
-      const storage = jsonData.analiza;
-      Object.keys(storage).forEach((key) => {
-        localStorage.setItem(key, storage[key]);
-      });
-      setMessage("Ucitan je backUp iz baze");
-      setTimeout(() => logout(), 3000);
+      const storage = jsonData.analiza.analiza;
+      console.log(storage);
+      const store = `ISP${sifraIspitivanja}`;
+      let key;
+      if (storage) {
+        for (const data of storage) {
+          key = data.moja_sifra;
+          await addObject(dbName, dbVersion, store, key, data);
+        }
+        setMessage("Ucitan je backUp iz baze");
+        setTimeout(() => logout(), 3000);
+      } else {
+        setMessage("Ne postoji back-up trenutnog ispitivanja");
+        setLoadData(false);
+      }
     } catch (error) {
+      console.log(error.message);
       setLoadData(false);
       setMessage("Greska na serveru, ili ne postoji backUp ispitivanja");
     }
@@ -182,22 +208,24 @@ const Ispitivanje = () => {
     sd.luf = "";
     sd.lub = "";
     sd.lt = "";
-    setChartDataIsp((ch) => ({
+    setChartDataIsp(() => ({
       ...sd,
     }));
     setCurrentEl(null);
     setBaseFile(null);
   };
-  const promeni = (ele, no) => {
+  const promeni = async (ele, no) => {
     setModal(false);
+    const value = { ...chartDataIsp, isp: no, moja_sifra: ele };
     let tempel = examine.map((e) => {
       if (e.moja_sifra === ele) {
         return { ...e, isp: no };
       } else return e;
     });
     if (no !== 5) {
-      localStorage.setItem("currExamine", JSON.stringify(tempel));
-      localStorage.setItem(ele, JSON.stringify(chartDataIsp));
+      const key = ele;
+      const store = `ISP${sifraIspitivanja}`;
+      await addObject(dbName, dbVersion, store, key, value);
     }
     resetData();
     setExamine(tempel);
@@ -211,14 +239,12 @@ const Ispitivanje = () => {
       )
     ) {
       setLoadData(true);
-      let dataExam = examine.map((d) => {
-        d = { ...d, chart: JSON.parse(localStorage.getItem(d.moja_sifra)) };
-        return d;
-      });
+      const store = `ISP${sifraIspitivanja}`;
+      const localData = await getAllObjects(dbName, dbVersion, store);
       const dataIsp = {
         sifra: sifraIspitivanja,
         nar: narudzbenica.broj_narudzbenice,
-        isp: dataExam,
+        isp: localData,
         nap: trafoStanica.naponski_nivo,
         naz: `ТС ${trafoStanica.naponski_nivo.trim()} kV ${trafoStanica.naziv}`,
         brI: brIzv.current.value,
@@ -239,7 +265,7 @@ const Ispitivanje = () => {
         );
         if (response2.status === 210) {
           setMessage("primljeno");
-          localStorage.clear();
+          indexedDB.deleteDatabase(dbName);
           setLoadData(false);
           setTimeout(() => logout(), 2000);
         } else {
@@ -365,6 +391,26 @@ const Ispitivanje = () => {
     }
   }, [baseFile]);
 
+  const getGrapf = async (e) => {
+    const store = `ISP${sifraIspitivanja}`;
+    const data = await getValue(dbName, dbVersion, store, e);
+    if (data) {
+      setChartDataIsp(data);
+      console.log(e);
+    } else {
+      setModal(true);
+      setFileTree(e.substring(9, 12));
+      console.log(e);
+    }
+    console.log(chartDataIsp);
+  };
+
+  const deleteGraph = async (e) => {
+    const store = `ISP${sifraIspitivanja}`;
+    await deleteObject(dbName, dbVersion, store, e);
+    resetData();
+  };
+
   return (
     <div
       style={{
@@ -412,7 +458,6 @@ const Ispitivanje = () => {
                 style={{ color: "blue", cursor: "pointer" }}
                 key={indf}
                 onClick={() => {
-                  console.log(currentEl);
                   displayFile(f);
                 }}
               >
@@ -497,25 +542,13 @@ const Ispitivanje = () => {
                                           fazaEl: elpn.faza_opis,
                                           izolacija: elpn.isp,
                                         });
-                                        if (
-                                          localStorage.getItem(elpn.moja_sifra)
-                                        ) {
-                                          setChartDataIsp((ch) => ({
-                                            ...JSON.parse(
-                                              localStorage.getItem(
-                                                elpn.moja_sifra
-                                              )
-                                            ),
-                                          }));
-                                        } else {
-                                          setModal(true);
-                                          setFileTree(elpn.us.substring(9, 12));
-                                        }
+                                        console.log(examine);
+                                        getGrapf(elpn.moja_sifra);
                                       }
                                     }}
                                     onDoubleClick={() => {
-                                      localStorage.removeItem(elpn.moja_sifra);
-                                      promeni(currentEl?.sifra, 5);
+                                      promeni(currentEl.sifra, 5);
+                                      deleteGraph(elpn.moja_sifra);
                                     }}
                                     style={{
                                       backgroundColor:
@@ -580,7 +613,7 @@ const Ispitivanje = () => {
           Поље {currentEl?.oznakaEl}, {currentEl?.element} Фаза{" "}
           {currentEl?.fazaEl}
         </div>
-        <PrintGraph chartData={chartDataIsp} setChartData={setChartDataIsp} />
+        <PrintGraph chartData={chartDataIsp} />
         <div style={{ marginTop: "20px" }}>
           <button
             style={{ width: "110px", backgroundColor: "green" }}
@@ -618,26 +651,23 @@ const Ispitivanje = () => {
           </button>
         </div>
         <div>
-          {localStorage.getItem("currExamine") ? (
-            <button
-              className="block-btn"
-              style={{ width: "235px", alignSelf: "center" }}
-              onClick={() => backupIsp()}
-            >
-              Back-up
-            </button>
-          ) : (
-            <button
-              className="block-btn"
-              style={{ width: "235px", alignSelf: "center" }}
-              onClick={() => loadBackup()}
-            >
-              Ucitaj Back-up
-            </button>
-          )}
           <button
             className="block-btn"
-            style={{ width: "235px", alignSelf: "center" }}
+            style={{ width: "190px", alignSelf: "center" }}
+            onClick={() => backupIsp()}
+          >
+            Back-up
+          </button>
+          <button
+            className="block-btn"
+            style={{ width: "190px", alignSelf: "center" }}
+            onClick={() => loadBackup()}
+          >
+            Ucitaj Back-up
+          </button>
+          <button
+            className="block-btn"
+            style={{ width: "190px", alignSelf: "center" }}
             onClick={() => submitIsp()}
           >
             Upiši u bazu

@@ -831,7 +831,7 @@ const Zapisnik = () => {
                 <div
                   style={{
                     display: modal ? "flex" : "none",
-                    position: "absolute",
+                    position: "fixed",
                     flexDirection: "column",
                     padding: "5px",
                     width: "9cm",

@@ -127,8 +127,10 @@ select {
   letter-spacing: initial;
   margin-bottom: initial;
 }
-.report input {
+.report input,
+textarea {
   font-size: 1rem;
+  background-color: rgb(197, 247, 249);
 }
 .order {
   margin: auto;
@@ -512,6 +514,10 @@ button {
   body {
     height: initial !important;
     overflow: initial !important;
+  }
+  .report input,
+  textarea {
+    background-color: white;
   }
 }
 @media screen {

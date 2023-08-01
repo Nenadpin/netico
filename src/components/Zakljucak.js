@@ -12,6 +12,7 @@ const Zakljucak = ({
   setPageCount,
   ispPolja,
   izvBr,
+  sifra,
 }) => {
   const [zuto, setZuto] = useState(null);
   const [crveno, setCrveno] = useState(null);
@@ -83,7 +84,12 @@ const Zakljucak = ({
                 }}
               >
                 <Header izvBr={izvBr} />
-                <Footer str={parseInt(str) + ih} pageCount={pageCount} z={1} />
+                <Footer
+                  str={parseInt(str) + ih}
+                  pageCount={pageCount}
+                  z={1}
+                  sifra={sifra}
+                />
               </div>
               <hr
                 className="limiter"
@@ -116,6 +122,7 @@ const Zakljucak = ({
               str={parseInt(str) + Object.keys(napIzv).length}
               pageCount={pageCount}
               z={1}
+              sifra={sifra}
             />
           </div>
         ) : null}
@@ -479,6 +486,7 @@ const Zakljucak = ({
         <Footer
           str={parseInt(str) + Object.keys(napIzv).length + dummy}
           pageCount={pageCount}
+          sifra={sifra}
         />
       </div>
     </>

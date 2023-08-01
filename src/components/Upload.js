@@ -7,7 +7,7 @@ import ReportContext from "../Context";
 import Spinner from "./Spinner";
 
 const Upload = () => {
-  const { narudzbenica, ispList, setMessage, logout, role } =
+  const { narudzbenica, ispList, setMessage, logout, role, sviUgovori } =
     useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
   const [loadData, setLoadData] = useState(false);
@@ -21,10 +21,12 @@ const Upload = () => {
   }
   useMemo(() => {
     if (narudzbenica) {
+      console.log(narudzbenica, ispList);
       let sif = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       })[0];
       setSifra(sif?.ugovor + "_ISP" + sif?.sifra + "_" + sif?.r_br);
+      console.log(sif?.ugovor + "_ISP" + sif?.sifra + "_" + sif?.r_br);
     }
   }, [narudzbenica]);
   const uploadForm = useRef();
@@ -39,6 +41,7 @@ const Upload = () => {
       Object.keys(myFiles).forEach((key) => {
         formData.append(myFiles.item(key).name, myFiles.item(key));
       });
+      console.log(token, role, narudzbenica.broj_narudzbenice);
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/upload${sifra}`,
@@ -47,18 +50,20 @@ const Upload = () => {
             headers: {
               authorization: token,
               role: role,
+              nar: narudzbenica.broj_narudzbenice,
             },
             body: formData,
           }
         );
+
         const json = await response.json();
         if (json.status === "success") {
           setMessage("Primljeno!");
           setTimeout(() => logout(), 2000);
           setLoadData(false);
-        }
+        } else setMessage(json.status);
       } catch (error) {
-        setMessage("greska na serveru");
+        setMessage(error.message);
         setLoadData(false);
       }
     } else setMessage("Niste ucitali nijedan fajl...");
@@ -74,13 +79,20 @@ const Upload = () => {
           >{`Ucitavanje fajlova na server za ispitivanje r.br: ${
             sifra.split("_")[2]
           }`}</p>
-          <p style={{ fontSize: "1.5rem", margin: "15px" }}>{`Sifra ugovora: ${
-            sifra.split("_")[0]
-          }`}</p>
           <p
-            style={{ fontSize: "1.5rem", margin: "15px" }}
+            style={{ fontSize: "1.5rem", margin: "15px", fontWeight: "bold" }}
+          >{`Sifra ugovora: ${sifra.split("_")[0]}`}</p>
+          {sifra ? (
+            <p style={{ fontSize: "1.5rem", margin: "15px" }}>
+              {
+                sviUgovori.filter((u) => u.oznaka === sifra.split("_")[0])[0]
+                  .opis_ugovora
+              }
+            </p>
+          ) : null}
+          <p
+            style={{ fontSize: "1.5rem", margin: "15px", fontWeight: "bold" }}
           >{`Sifra ispitivanja: ${sifra.split("_")[1]}`}</p>
-
           <form
             ref={uploadForm}
             id="uploadForm"

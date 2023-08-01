@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef, useMemo, useEffect } from "react";
 import ReportContext from "../Context";
 import { useReactToPrint } from "react-to-print";
+import serbianTransliteration from "serbian-transliteration";
 import logo from "../logo.png";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -158,7 +159,8 @@ const Report = () => {
       dateRef2.current.innerText =
         months[parseInt(d.target.value.split("/")[1]) - 1] +
         " " +
-        d.target.value.split("/")[2];
+        d.target.value.split("/")[2] +
+        ".";
     } else if (d.target.value.includes(".")) {
       dateRef.current.innerText =
         months[parseInt(d.target.value.split(".")[1]) - 1] +
@@ -171,8 +173,10 @@ const Report = () => {
       dateRef2.current.innerText =
         months[parseInt(d.target.value.split(".")[1]) - 1] +
         " " +
-        d.target.value.split(".")[2];
-    } else setMessage("Unesite ispravan datum izvestaja u formatu dd.mm.yyyy!");
+        d.target.value.split(".")[2] +
+        ".";
+    } else
+      setMessage("Unesite ispravan datum izvestaja u formatu dd.mm.yyyy.!");
   };
   if (!loading)
     return (
@@ -220,13 +224,13 @@ const Report = () => {
         >
           Слика 1. Једнополна шема постројења
         </p>
-        <img
-          src={`${process.env.REACT_APP_SERVER_URL}/${
-            ugovor?.oznaka
-          }/ISP${sifraIspitivanja.toString().padStart(3, "0")}/sema/sema.jpg`}
-          style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
-          alt=""
-        />
+        {ispCurr ? (
+          <img
+            src={`${process.env.REACT_APP_SERVER_URL}/${ugovor?.oznaka}/ISP${ispCurr[0]?.sifra}/sema/sema.jpg`}
+            style={{ width: "36cm", height: "23cm", marginLeft: "2cm" }}
+            alt=""
+          />
+        ) : null}
         <FooterSema
           str="5"
           pageCount={pageCount}
@@ -424,7 +428,9 @@ const Report = () => {
                     Наруџбеница број
                   </td>
                   <td style={{ lineHeight: "40px", textAlign: "left" }}>
-                    {narudzbenica.broj_narudzbenice}
+                    {serbianTransliteration.toCyrillic(
+                      narudzbenica.broj_narudzbenice
+                    )}
                   </td>
                 </tr>
                 <tr>
@@ -444,7 +450,7 @@ const Report = () => {
                       type="text"
                       style={{
                         border: "none",
-                        width: "1.5cm",
+                        width: "1.1cm",
                         fontSize: "14px",
                         textAlign: "left",
                       }}
@@ -512,13 +518,14 @@ const Report = () => {
                       "." +
                       ispCurr[0]?.datum.substring(5, 7) +
                       "." +
-                      ispCurr[0]?.datum.substring(0, 4)}{" "}
-                    -{" "}
+                      ispCurr[0]?.datum.substring(0, 4)}
+                    {". "}-{" "}
                     {ispCurr[0]?.datum_do.substring(8, 10) +
                       "." +
                       ispCurr[0]?.datum_do.substring(5, 7) +
                       "." +
-                      ispCurr[0]?.datum_do.substring(0, 4)}{" "}
+                      ispCurr[0]?.datum_do.substring(0, 4)}
+                    {". "}
                   </td>
                 </tr>
                 <tr>
@@ -573,7 +580,8 @@ const Report = () => {
                         "." +
                         parseInt(new Date().getMonth() + 1) +
                         "." +
-                        new Date().getFullYear()
+                        new Date().getFullYear() +
+                        "."
                       }
                     ></input>{" "}
                     г.
@@ -660,13 +668,15 @@ const Report = () => {
                   <td style={{ border: "1px solid black", textAlign: "left" }}>
                     <div style={{ marginLeft: "5px", textAlign: "left" }}>
                       {ispCurr[0]?.rukovodilac}
-                      <br />
+                    </div>
+                    <hr style={{ margin: "0", borderColor: "black" }} />
+                    <div style={{ marginLeft: "5px", textAlign: "left" }}>
                       {ispCurr[0]?.izvrsilac1}
                     </div>
                   </td>
-                  <td
-                    style={{ border: "1px solid black", textAlign: "left" }}
-                  ></td>
+                  <td style={{ border: "1px solid black", textAlign: "left" }}>
+                    <hr style={{ margin: "0", borderColor: "black" }} />
+                  </td>
                 </tr>
                 <tr>
                   <td>
@@ -724,6 +734,7 @@ const Report = () => {
         </div>
         <Sadrzaj
           napIzv={napIzv}
+          sifra={ispCurr[0]?.sifra.substr(-3)}
           strSad={Math.ceil(Object.keys(history).length / 44) + 1}
         />
         <div id="pg4" className="report">
@@ -1056,6 +1067,7 @@ const Report = () => {
             ispPolja={ispPolja}
             pageCount={[pageCount]}
             napIzv={napIzv}
+            sifra={ispCurr[0]?.sifra.substr(-3)}
           />
           <Zakljucak
             napIzv={napIzv}
@@ -1064,6 +1076,7 @@ const Report = () => {
             setPageCount={setPageCount}
             ispPolja={ispPolja}
             izvBr={izvBr}
+            sifra={ispCurr[0]?.sifra.substr(-3)}
           />
           {izvBr ? (
             <Listovi
@@ -1072,6 +1085,7 @@ const Report = () => {
               ispPolja={ispPolja}
               ispCurr={ispCurr}
               izvBr={izvBr}
+              sifra={ispCurr[0]?.sifra.substr(-3)}
             />
           ) : null}
         </div>

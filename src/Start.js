@@ -16,6 +16,8 @@ import EditUser from "./components/EditUser";
 import Dialog from "./components/Dialog";
 import NewContract from "./components/NewContract";
 import UserNew from "./components/UserNew";
+import Izvestaji from "./components/Izvestaji";
+import OrderList from "./components/OrderList";
 
 const Start = () => {
   const [tsList, setTsList] = useState([]); // Lokalna lista trafostanica i ispitivanja
@@ -35,6 +37,7 @@ const Start = () => {
     sviUgovori,
     sifraIspitivanja,
     greska,
+    reports,
     setOrders,
     setPrev,
     setKd,
@@ -87,6 +90,7 @@ const Start = () => {
       setSviUgovori(jsonData.contracts);
       setKd(jsonData.kd);
       setEmplList(jsonData.empl);
+      setReports(jsonData.izv);
       setLoadData(false);
     } catch (err) {
       setLoadData(false);
@@ -142,7 +146,6 @@ const Start = () => {
       console.log(jsonData);
       setPolja(jsonData.fields);
       setExamine(jsonData.els);
-      setReports(jsonData.izv);
     } catch (err) {
       setMessage("Greska na serveru...");
       setLoadData(false);
@@ -447,7 +450,7 @@ const Start = () => {
         {role === "tech" && !dispOrd && !changePass && filter ? (
           <select
             onFocus={(e) => {
-              setTipPrikaza(null);
+              if (tipPrikaza !== 2) setTipPrikaza(null);
               setNarudzbenica(null);
               e.target.selectedIndex = 0;
             }}
@@ -632,6 +635,10 @@ const Start = () => {
         <UserNew />
       ) : null}
       {upload && trafoStanica.sifra_ts && role ? <Upload /> : null}
+      {tipPrikaza === 8 && reports ? <Izvestaji reports={reports} /> : null}
+      {role === "tech" && tipPrikaza === 2 && !trafoStanica.sifra_ts ? (
+        <OrderList orders={orders} sviUgovori={sviUgovori} />
+      ) : null}
     </>
   );
 };

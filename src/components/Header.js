@@ -3,7 +3,6 @@ import ReportContext from "../Context";
 import logo from "../headerLogo.png";
 
 const Header = ({ izvBr }) => {
-  const { reports } = useContext(ReportContext);
   return (
     <div className="reportHeader">
       <div>
