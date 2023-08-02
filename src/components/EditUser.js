@@ -42,7 +42,7 @@ const EditUser = ({
         }
       );
       if (loginRes.status === 501) {
-        const errorData = await response.json();
+        const errorData = await loginRes.json();
         setMessage(errorData.error.message);
       } else if (loginRes.status === 210) {
         setMessage("Podaci su uspesno promenjeni");
