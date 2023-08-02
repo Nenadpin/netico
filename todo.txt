@@ -8,15 +8,9 @@ Obrisati trafostanice od 104 do kraja, ukljucujuci i 104.
 
 * bez auto logout, za neke tipove korisnike
 * korisnici lozinke u bazi (na kraju)
-* Dugmici za akcije,
-* error message u gui
 =====================================================
 Korisnici
 * dugme za promenu lozinke za bilo koje korisnike iz admina
 * admin, kreira korisnika i da promeni lozinku
-=====================================================
-Novi ugovor
-* mogucnost dodati novu stavku ugovora
-
 
 

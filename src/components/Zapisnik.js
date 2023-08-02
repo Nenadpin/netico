@@ -413,12 +413,13 @@ const Zapisnik = () => {
         localStorage.removeItem("zapisnik");
         localStorage.removeItem("total");
       } else {
-        setMessage("neka greska...");
+        const errorData = await response2.json();
+        setMessage(errorData.error);
         setLoadData(false);
         return;
       }
     } catch (error) {
-      setMessage("Greska na serveru");
+      setMessage(error.message);
       setLoadData(false);
     }
   };
@@ -450,12 +451,13 @@ const Zapisnik = () => {
         localStorage.removeItem("total");
         setTimeout(() => logout(), 3000);
       } else {
-        setMessage("neka greska...");
+        const errorData = await response2.json();
+        setMessage(errorData.error);
         setLoadData(false);
         return;
       }
     } catch (error) {
-      setMessage("Greska na serveru");
+      setMessage(error.message);
       setLoadData(false);
     }
   };

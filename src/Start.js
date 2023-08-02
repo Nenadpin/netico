@@ -95,7 +95,7 @@ const Start = () => {
     } catch (err) {
       setLoadData(false);
       setModal(true);
-      setMessage("Greska na serveru...");
+      setMessage(err.message);
       return;
     }
   };
@@ -110,7 +110,6 @@ const Start = () => {
     let nar = orders.filter((o) => {
       return o.broj_narudzbenice === ord_no;
     })[0];
-    console.log(nar);
     if (editZap) {
       try {
         const response = await fetch(
@@ -131,7 +130,10 @@ const Start = () => {
           setMessage("Zapisnik je potrebno doraditi");
           setTimeout(() => logout(), 2000);
           return;
-        } else if (response.status === 501) setMessage("Greska na serveru");
+        } else if (response.status === 501) {
+          const errorData = await response.json();
+          setMessage(errorData.error);
+        }
       } catch (err) {
         setMessage(err.message);
       }
@@ -143,11 +145,10 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/detalji_stanice${ts_no}`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
       setPolja(jsonData.fields);
       setExamine(jsonData.els);
     } catch (err) {
-      setMessage("Greska na serveru...");
+      setMessage(err.message);
       setLoadData(false);
     }
     let tmp = [...ispList];
@@ -164,10 +165,8 @@ const Start = () => {
       setPrev([]);
     }
     let newTS = tsList.filter((e) => {
-      console.log(e.sifra_ts, ts_no);
       return e.sifra_ts.trim() === ts_no.trim();
     });
-    console.log(newTS);
     newTS[0].napon = newTS[0]?.naponski_nivo.trim().split("/");
     setTrafoStanica({ ...newTS[0] });
     setLoadData(false);
@@ -266,7 +265,6 @@ const Start = () => {
         }
       }
       case "nova": {
-        //console.log(orders);
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "nova";
         });
@@ -476,41 +474,48 @@ const Start = () => {
             <h4>Prethodna ispitivanja: {filter}</h4>
             {prev.map((x, idx) => {
               return (
-                <p key={idx} style={{ marginBottom: "5px" }}>
-                  <span
-                    onClick={() => {
-                      setChangePass(false);
-                      setSifraIspitivanja(x.r_br);
-                      setNarudzbenica(
-                        orders.filter(
-                          (o) => o.broj_narudzbenice === x.narudzbenica
-                        )[0]
-                      );
-                      prikazi(x.r_br);
-                    }}
-                    style={{ cursor: "pointer", color: "blue" }}
-                  >
-                    Datum: {x.datum} Ispitivanje br: {x.r_br}
-                  </span>
-                </p>
+                <button
+                  className="block-btn"
+                  key={idx}
+                  onClick={() => {
+                    setChangePass(false);
+                    setSifraIspitivanja(x.r_br);
+                    setNarudzbenica(
+                      orders.filter(
+                        (o) => o.broj_narudzbenice === x.narudzbenica
+                      )[0]
+                    );
+                    prikazi(x.r_br);
+                  }}
+                  style={{
+                    cursor: "pointer",
+                    maxWidth: "360px",
+                    marginLeft: "0",
+                  }}
+                >
+                  Ispitivanje br: {x.r_br} ({x.datum})
+                </button>
               );
             })}
             {narudzbenica?.operativno === "zavrseno" &&
             narudzbenica.stavke &&
             sifraIspitivanja ? (
-              <p
+              <button
+                className="block-btn"
                 style={{
                   cursor: "pointer",
-                  color: "green",
-                  marginLeft: "1cm",
+                  background: "green",
+                  maxWidth: "360px",
+                  color: "white",
+                  marginLeft: "0",
                 }}
                 onClick={() => {
                   setChangePass(false);
                   izvestaj();
                 }}
               >
-                Stampanje izvestaja za isptitivanje br: {sifraIspitivanja}
-              </p>
+                Izveštaj za isptitivanje br: {sifraIspitivanja}
+              </button>
             ) : null}
           </>
         ) : null}
@@ -541,7 +546,6 @@ const Start = () => {
               <p
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
-                  console.log(narudzbenica.operativno);
                   setChangePass(false);
                   setUpload(true);
                   setExtra(false);

@@ -41,15 +41,17 @@ const EditUser = ({
           body: JSON.stringify(data),
         }
       );
-      if (loginRes.status === 501) setMessage("Greska na serveru...");
-      else if (loginRes.status === 210) {
+      if (loginRes.status === 501) {
+        const errorData = await response.json();
+        setMessage(errorData.error.message);
+      } else if (loginRes.status === 210) {
         setMessage("Podaci su uspesno promenjeni");
         setChangePass(false);
         setLoadData(false);
         setNeticoUser(data.name);
       }
     } catch (err) {
-      setMessage("Greska na serveru!");
+      setMessage(err.message);
       setLoadData(false);
     }
   };

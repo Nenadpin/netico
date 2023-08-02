@@ -73,11 +73,12 @@ const Nalog = () => {
           setMessage("primljeno");
           setTimeout(() => logout(), 2000);
         } else {
-          setMessage("neka greska...");
+          const errorData = await response.json();
+          setMessage(errorData.err.message);
           return;
         }
       } catch (error) {
-        setMessage("greska na serveru");
+        setMessage(error.message);
       }
     }
   };

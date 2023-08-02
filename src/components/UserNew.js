@@ -51,11 +51,11 @@ const UserNew = () => {
           let newUsers = [...users, newUser];
           setUsers(newUsers);
         } else {
-          setMessage("Greska servera...");
+          setMessage("Greska u upisivanju korisnika...");
           return;
         }
       } catch (error) {
-        setMessage("Greska na serveru");
+        setMessage(error.message);
       }
     } else setMessage("Niste popunili neophodne podatke");
   };
@@ -77,7 +77,7 @@ const UserNew = () => {
         });
         setUsers(newUsers);
       } else {
-        setMessage("Greska na serveru");
+        setMessage("Greska prilikom brisanja korisnika");
         return;
       }
     } catch (error) {

@@ -49,13 +49,11 @@ const Ispitivanje = () => {
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
       setIspEls(jsonData.elementi);
       setReportCount(jsonData.broj_izvestaja);
     } catch (error) {
-      console.log(error);
       setLoadData(false);
-      setMessage("Greska na serveru...");
+      setMessage(error.message);
     } finally {
       let labelS = [0];
       for (let i = 0; i < 500; i++) {
@@ -122,11 +120,10 @@ const Ispitivanje = () => {
           `${process.env.REACT_APP_SERVER_URL}/struktura${sifraIspitivanja}`
         );
         const jsonData = await response.json();
-        console.log(jsonData);
         setStructure(jsonData);
         setLoadData(false);
       } catch (error) {
-        setMessage("greska na serveru");
+        setMessage(error.message);
         setLoadData(false);
       }
     }
@@ -162,7 +159,8 @@ const Ispitivanje = () => {
         setLoadData(false);
         setTimeout(() => logout(), 3000);
       } else {
-        setMessage("Greska na serveru");
+        const errorData = await response.json();
+        setMessage(errorData.err.message);
         setLoadData(false);
       }
     } catch (error) {
@@ -178,7 +176,6 @@ const Ispitivanje = () => {
       );
       const jsonData = await response.json();
       const storage = jsonData.analiza.analiza;
-      console.log(storage);
       const store = `ISP${sifraIspitivanja}`;
       let key;
       if (storage) {
@@ -193,7 +190,6 @@ const Ispitivanje = () => {
         setLoadData(false);
       }
     } catch (error) {
-      console.log(error.message);
       setLoadData(false);
       setMessage("Greska na serveru, ili ne postoji backUp ispitivanja");
     }
@@ -269,19 +265,19 @@ const Ispitivanje = () => {
           setLoadData(false);
           setTimeout(() => logout(), 2000);
         } else {
-          setMessage("neka greska...");
+          const errorData = await response2.json();
+          setMessage(errorData.err.message);
           setLoadData(false);
           return;
         }
       } catch (error) {
-        setMessage("greska na serveru");
+        setMessage(error.message);
         setLoadData(false);
       }
     }
   };
 
   const displayFile = async (f) => {
-    //console.log(f);
     const fileData = {
       dir: structure.dir,
       fName: f,
@@ -329,7 +325,6 @@ const Ispitivanje = () => {
           }
         }
         dT.pop();
-        // console.log(dT);
         let sd = { ...chartDataIsp };
         sd.ut.data = dT;
         sd.lt = f + " (Frequency " + b;
@@ -340,13 +335,12 @@ const Ispitivanje = () => {
         setLoadData(false);
       }
     } catch (error) {
-      setMessage("greska na serveru");
+      setMessage(error.message);
       setLoadData(false);
     }
   };
 
   const displayBase = async (f) => {
-    // console.log(f);
     const fileData = {
       dir: structure.dir,
       fName: f,
@@ -380,7 +374,7 @@ const Ispitivanje = () => {
       setChartDataIsp(sd);
       setLoadData(false);
     } catch (error) {
-      setMessage("Greska na serveru");
+      setMessage(error.message);
       setLoadData(false);
     }
   };
@@ -396,13 +390,10 @@ const Ispitivanje = () => {
     const data = await getValue(dbName, dbVersion, store, e);
     if (data) {
       setChartDataIsp(data);
-      console.log(e);
     } else {
       setModal(true);
       setFileTree(e.substring(9, 12));
-      console.log(e);
     }
-    console.log(chartDataIsp);
   };
 
   const deleteGraph = async (e) => {
@@ -542,7 +533,6 @@ const Ispitivanje = () => {
                                           fazaEl: elpn.faza_opis,
                                           izolacija: elpn.isp,
                                         });
-                                        console.log(examine);
                                         getGrapf(elpn.moja_sifra);
                                       }
                                     }}

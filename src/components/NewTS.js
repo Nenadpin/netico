@@ -97,11 +97,12 @@ const NewTS = ({ tsList, setTsList }) => {
           objekatRef.current.value = "TS";
           koordRef.current.value = "";
         } else {
-          setMessage("Greska servera...");
+          const errorData = await response.json();
+          setMessage(errorData.err.message);
           return;
         }
       } catch (error) {
-        setMessage("Greska na serveru");
+        setMessage(error.message);
       }
     } else setMessage("Morate popuniti obavezna polja!");
   };

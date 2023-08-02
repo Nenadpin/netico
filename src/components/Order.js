@@ -107,12 +107,13 @@ const Order = ({ setFilter }) => {
           setTimeout(() => keepWorking(), 2000);
           setOrders([...orders, tempOrder]);
         } else {
-          setMessage("neka greska...");
+          const errorData = await response2.json();
+          setMessage(errorData.err.message);
           setLoadData(false);
           return;
         }
       } catch (error) {
-        setMessage("greska na serveru");
+        setMessage(error.message);
         setLoadData(false);
       }
     } else setMessage("Niste popunili sve podatke!");
@@ -139,7 +140,8 @@ const Order = ({ setFilter }) => {
           setTimeout(() => logout(), 3000);
           return;
         } else if (response.status === 501) {
-          setMessage("Greska na serveru!");
+          const errorData = await response.json();
+          setMessage(errorData.error);
           setLoadData(false);
         }
       } catch (err) {
