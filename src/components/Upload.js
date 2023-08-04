@@ -7,8 +7,15 @@ import ReportContext from "../Context";
 import Spinner from "./Spinner";
 
 const Upload = () => {
-  const { narudzbenica, ispList, setMessage, logout, role, sviUgovori } =
-    useContext(ReportContext);
+  const {
+    narudzbenica,
+    ispList,
+    setMessage,
+    logout,
+    role,
+    sviUgovori,
+    keepWorking,
+  } = useContext(ReportContext);
   const [sifra, setSifra] = useState(null);
   const [loadData, setLoadData] = useState(false);
   let acceptedFileTypes = "";
@@ -59,7 +66,9 @@ const Upload = () => {
         const json = await response.json();
         if (json.status === "success") {
           setMessage("Primljeno!");
-          setTimeout(() => logout(), 2000);
+          role === "tech"
+            ? setTimeout(() => keepWorking(), 2000)
+            : setTimeout(() => logout(), 2000);
           setLoadData(false);
         } else setMessage(json.status);
       } catch (error) {

@@ -506,7 +506,6 @@ const Start = () => {
                   cursor: "pointer",
                   background: "green",
                   maxWidth: "360px",
-                  color: "white",
                   marginLeft: "0",
                 }}
                 onClick={() => {
@@ -526,11 +525,13 @@ const Start = () => {
         extra ? (
           <>
             {!greska ? (
-              <p
+              <button
+                className="block-btn"
                 style={{
                   cursor: "pointer",
-                  color: "blue",
-                  marginBottom: "5px",
+                  background: "red",
+                  maxWidth: "360px",
+                  marginLeft: "0",
                 }}
                 onClick={() => {
                   setChangePass(false);
@@ -540,11 +541,16 @@ const Start = () => {
                 }}
               >
                 Greska u narudzbenici
-              </p>
+              </button>
             ) : null}
             {!upload ? (
-              <p
-                style={{ cursor: "pointer", color: "blue" }}
+              <button
+                className="block-btn"
+                style={{
+                  cursor: "pointer",
+                  maxWidth: "360px",
+                  marginLeft: "0",
+                }}
                 onClick={() => {
                   setChangePass(false);
                   setUpload(true);
@@ -552,7 +558,7 @@ const Start = () => {
                 }}
               >
                 Upload ostalih fajlova
-              </p>
+              </button>
             ) : null}
           </>
         ) : null}

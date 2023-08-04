@@ -4,7 +4,7 @@ import ReportContext from "../Context";
 import serbianTransliteration from "serbian-transliteration";
 
 const NewContract = () => {
-  const { role, sviUgovori, setMessage, logout, kd, setKd } =
+  const { role, sviUgovori, setMessage, keepWorking, kd, setKd } =
     useContext(ReportContext);
   const sifraCon = useRef();
   const brKorRef = useRef();
@@ -47,7 +47,7 @@ const NewContract = () => {
         );
         if (response.status === 210) {
           setMessage("primljeno");
-          setTimeout(() => logout(), 2000);
+          setTimeout(() => keepWorking(), 2000);
         } else {
           const errorData = await response.json();
           setMessage(errorData.err.message);
