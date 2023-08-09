@@ -410,7 +410,7 @@ const Ispitivanje = () => {
         columnGap: "50px",
       }}
     >
-      {loadData && <Spinner />}
+      {loadData && <Spinner message={"Snimanje podataka analize..."} />}
       <div
         className="modal"
         style={{ display: modal ? "block" : "none", zIndex: "1" }}

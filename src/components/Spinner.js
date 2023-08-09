@@ -1,6 +1,6 @@
 import React from "react";
 
-const Spinner = () => {
+const Spinner = ({ message }) => {
   return (
     <div
       className="modal"
@@ -11,7 +11,7 @@ const Spinner = () => {
         alignItems: "center",
       }}
     >
-      <h2>Loading data...</h2>
+      <h2>{message ? message : "Loading data..."}</h2>
     </div>
   );
 };

@@ -154,7 +154,9 @@ const Order = ({ setFilter }) => {
   return (
     <div className="order">
       <>
-        {loadData ? <Spinner /> : null}
+        {loadData ? (
+          <Spinner message={"Snimanje narudzbenice u bazu..."} />
+        ) : null}
         <div className="orderInfo">
           <span style={{ marginTop: "7px" }}>
             <strong>Уговор: </strong>

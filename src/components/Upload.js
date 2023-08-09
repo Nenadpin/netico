@@ -33,7 +33,6 @@ const Upload = () => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       })[0];
       setSifra(sif?.ugovor + "_ISP" + sif?.sifra + "_" + sif?.r_br);
-      console.log(sif?.ugovor + "_ISP" + sif?.sifra + "_" + sif?.r_br);
     }
   }, [narudzbenica]);
   const uploadForm = useRef();
@@ -41,7 +40,7 @@ const Upload = () => {
   const sendFiles = async () => {
     const token = sessionStorage.getItem(role);
     const myFiles = document.getElementById("myFiles").files;
-    //console.log(myFiles.length);
+    console.log(myFiles.length);
     if (myFiles.length > 0) {
       const formData = new FormData();
       setLoadData(true);
@@ -62,7 +61,6 @@ const Upload = () => {
             body: formData,
           }
         );
-
         const json = await response.json();
         if (json.status === "success") {
           setMessage("Primljeno!");
@@ -70,7 +68,10 @@ const Upload = () => {
             ? setTimeout(() => keepWorking(), 2000)
             : setTimeout(() => logout(), 2000);
           setLoadData(false);
-        } else setMessage(json.status);
+        } else {
+          setMessage(json.status);
+          setLoadData(false);
+        }
       } catch (error) {
         setMessage(error.message);
         setLoadData(false);
@@ -80,7 +81,7 @@ const Upload = () => {
 
   return (
     <>
-      {loadData && <Spinner />}
+      {loadData && <Spinner message={"Uploading files to server..."} />}
       {sifra ? (
         <div>
           <p

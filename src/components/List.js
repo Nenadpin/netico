@@ -28,7 +28,7 @@ const List = ({
 
   if (!isLoading) {
     return (
-      <h2 style={{ position: "fixed", top: "50vh", left: "20cm" }}>
+      <h2 style={{ position: "fixed", top: "50vh", left: "10cm" }}>
         Generating element graphs...
       </h2>
     );

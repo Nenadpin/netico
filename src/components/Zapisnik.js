@@ -470,7 +470,7 @@ const Zapisnik = () => {
 
   return (
     <div className="zapisnik">
-      {loadData && <Spinner />}
+      {loadData && <Spinner message={"Upisivanje zapisnika u bazu..."} />}
       {naruceno ? (
         <>
           <div className="zapisnikEl">

@@ -32,8 +32,15 @@ const Izvestaji = ({ reports }) => {
       }}
     >
       {reports
-        ? reports.map((r) => (
-            <div>
+        ? reports.map((r, index) => (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+              key={index}
+            >
               <span>
                 {r.broj_izvestaja} - {r.naziv}
               </span>
