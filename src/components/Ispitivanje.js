@@ -385,14 +385,14 @@ const Ispitivanje = () => {
     }
   }, [baseFile]);
 
-  const getGrapf = async (e) => {
+  const getGrapf = async (e, p) => {
     const store = `ISP${sifraIspitivanja}`;
     const data = await getValue(dbName, dbVersion, store, e);
     if (data) {
       setChartDataIsp(data);
     } else {
       setModal(true);
-      setFileTree(e.substring(9, 12));
+      setFileTree(p);
     }
   };
 
@@ -511,8 +511,8 @@ const Ispitivanje = () => {
                                   <span>{`Sprat: ${elpn.moja_sifra.substring(
                                     8,
                                     9
-                                  )}   Pozicija: ${elpn.moja_sifra.substring(
-                                    15
+                                  )}   Pozicija: ${elpn.moja_sifra.slice(
+                                    -1
                                   )}`}</span>
                                   <span
                                     style={{
@@ -524,6 +524,7 @@ const Ispitivanje = () => {
                                   </span>
                                   <span
                                     onClick={() => {
+                                      console.log(elpn.moja_sifra, ispEls);
                                       if (ispEls?.includes(elpn.moja_sifra)) {
                                         setCurrentEl({
                                           element: elpn.el_skraceno,
@@ -533,7 +534,10 @@ const Ispitivanje = () => {
                                           fazaEl: elpn.faza_opis,
                                           izolacija: elpn.isp,
                                         });
-                                        getGrapf(elpn.moja_sifra);
+                                        getGrapf(
+                                          elpn.moja_sifra,
+                                          polje.celija_oznaka
+                                        );
                                       }
                                     }}
                                     onDoubleClick={() => {

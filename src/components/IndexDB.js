@@ -20,17 +20,16 @@ export const addObject = async (
   object
 ) => {
   const db = await openDatabase(dbName, dbVersion, objectStoreName);
-  await db
-    .transaction(objectStoreName, "readwrite")
-    .objectStore(objectStoreName)
-    .add(object, key);
+  const transaction = db.transaction(objectStoreName, "readwrite");
+  const objectStore = transaction.objectStore(objectStoreName);
+  await objectStore.add(object, key);
 };
+
 export const deleteObject = async (dbName, dbVersion, objectStoreName, key) => {
   const db = await openDatabase(dbName, dbVersion, objectStoreName);
-  await db
-    .transaction(objectStoreName, "readwrite")
-    .objectStore(objectStoreName)
-    .delete(key);
+  const transaction = db.transaction(objectStoreName, "readwrite");
+  const objectStore = transaction.objectStore(objectStoreName);
+  await objectStore.delete(key);
 };
 
 export const updateObject = async (
@@ -41,30 +40,27 @@ export const updateObject = async (
   object
 ) => {
   const db = await openDatabase(dbName, dbVersion, objectStoreName);
-  await db
-    .transaction(objectStoreName, "readwrite")
-    .objectStore(objectStoreName)
-    .put(object, key);
+  const transaction = db.transaction(objectStoreName, "readwrite");
+  const objectStore = transaction.objectStore(objectStoreName);
+  await objectStore.put(object, key);
 };
 
 export const getValue = async (dbName, dbVersion, objectStoreName, key) => {
   const db = await openDatabase(dbName, dbVersion, objectStoreName);
-  const objectStore = db
-    .transaction(objectStoreName, "readonly")
-    .objectStore(objectStoreName);
-  const keyExists = await objectStore.getKey(key);
+  const transaction = db.transaction(objectStoreName, "readonly");
+  const objectStore = transaction.objectStore(objectStoreName);
 
-  if (keyExists !== undefined) {
-    return objectStore.get(key);
-  } else {
+  if (objectStore.keyPath !== key) {
     return null;
   }
+
+  return objectStore.get(key);
 };
 
 export const getAllObjects = async (dbName, dbVersion, objectStoreName) => {
   const db = await openDatabase(dbName, dbVersion, objectStoreName);
-  return db
-    .transaction(objectStoreName, "readonly")
-    .objectStore(objectStoreName)
-    .getAll();
+  const transaction = db.transaction(objectStoreName, "readonly");
+  const objectStore = transaction.objectStore(objectStoreName);
+
+  return objectStore.getAll();
 };

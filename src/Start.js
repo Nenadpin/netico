@@ -83,7 +83,6 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
-      console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -543,7 +542,7 @@ const Start = () => {
                 Greska u narudzbenici
               </button>
             ) : null}
-            {!upload ? (
+            {!upload && narudzbenica.operativno === "ispitano" ? (
               <button
                 className="block-btn"
                 style={{
@@ -555,9 +554,10 @@ const Start = () => {
                   setChangePass(false);
                   setUpload(true);
                   setExtra(false);
+                  console.log(narudzbenica);
                 }}
               >
-                Upload ostalih fajlova
+                Upload obradjene seme
               </button>
             ) : null}
           </>
@@ -645,7 +645,9 @@ const Start = () => {
         <UserNew />
       ) : null}
       {upload && trafoStanica.sifra_ts && role ? <Upload /> : null}
-      {tipPrikaza === 8 && reports ? <Izvestaji reports={reports} /> : null}
+      {tipPrikaza === 8 && reports && role === "admin" ? (
+        <Izvestaji reports={reports} />
+      ) : null}
       {role === "tech" && tipPrikaza === 2 && !trafoStanica.sifra_ts ? (
         <OrderList orders={orders} sviUgovori={sviUgovori} />
       ) : null}

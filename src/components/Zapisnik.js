@@ -413,8 +413,8 @@ const Zapisnik = () => {
         localStorage.removeItem("zapisnik");
         localStorage.removeItem("total");
       } else {
-        const errorData = await response2.json();
-        setMessage(errorData.error);
+        // const errorData = await response2.json();
+        setMessage(response2.error);
         setLoadData(false);
         return;
       }
@@ -451,8 +451,8 @@ const Zapisnik = () => {
         localStorage.removeItem("total");
         setTimeout(() => logout(), 3000);
       } else {
-        const errorData = await response2.json();
-        setMessage(errorData.error);
+        // const errorData = await response2.json();
+        setMessage(response2.error);
         setLoadData(false);
         return;
       }

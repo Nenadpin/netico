@@ -28,7 +28,6 @@ const Upload = () => {
   }
   useMemo(() => {
     if (narudzbenica) {
-      console.log(narudzbenica, ispList);
       let sif = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       })[0];
@@ -40,14 +39,12 @@ const Upload = () => {
   const sendFiles = async () => {
     const token = sessionStorage.getItem(role);
     const myFiles = document.getElementById("myFiles").files;
-    console.log(myFiles.length);
     if (myFiles.length > 0) {
       const formData = new FormData();
       setLoadData(true);
       Object.keys(myFiles).forEach((key) => {
         formData.append(myFiles.item(key).name, myFiles.item(key));
       });
-      console.log(token, role, narudzbenica.broj_narudzbenice);
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER_URL}/upload${sifra}`,
