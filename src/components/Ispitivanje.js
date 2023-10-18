@@ -5,6 +5,7 @@ import ReportContext from "../Context";
 import PrintGraph from "./PrintGraph";
 import Spinner from "./Spinner";
 import { useEffect } from "react";
+import PrintHits from "./PrintHits";
 
 const Ispitivanje = () => {
   const {
@@ -49,7 +50,8 @@ const Ispitivanje = () => {
         `${process.env.REACT_APP_SERVER_URL}/isp_elementi${narudzbenica.broj_narudzbenice}`
       );
       const jsonData = await response.json();
-      setIspEls(jsonData.elementi);
+      setIspEls(jsonData.elementi.sort());
+      console.log(jsonData);
       setReportCount(jsonData.broj_izvestaja);
     } catch (error) {
       setLoadData(false);
@@ -67,6 +69,7 @@ const Ispitivanje = () => {
         lub: "",
         luf: "",
         lt: "",
+        luh: "",
         us: {
           label: labelS,
           dataF: [],
@@ -74,6 +77,12 @@ const Ispitivanje = () => {
         },
         ut: {
           label: labelT,
+          data: [],
+        },
+        hits: {
+          data: [],
+        },
+        bars: {
           data: [],
         },
       });
@@ -98,7 +107,7 @@ const Ispitivanje = () => {
 
   useEffect(() => {
     if (ispEls) {
-      const filteredPolja = polja
+      let filteredPolja = polja
         .filter((item) => item !== null)
         .map((item) => ({
           ...item,
@@ -107,7 +116,19 @@ const Ispitivanje = () => {
           ),
         }))
         .filter((item) => item.element?.length > 0);
+      filteredPolja = filteredPolja.sort((a, b) => {
+        const celijaA = a.celija_oznaka.trim();
+        const celijaB = b.celija_oznaka.trim();
+        if (celijaA < celijaB) {
+          return -1;
+        }
+        if (celijaA > celijaB) {
+          return 1;
+        }
+        return 0;
+      });
       setIspPolja(filteredPolja);
+      console.log(filteredPolja);
       getStorage();
     }
   }, [ispEls]);
@@ -201,9 +222,12 @@ const Ispitivanje = () => {
     sd.us.dataF = [];
     sd.us.dataB = [];
     sd.ut.data = [];
+    sd.hits.data = [];
+    sd.bars.data = [];
     sd.luf = "";
     sd.lub = "";
     sd.lt = "";
+    sd.luh = "";
     setChartDataIsp(() => ({
       ...sd,
     }));
@@ -277,6 +301,14 @@ const Ispitivanje = () => {
     }
   };
 
+  function parseRecord(hit) {
+    let record = hit.split('="');
+    return {
+      x: parseFloat(record[2]) / 18,
+      y: parseFloat(record[3]),
+    };
+  }
+
   const displayFile = async (f) => {
     const fileData = {
       dir: structure.dir,
@@ -329,6 +361,41 @@ const Ispitivanje = () => {
         sd.ut.data = dT;
         sd.lt = f + " (Frequency " + b;
         setChartDataIsp(sd);
+        setLoadData(false);
+      } else if (f?.includes("HITS")) {
+        let Baza = [],
+          tempBar = [];
+        let a = text.split("\r\n");
+        for (let i = 0; i < a.length; i++) {
+          if (a[i].includes("<hit ts=")) {
+            Baza.push(parseRecord(a[i]));
+          } else if (
+            a[i].includes("<RMS units=") &&
+            parseFloat(a[i].split(">")[1]) > 0
+          ) {
+            tempBar[0] = parseFloat(a[i].split(">")[1]);
+          } else if (
+            a[i].includes("<Peak units=") &&
+            parseFloat(a[i].split(">")[1]) > 0
+          ) {
+            tempBar[1] = parseFloat(a[i].split(">")[1]);
+          } else if (
+            a[i].includes("<F1 units=") &&
+            parseFloat(a[i].split(">")[1]) > 0
+          ) {
+            tempBar[2] = parseFloat(a[i].split(">")[1]);
+          } else if (
+            a[i].includes("<F2 units=") &&
+            parseFloat(a[i].split(">")[1]) > 0
+          ) {
+            tempBar[3] = parseFloat(a[i].split(">")[1]);
+          }
+        }
+        let sh = { ...chartDataIsp };
+        sh.hits.data = Baza;
+        sh.bars.data = tempBar;
+        sh.luh = f;
+        setChartDataIsp(sh);
         setLoadData(false);
       } else {
         setMessage("Greska u citanju fajla...");
@@ -388,6 +455,7 @@ const Ispitivanje = () => {
   const getGrapf = async (e, p) => {
     const store = `ISP${sifraIspitivanja}`;
     const data = await getValue(dbName, dbVersion, store, e);
+    console.log(dbName, dbVersion, store, e, data);
     if (data) {
       setChartDataIsp(data);
     } else {
@@ -523,26 +591,26 @@ const Ispitivanje = () => {
                                     {r_br++}
                                   </span>
                                   <span
-                                    onClick={() => {
-                                      console.log(elpn.moja_sifra, ispEls);
-                                      if (ispEls?.includes(elpn.moja_sifra)) {
-                                        setCurrentEl({
-                                          element: elpn.el_skraceno,
-                                          naponEl: el,
-                                          oznakaEl: polje.celija_oznaka,
-                                          sifra: elpn.moja_sifra,
-                                          fazaEl: elpn.faza_opis,
-                                          izolacija: elpn.isp,
-                                        });
-                                        getGrapf(
-                                          elpn.moja_sifra,
-                                          polje.celija_oznaka
-                                        );
+                                    onClick={(e) => {
+                                      if (!e.ctrlKey) {
+                                        if (ispEls?.includes(elpn.moja_sifra)) {
+                                          setCurrentEl({
+                                            element: elpn.el_skraceno,
+                                            naponEl: el,
+                                            oznakaEl: polje.celija_oznaka,
+                                            sifra: elpn.moja_sifra,
+                                            fazaEl: elpn.faza_opis,
+                                            izolacija: elpn.isp,
+                                          });
+                                          getGrapf(
+                                            elpn.moja_sifra,
+                                            polje.celija_oznaka
+                                          );
+                                        }
+                                      } else {
+                                        promeni(elpn.moja_sifra, 5);
+                                        deleteGraph(elpn.moja_sifra);
                                       }
-                                    }}
-                                    onDoubleClick={() => {
-                                      promeni(currentEl.sifra, 5);
-                                      deleteGraph(elpn.moja_sifra);
                                     }}
                                     style={{
                                       backgroundColor:
@@ -608,7 +676,10 @@ const Ispitivanje = () => {
           {currentEl?.fazaEl}
         </div>
         <PrintGraph chartData={chartDataIsp} />
-        <div style={{ marginTop: "20px" }}>
+        {chartDataIsp?.hits.data.length ? (
+          <PrintHits chartData={chartDataIsp} />
+        ) : null}
+        <div style={{ marginTop: "250px" }}>
           <button
             style={{ width: "110px", backgroundColor: "green" }}
             onClick={() => promeni(currentEl?.sifra, 1)}

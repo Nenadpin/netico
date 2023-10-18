@@ -4,7 +4,7 @@ const Footer = ({ pad, str, pageCount, z, sifra }) => {
       style={{
         position: "absolute",
         display: "block",
-        top: pad ? pad : "28cm",
+        top: pad ? pad : "28.5cm",
         left: z === 1 ? "0" : "1.5cm",
       }}
     >

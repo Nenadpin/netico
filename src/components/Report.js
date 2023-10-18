@@ -35,7 +35,6 @@ const Report = () => {
     ispList,
     narudzbenica,
     history,
-    sifraIspitivanja,
     setMessage,
     setUpload,
     setTipPrikaza,
@@ -53,6 +52,7 @@ const Report = () => {
   const dateRef = useRef();
   const dateRef1 = useRef();
   const dateRef2 = useRef();
+  const [extraPage, setExtraPage] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -63,6 +63,7 @@ const Report = () => {
       let no_el = Object.keys(history).length;
       let strNo = 1;
       let acc = 0;
+      let extraG = 1;
       setNo(no_el);
       let tIsp = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
@@ -75,7 +76,6 @@ const Report = () => {
             return Object.keys(history).includes(e.moja_sifra);
           });
         }
-        // console.log(f);
         for (let i = 0; i < f.length; i++) {
           if (f[i].element && f[i].element.length) {
             acc += f[i].element.length;
@@ -83,12 +83,24 @@ const Report = () => {
           if (acc > 44) {
             strNo++;
             acc = 0;
+            extraG += 1;
             i = i - 1;
           }
           if (i > 1 && f[i].napon !== f[i - 1].napon) {
             acc += 4;
           }
         }
+        f = f.sort((a, b) => {
+          const celijaA = a.celija_oznaka.trim();
+          const celijaB = b.celija_oznaka.trim();
+          if (celijaA < celijaB) {
+            return -1;
+          }
+          if (celijaA > celijaB) {
+            return 1;
+          }
+          return 0;
+        });
         setIspPolja(f);
         let tIzvest = reports.filter((r) => {
           return r.narudzbenica === narudzbenica.broj_narudzbenice;
@@ -110,6 +122,7 @@ const Report = () => {
             ? [...nap[110], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
       }
+      if (extraG > Math.ceil(no_el / 43)) setExtraPage(1);
       no_el += 8 + strNo + Object.keys(nap).length;
       setPageCount(no_el);
       setNapIzv(nap);
@@ -175,9 +188,16 @@ const Report = () => {
         " " +
         d.target.value.split(".")[2] +
         ".";
+      // if (
+      //   window.confirm(
+      //     "Da li je potrebna dodatna stranica za tabelu elemenata?"
+      //   )
+      // )
+      //   setExtraPage(1);
     } else
       setMessage("Unesite ispravan datum izvestaja u formatu dd.mm.yyyy.!");
   };
+
   if (!loading)
     return (
       <h2 style={{ position: "fixed", top: "50vh", left: "20cm" }}>
@@ -687,9 +707,7 @@ const Report = () => {
                     </div>
                   </td>
                   <td style={{ border: "1px solid black", textAlign: "left" }}>
-                    <span style={{ marginLeft: "5px" }}>
-                      {ispCurr[0]?.izvrsilac2}
-                    </span>
+                    <span>{ispCurr[0]?.izvrsilac2}</span>
                   </td>
                   <td></td>
                 </tr>
@@ -1068,6 +1086,7 @@ const Report = () => {
             pageCount={[pageCount]}
             napIzv={napIzv}
             sifra={ispCurr[0]?.sifra.substr(-3)}
+            extraPage={extraPage}
           />
           <Zakljucak
             napIzv={napIzv}
@@ -1077,6 +1096,7 @@ const Report = () => {
             ispPolja={ispPolja}
             izvBr={izvBr}
             sifra={ispCurr[0]?.sifra.substr(-3)}
+            extraPage={extraPage}
           />
           {izvBr ? (
             <Listovi

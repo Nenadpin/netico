@@ -3,7 +3,15 @@ import ReportContext from "../Context";
 import Footer from "./Footer";
 import logo from "../headerLogo.png";
 
-const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv, sifra }) => {
+const ReportTable = ({
+  izvBr,
+  no,
+  ispPolja,
+  pageCount,
+  napIzv,
+  sifra,
+  extraPage,
+}) => {
   const { history } = useContext(ReportContext);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
   let r_br = 0;
@@ -11,8 +19,7 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv, sifra }) => {
   useMemo(() => {
     if (no) {
       let total = Math.ceil(no / 43);
-      for (let i = 0; i < total; i++) str.push(8 + i);
-      //console.log(ispPolja, napIzv);
+      for (let i = 0; i < total + extraPage; i++) str.push(8 + i);
     }
   }, [no]);
 
@@ -93,7 +100,8 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv, sifra }) => {
                                   textAlign: "left",
                                 }}
                               >
-                                Табела 2 Резултати испитивања елемената {el} kV
+                                Табела {index + 2}. Резултати испитивања
+                                елемената {el} kV
                               </caption>
                               <colgroup>
                                 <col span="1" style={{ width: "5%" }}></col>
@@ -218,6 +226,19 @@ const ReportTable = ({ izvBr, no, ispPolja, pageCount, napIzv, sifra }) => {
               </>
             );
           })}
+          <textarea
+            rows={3}
+            style={{
+              border: "none",
+              width: "18cm",
+              textAlign: "justify",
+              fontFamily: "arial",
+              fontSize: "0.9rem",
+              marginLeft: "1.5cm",
+              marginTop: "-30px",
+            }}
+            defaultValue="У прилогу извештаја налазе се засебни испитни листови за сваки од елемената. У испитним листовима дати су подаци о елементима који су испитани и UHF снимци у спектралном и временском моду."
+          ></textarea>
         </div>
       ) : null}
     </>

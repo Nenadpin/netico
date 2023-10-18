@@ -49,12 +49,10 @@ export const getValue = async (dbName, dbVersion, objectStoreName, key) => {
   const db = await openDatabase(dbName, dbVersion, objectStoreName);
   const transaction = db.transaction(objectStoreName, "readonly");
   const objectStore = transaction.objectStore(objectStoreName);
-
-  if (objectStore.keyPath !== key) {
+  const graph = await objectStore.get(key);
+  if (!graph) {
     return null;
-  }
-
-  return objectStore.get(key);
+  } else return graph;
 };
 
 export const getAllObjects = async (dbName, dbVersion, objectStoreName) => {

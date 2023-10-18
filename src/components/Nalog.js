@@ -137,7 +137,7 @@ const Nalog = () => {
               </option>
               {emplList.length
                 ? emplList.map((man, index) => (
-                    <option key={index} value={man.ime}>
+                    <option key={index} value={man.ime + ", " + man.zvanje}>
                       {man.ime}
                     </option>
                   ))
@@ -167,7 +167,7 @@ const Nalog = () => {
               </option>
               {emplList.length
                 ? emplList.map((man, index) => (
-                    <option key={index} value={man.ime}>
+                    <option key={index} value={man.ime + ", " + man.zvanje}>
                       {man.ime}
                     </option>
                   ))
@@ -198,7 +198,7 @@ const Nalog = () => {
               </option>
               {emplList.length
                 ? emplList.map((man, index) => (
-                    <option key={index} value={man.ime}>
+                    <option key={index} value={man.ime + ", " + man.zvanje}>
                       {man.ime}
                     </option>
                   ))

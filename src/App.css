@@ -419,6 +419,12 @@ th {
   flex-direction: column;
   width: 800px;
 }
+canvas {
+  height: 200px;
+}
+.diagram canvas {
+  height: 250px;
+}
 
 button {
   font-size: large;
@@ -438,6 +444,7 @@ button {
   padding-left: 1.5cm;
   overflow: hidden;
 }
+
 .reportTable {
   display: block;
   position: relative;
@@ -530,7 +537,7 @@ button {
     visibility: hidden;
   }
   .page-break {
-    break-inside: avoid;
+    page-break-inside: avoid;
   }
   .footer {
     break-after: always;

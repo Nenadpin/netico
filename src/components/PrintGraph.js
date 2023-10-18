@@ -37,6 +37,7 @@ const PrintGraph = ({ chartData }) => {
     plugins: {
       legend: true,
     },
+    maintainAspectRatio: false,
     scales: {
       y: {
         display: true,
@@ -86,6 +87,7 @@ const PrintGraph = ({ chartData }) => {
     plugins: {
       legend: true,
     },
+    maintainAspectRatio: false,
     scales: {
       y: {
         display: true,
@@ -119,12 +121,14 @@ const PrintGraph = ({ chartData }) => {
   };
 
   return (
-    <>
+    <div style={{ height: "200px" }}>
       <Line data={dataU} options={optionsU}></Line>
       {chartData?.ut.data.length ? (
-        <Line data={dataT} options={optionsT}></Line>
+        <div style={{ height: "200px" }}>
+          <Line data={dataT} options={optionsT}></Line>
+        </div>
       ) : null}
-    </>
+    </div>
   );
 };
 

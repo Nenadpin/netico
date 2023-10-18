@@ -3,6 +3,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import ReportContext from "../Context";
 import PrintGraph from "./PrintGraph";
+import PrintHits from "./PrintHits";
 
 const List = ({
   pageCount,
@@ -128,14 +129,14 @@ const List = ({
             <td>Ознака</td>
             <td>{polje.celija_oznaka}</td>
           </tr>
-          <tr style={{ height: "20cm" }}>
+          <tr style={{ height: "21.5cm" }}>
             <td colSpan={10} style={{ border: "none" }}>
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   margin: "auto",
-                  height: "18cm",
+                  height: "21.5cm",
                   width: "14cm",
                 }}
               >
@@ -146,6 +147,17 @@ const List = ({
                     )[0]?.chart
                   }
                 />
+                {ele.history.filter(
+                  (h) => h.sifra_ispitivanja === "ISP" + sifraIspitivanja
+                )[0]?.chart.hits ? (
+                  <PrintHits
+                    chartData={
+                      ele.history.filter(
+                        (h) => h.sifra_ispitivanja === "ISP" + sifraIspitivanja
+                      )[0]?.chart
+                    }
+                  />
+                ) : null}
               </div>
             </td>
           </tr>

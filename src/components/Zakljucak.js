@@ -13,6 +13,7 @@ const Zakljucak = ({
   ispPolja,
   izvBr,
   sifra,
+  extraPage,
 }) => {
   const [zuto, setZuto] = useState(null);
   const [crveno, setCrveno] = useState(null);
@@ -85,7 +86,7 @@ const Zakljucak = ({
               >
                 <Header izvBr={izvBr} />
                 <Footer
-                  str={parseInt(str) + ih}
+                  str={parseInt(str) + ih + extraPage}
                   pageCount={pageCount}
                   z={1}
                   sifra={sifra}
@@ -119,7 +120,7 @@ const Zakljucak = ({
           >
             <Header izvBr={izvBr} />
             <Footer
-              str={parseInt(str) + Object.keys(napIzv).length}
+              str={parseInt(str) + Object.keys(napIzv).length + extraPage}
               pageCount={pageCount}
               z={1}
               sifra={sifra}
@@ -167,18 +168,6 @@ const Zakljucak = ({
                         >
                           {iz === 0 ? (
                             <>
-                              <textarea
-                                rows={3}
-                                style={{
-                                  border: "none",
-                                  width: "18cm",
-                                  textAlign: "justify",
-                                  fontFamily: "arial",
-                                  fontSize: "0.9rem",
-                                  marginTop: "0.5cm",
-                                }}
-                                defaultValue={zakljucakText.start}
-                              ></textarea>
                               <p
                                 style={{
                                   display: "block",
@@ -215,6 +204,8 @@ const Zakljucak = ({
                               marginRight: "1.5cm",
                               fontFamily: "arial",
                               fontSize: "0.9rem",
+                              overflow: "hidden",
+                              scrollbarWidth: "0",
                             }}
                             maxRows={7}
                             defaultValue={`У ${pn}kV делу ТС, ултразвучном методом испитано је ${
@@ -252,6 +243,8 @@ const Zakljucak = ({
                               marginRight: "1.5cm",
                               fontFamily: "arial",
                               fontSize: "0.9rem",
+                              overflow: "hidden",
+                              scrollbarWidth: "0",
                             }}
                             minRows={6}
                             defaultValue={`${zakljucakText?.zadovoljavajuce[0]} мерних трансформатора кабловских завршница, потпорних изолатора ${zakljucakText.zadovoljavajuce[1]}`}
@@ -267,6 +260,7 @@ const Zakljucak = ({
                               fontSize: "0.9rem",
                               fontWeight: "bold",
                               fontStyle: "italic",
+                              scrollbarWidth: "0",
                             }}
                             defaultValue={zakljucakText.zadovoljavajuce[2]}
                           />
@@ -291,6 +285,8 @@ const Zakljucak = ({
                                   marginRight: "1.5cm",
                                   fontFamily: "arial",
                                   fontSize: "0.9rem",
+                                  overflow: "hidden",
+                                  scrollbarWidth: "0",
                                 }}
                                 minRows={3}
                                 defaultValue={
@@ -344,6 +340,7 @@ const Zakljucak = ({
                                   fontSize: "0.9rem",
                                   fontWeight: "bold",
                                   fontStyle: "italic",
+                                  scrollbarWidth: "0",
                                 }}
                                 defaultValue={zakljucakText.delimicna[2]}
                               />
@@ -370,6 +367,8 @@ const Zakljucak = ({
                                   marginRight: "1.5cm",
                                   fontFamily: "arial",
                                   fontSize: "0.9rem",
+                                  overflow: "hidden",
+                                  scrollbarWidth: "0",
                                 }}
                                 minRows={3}
                                 defaultValue={
@@ -414,6 +413,8 @@ const Zakljucak = ({
                                   fontWeight: "bold",
                                   fontStyle: "italic",
                                   fontSize: "0.9rem",
+                                  overflow: "hidden",
+                                  scrollbarWidth: "0",
                                 }}
                                 minRows={3}
                                 defaultValue={zakljucakText.dodatno}
@@ -484,7 +485,7 @@ const Zakljucak = ({
           7 ПРИЛОЗИ
         </p>
         <Footer
-          str={parseInt(str) + Object.keys(napIzv).length + dummy}
+          str={parseInt(str) + Object.keys(napIzv).length + dummy + extraPage}
           pageCount={pageCount}
           sifra={sifra}
         />
