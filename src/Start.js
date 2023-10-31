@@ -83,6 +83,7 @@ const Start = () => {
         `${process.env.REACT_APP_SERVER_URL}/trafo_stanice`
       );
       const jsonData = await response.json();
+      console.log(jsonData);
       setTsList(jsonData.trafo);
       setIspList(jsonData.ispitano);
       setOrders(jsonData.orders);
@@ -182,7 +183,7 @@ const Start = () => {
 
   const prikazi = (y) => {
     setLoadData(true);
-
+    console.log(examine);
     let temp1 = {};
     let temp = examine
       .map((h) => {
@@ -245,11 +246,6 @@ const Start = () => {
         }
       }
       case "upload": {
-        // if (editZap)
-        //   ispOrders = ispOrders.filter((o) => {
-        //     return o.operativno === "uploaded";
-        //   });
-        // else
         ispOrders = ispOrders.filter((o) => {
           return o.operativno === "upisano";
         });
@@ -305,6 +301,7 @@ const Start = () => {
           }
         }
         setDispOrd([...lista]);
+        console.log(lista);
         if (ispOrders.length) break;
         else return;
       }
@@ -337,6 +334,42 @@ const Start = () => {
         ispOrders = [];
     }
     setFilter(true);
+  };
+  const ispravka = async (nar, isp) => {
+    if (
+      window.confirm(
+        `Sigurni ste da ponavljamo analizu za ispitivanje br${isp}?`
+      )
+    ) {
+      const analiza = `ISP${isp}`;
+      const token = sessionStorage.getItem(role);
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_URL}/izmena_isp`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: token,
+            },
+            body: JSON.stringify({
+              nar: nar,
+              isp: analiza,
+            }),
+          }
+        );
+        if (response.status === 210) {
+          setMessage("Analizu je potrebno ponoviti");
+          setTimeout(() => logout(), 2000);
+          return;
+        } else if (response.status === 501) {
+          const errorData = await response.json();
+          setMessage(errorData.error);
+        }
+      } catch (err) {
+        setMessage(err.message);
+      }
+    }
   };
 
   return (
@@ -499,21 +532,35 @@ const Start = () => {
             {narudzbenica?.operativno === "zavrseno" &&
             narudzbenica.stavke &&
             sifraIspitivanja ? (
-              <button
-                className="block-btn"
-                style={{
-                  cursor: "pointer",
-                  background: "green",
-                  maxWidth: "360px",
-                  marginLeft: "0",
-                }}
-                onClick={() => {
-                  setChangePass(false);
-                  izvestaj();
-                }}
-              >
-                Izveštaj za isptitivanje br: {sifraIspitivanja}
-              </button>
+              <>
+                <button
+                  style={{
+                    width: "360px",
+                    backgroundColor: "red",
+                    color: "white",
+                  }}
+                  onClick={() =>
+                    ispravka(narudzbenica.broj_narudzbenice, sifraIspitivanja)
+                  }
+                >
+                  Ispravka analize ISP{sifraIspitivanja}
+                </button>
+                <button
+                  className="block-btn"
+                  style={{
+                    cursor: "pointer",
+                    background: "green",
+                    maxWidth: "360px",
+                    marginLeft: "0",
+                  }}
+                  onClick={() => {
+                    setChangePass(false);
+                    izvestaj();
+                  }}
+                >
+                  Izveštaj za isptitivanje br: {sifraIspitivanja}
+                </button>
+              </>
             ) : null}
           </>
         ) : null}
@@ -554,7 +601,7 @@ const Start = () => {
                   setChangePass(false);
                   setUpload(true);
                   setExtra(false);
-                  console.log(narudzbenica);
+                  //console.log(narudzbenica);
                 }}
               >
                 Upload obradjene seme

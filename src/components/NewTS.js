@@ -186,7 +186,7 @@ const NewTS = ({ tsList, setTsList }) => {
             }}
             style={{ width: "320px" }}
           />
-          <h3>Region</h3>
+          <h3>Distributivno Podrucje</h3>
           <input
             style={{
               fontFamily: "Arial",

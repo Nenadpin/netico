@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import ReportContext from "../Context";
 import Footer from "./Footer";
 import logo from "../headerLogo.png";
@@ -6,22 +6,25 @@ import logo from "../headerLogo.png";
 const ReportTable = ({
   izvBr,
   no,
+  tablePages,
   ispPolja,
   pageCount,
   napIzv,
   sifra,
-  extraPage,
 }) => {
   const { history } = useContext(ReportContext);
   const colors = ["Без напона", "Зелено", "Жуто", "Црвено", "Љубичасто"];
+  // const [pages, setPages] = useState(null);
   let r_br = 0;
   let str = [];
   useMemo(() => {
-    if (no) {
-      let total = Math.ceil(no / 43);
-      for (let i = 0; i < total + extraPage; i++) str.push(8 + i);
+    // console.log(tablePages);
+    if (tablePages) {
+      //      let total = Math.ceil(no / 43);
+      for (let i = 0; i < tablePages; i++) str.push(8 + i);
     }
-  }, [no]);
+    //setPages(str.length);
+  }, [tablePages]);
 
   return (
     <>
@@ -31,7 +34,7 @@ const ReportTable = ({
             display: "flex",
             flexDirection: "column",
             columnGap: "50px",
-            height: (29.5 * str.length).toString() + "cm",
+            height: (29.5 * tablePages).toString() + "cm",
           }}
         >
           <table style={{ border: "none", width: "21cm" }}>
@@ -92,6 +95,7 @@ const ReportTable = ({
                               style={{ marginTop: "0", width: "18cm" }}
                             >
                               <caption
+                                className="capt"
                                 key={index}
                                 style={{
                                   fontSize: "16px",
@@ -110,7 +114,7 @@ const ReportTable = ({
                                 <col span="1" style={{ width: "25%" }}></col>
                                 <col span="1" style={{ width: "20%" }}></col>
                               </colgroup>
-                              <thead>
+                              <thead className="capt">
                                 <tr>
                                   <th>Р.бр.</th>
                                   <th>Поље</th>
@@ -214,12 +218,12 @@ const ReportTable = ({
               </tr>
             </tfoot>
           </table>
-          {str?.map((page, index) => {
+          {Array.from({ length: tablePages }).map((page, index) => {
             return (
               <>
                 <Footer
-                  pad={(28.5 + index * 29.5).toString() + "cm"}
-                  str={page}
+                  pad={(28.7 + index * 29.7).toString() + "cm"}
+                  str={8 + index}
                   pageCount={pageCount}
                   sifra={sifra}
                 />

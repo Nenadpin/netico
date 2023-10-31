@@ -9,17 +9,25 @@ const Zakljucak = ({
   napIzv,
   str,
   pageCount,
-  setPageCount,
+  zakljucakPages,
   ispPolja,
   izvBr,
   sifra,
-  extraPage,
 }) => {
   const [zuto, setZuto] = useState(null);
   const [crveno, setCrveno] = useState(null);
-  const [dummy, setDummy] = useState(0);
   const { history } = useContext(ReportContext);
 
+  useMemo(() => {}, [zakljucakPages]);
+  // const expandPage = () => {
+  //   if (dummy === 0) {
+  //     setPageCount((p) => p + 1);
+  //     setDummy(1);
+  //   } else {
+  //     setPageCount((p) => p - 1);
+  //     setDummy(0);
+  //   }
+  // };
   useMemo(() => {
     // console.log(history);
     if (ispPolja) {
@@ -46,31 +54,21 @@ const Zakljucak = ({
           }
         }
       }
-      // console.log(f, g);
       setZuto(f);
       setCrveno(g);
+      // if (f.length + g.length > 18) expandPage();
     }
   }, [history]);
-  const expandPage = () => {
-    if (dummy === 0) {
-      setPageCount((p) => p + 1);
-      setDummy(1);
-    } else {
-      setPageCount((p) => p - 1);
-      setDummy(0);
-    }
-  };
 
   return (
     <>
       <div
         className="report"
         style={{
-          height:
-            ((Object.keys(napIzv).length + dummy) * 29.5).toString() + "cm",
+          height: (zakljucakPages * 29.5).toString() + "cm",
         }}
       >
-        {Object.keys(napIzv).map((h, ih) => {
+        {Array.from({ length: zakljucakPages }).map((h, ih) => {
           return (
             <>
               <div
@@ -86,7 +84,7 @@ const Zakljucak = ({
               >
                 <Header izvBr={izvBr} />
                 <Footer
-                  str={parseInt(str) + ih + extraPage}
+                  str={parseInt(str) + ih}
                   pageCount={pageCount}
                   z={1}
                   sifra={sifra}
@@ -107,7 +105,7 @@ const Zakljucak = ({
             </>
           );
         })}
-        {dummy > 0 ? (
+        {/* {zakljucakPages > 0 ? (
           <div
             className="zakljucak"
             style={{
@@ -120,13 +118,13 @@ const Zakljucak = ({
           >
             <Header izvBr={izvBr} />
             <Footer
-              str={parseInt(str) + Object.keys(napIzv).length + extraPage}
+              str={parseInt(str) + Object.keys(napIzv).length}
               pageCount={pageCount}
               z={1}
               sifra={sifra}
             />
           </div>
-        ) : null}
+        ) : null} */}
         <table
           style={{
             border: "none",
@@ -149,8 +147,7 @@ const Zakljucak = ({
           </thead>
           <tbody
             style={{
-              height:
-                ((Object.keys(napIzv).length + dummy) * 26.7).toString() + "cm",
+              height: (zakljucakPages * 26.7).toString() + "cm",
             }}
           >
             <tr style={{ border: "none" }}>
@@ -193,7 +190,7 @@ const Zakljucak = ({
                               color: "#0073ce",
                             }}
                           >
-                            6.1 Напонски ниво {pn}kV
+                            6.{iz + 1} Напонски ниво {pn}kV
                           </p>
                           <TextareaAutosize
                             style={{
@@ -210,7 +207,9 @@ const Zakljucak = ({
                             maxRows={7}
                             defaultValue={`У ${pn}kV делу ТС, ултразвучном методом испитано је ${
                               Object.keys(history)?.length
-                            },  мерних трансформатора,  струјних,  напонских мерних трансформатора, кабловских завршница, потпорних изолатора. Резултати испитивања приказани су у Табели 2, испитни листови испитане опреме налазе се у делу 7 ПРИЛОЗИ.`}
+                            },  мерних трансформатора,  струјних,  напонских мерних трансформатора, кабловских завршница, потпорних изолатора. Резултати испитивања приказани су у Табели ${
+                              iz + 2
+                            }, испитни листови испитане опреме налазе се у делу 7 ПРИЛОЗИ.`}
                           />
                           <p
                             style={{
@@ -247,7 +246,11 @@ const Zakljucak = ({
                               scrollbarWidth: "0",
                             }}
                             minRows={6}
-                            defaultValue={`${zakljucakText?.zadovoljavajuce[0]} мерних трансформатора кабловских завршница, потпорних изолатора ${zakljucakText.zadovoljavajuce[1]}`}
+                            defaultValue={`${
+                              zakljucakText?.zadovoljavajuce[0]
+                            } мерних трансформатора кабловских завршница, потпорних изолатора оцењено је као задовољавајуће, означено зеленом бојом у Табели ${
+                              iz + 2
+                            } ${zakljucakText.zadovoljavajuce[1]}`}
                           />
                           <TextareaAutosize
                             style={{
@@ -291,7 +294,8 @@ const Zakljucak = ({
                                 minRows={3}
                                 defaultValue={
                                   zakljucakText.delimicna[0] +
-                                  zakljucakText.delimicna[1]
+                                  zakljucakText.delimicna[1] +
+                                  ` ${iz + 2}, означени жутом бојом:`
                                 }
                               />
                               {zuto.map((e, id) => {
@@ -373,7 +377,8 @@ const Zakljucak = ({
                                 minRows={3}
                                 defaultValue={
                                   zakljucakText.znacajna[0] +
-                                  zakljucakText.znacajna[1]
+                                  zakljucakText.znacajna[1] +
+                                  ` ${iz + 2}, означени црвеном бојом:`
                                 }
                               />
                               {crveno.map((e, id) => {
@@ -480,12 +485,12 @@ const Zakljucak = ({
             color: "#0073ce",
             marginTop: "13.5cm",
           }}
-          onClick={() => expandPage()}
+          // onClick={() => expandPage()}
         >
           7 ПРИЛОЗИ
         </p>
         <Footer
-          str={parseInt(str) + Object.keys(napIzv).length + dummy + extraPage}
+          str={parseInt(str) + zakljucakPages}
           pageCount={pageCount}
           sifra={sifra}
         />

@@ -17,7 +17,7 @@ const Header = ({ izvBr }) => {
             border: "1px 0",
           }}
         >
-          <span className="headerLogoText">Netico solutions</span>
+          <span className="headerLogoText">Netico Solutions</span>
           <span
             style={{
               textAlign: "right",

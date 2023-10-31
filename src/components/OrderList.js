@@ -50,7 +50,7 @@ const OrderList = ({ orders, sviUgovori }) => {
                 ))}
               </select>
             </th>
-            <th>Opis ugovora</th>
+            <th>Trafo Stanica</th>
             <th>Daum nar.</th>
             <th>Status</th>
           </tr>
@@ -62,12 +62,7 @@ const OrderList = ({ orders, sviUgovori }) => {
                   <td>{o.broj_narudzbenice}</td>
                   <td>{o.sifra_ts}</td>
                   <td>{o.sifra_ugovora}</td>
-                  <td>
-                    {
-                      sviUgovori.filter((u) => u.oznaka === o.sifra_ugovora)[0]
-                        .opis_ugovora
-                    }
-                  </td>
+                  <td>{o.naziv}</td>
                   <td>
                     {o.datum.substring(8, 10) +
                       "." +

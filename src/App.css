@@ -545,4 +545,7 @@ button {
   .report {
     break-inside: avoid;
   }
+  .capt {
+    break-after: avoid;
+  }
 }

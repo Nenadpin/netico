@@ -51,7 +51,7 @@ const Ispitivanje = () => {
       );
       const jsonData = await response.json();
       setIspEls(jsonData.elementi.sort());
-      console.log(jsonData);
+      //console.log(jsonData);
       setReportCount(jsonData.broj_izvestaja);
     } catch (error) {
       setLoadData(false);
@@ -91,17 +91,22 @@ const Ispitivanje = () => {
   };
   const getStorage = async () => {
     const store = `ISP${sifraIspitivanja}`;
-    const localData = await getAllObjects(dbName, dbVersion, store);
-    if (localData.length && examine) {
-      let tempel = [...examine];
-      for (const data of localData) {
-        tempel = tempel.map((e) => {
-          if (e.moja_sifra === data.moja_sifra) {
-            return { ...e, isp: data.isp };
-          } else return e;
-        });
+    try {
+      const localData = await getAllObjects(dbName, dbVersion, store);
+      console.log(localData);
+      if (localData.length && examine) {
+        let tempel = [...examine];
+        for (const data of localData) {
+          tempel = tempel.map((e) => {
+            if (e.moja_sifra === data.moja_sifra) {
+              return { ...e, isp: data.isp };
+            } else return e;
+          });
+        }
+        setExamine(tempel);
       }
-      setExamine(tempel);
+    } catch (error) {
+      console.log("greska");
     }
   };
 
@@ -128,7 +133,6 @@ const Ispitivanje = () => {
         return 0;
       });
       setIspPolja(filteredPolja);
-      console.log(filteredPolja);
       getStorage();
     }
   }, [ispEls]);
@@ -222,12 +226,12 @@ const Ispitivanje = () => {
     sd.us.dataF = [];
     sd.us.dataB = [];
     sd.ut.data = [];
-    sd.hits.data = [];
-    sd.bars.data = [];
+    if (sd.hits.data) sd.hits.data = [];
+    if (sd.bars.data) sd.bars.data = [];
     sd.luf = "";
     sd.lub = "";
     sd.lt = "";
-    sd.luh = "";
+    if (sd.luh) sd.luh = "";
     setChartDataIsp(() => ({
       ...sd,
     }));
@@ -676,7 +680,7 @@ const Ispitivanje = () => {
           {currentEl?.fazaEl}
         </div>
         <PrintGraph chartData={chartDataIsp} />
-        {chartDataIsp?.hits.data.length ? (
+        {chartDataIsp?.hits?.data.length ? (
           <PrintHits chartData={chartDataIsp} />
         ) : null}
         <div style={{ marginTop: "250px" }}>

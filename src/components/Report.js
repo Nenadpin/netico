@@ -41,7 +41,6 @@ const Report = () => {
   } = useContext(ReportContext);
 
   const [pageCount, setPageCount] = useState(0);
-  const [no, setNo] = useState(0);
   const [ispCurr, setIspCurr] = useState([]);
   const [napIzv, setNapIzv] = useState(null);
   const [ispPolja, setIspPolja] = useState(null);
@@ -52,19 +51,32 @@ const Report = () => {
   const dateRef = useRef();
   const dateRef1 = useRef();
   const dateRef2 = useRef();
-  const [extraPage, setExtraPage] = useState(0);
+  const templateRef = useRef();
+  const [tablePages, setTablePages] = useState(null);
+  const [zakljucakPages, setZakljucakPages] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     // console.log("loaded");
   }, []);
+
+  const calculatePages = (template) => {
+    const pgT = template.split(".");
+    if (pgT.length === 2) {
+      setTablePages(parseInt(pgT[0]));
+      setZakljucakPages(parseInt(pgT[1]));
+      setPageCount(
+        Object.keys(history).length + tablePages + zakljucakPages + 8
+      );
+    }
+  };
   useMemo(() => {
     if (narudzbenica?.stavke && polja && history) {
       let no_el = Object.keys(history).length;
-      let strNo = 1;
-      let acc = 0;
-      let extraG = 1;
-      setNo(no_el);
+      // let strNo = 1;
+      // let acc = 0;
+      // let extraG = 1;
+      //      setNo(no_el);
       let tIsp = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       });
@@ -76,20 +88,20 @@ const Report = () => {
             return Object.keys(history).includes(e.moja_sifra);
           });
         }
-        for (let i = 0; i < f.length; i++) {
-          if (f[i].element && f[i].element.length) {
-            acc += f[i].element.length;
-          }
-          if (acc > 44) {
-            strNo++;
-            acc = 0;
-            extraG += 1;
-            i = i - 1;
-          }
-          if (i > 1 && f[i].napon !== f[i - 1].napon) {
-            acc += 4;
-          }
-        }
+        // for (let i = 0; i < f.length; i++) {
+        //   if (f[i].element && f[i].element.length) {
+        //     acc += f[i].element.length;
+        //   }
+        //   if (acc > 44) {
+        //     strNo++;
+        //     acc = 0;
+        //     extraG += 1;
+        //     i = i - 1;
+        //   }
+        //   if (i > 1 && f[i].napon !== f[i - 1].napon) {
+        //     acc += 4;
+        //   }
+        // }
         f = f.sort((a, b) => {
           const celijaA = a.celija_oznaka.trim();
           const celijaB = b.celija_oznaka.trim();
@@ -101,6 +113,7 @@ const Report = () => {
           }
           return 0;
         });
+        console.log(narudzbenica, reports);
         setIspPolja(f);
         let tIzvest = reports.filter((r) => {
           return r.narudzbenica === narudzbenica.broj_narudzbenice;
@@ -108,6 +121,7 @@ const Report = () => {
         if (tIzvest.length) setIzvBr({ ...tIzvest[0] });
       }
       let nap = {};
+
       for (let i = 0; i < narudzbenica.stavke.length; i++) {
         if ([1, 2, 6, 7, 10, 12].includes(narudzbenica.stavke[i].pos))
           nap[10] = nap[10]
@@ -122,9 +136,11 @@ const Report = () => {
             ? [...nap[110], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
       }
-      if (extraG > Math.ceil(no_el / 43)) setExtraPage(1);
-      no_el += 8 + strNo + Object.keys(nap).length;
-      setPageCount(no_el);
+      // if (extraG > Math.ceil(no_el / 43)) setExtraPage(1);
+      // no_el += 8 + strNo + Object.keys(nap).length;
+      //     setPageCount(no_el);
+      setTablePages(Math.ceil(no_el / 43));
+      setZakljucakPages(Object.keys(nap).length);
       setNapIzv(nap);
     }
   }, [narudzbenica]);
@@ -188,12 +204,6 @@ const Report = () => {
         " " +
         d.target.value.split(".")[2] +
         ".";
-      // if (
-      //   window.confirm(
-      //     "Da li je potrebna dodatna stranica za tabelu elemenata?"
-      //   )
-      // )
-      //   setExtraPage(1);
     } else
       setMessage("Unesite ispravan datum izvestaja u formatu dd.mm.yyyy.!");
   };
@@ -279,7 +289,7 @@ const Report = () => {
               marginTop: "-10px",
             }}
           >
-            Netico solutions
+            Netico Solutions
           </p>
           <p
             style={{
@@ -314,6 +324,7 @@ const Report = () => {
               color: "#74bc74",
               display: "block",
               textAlign: "center",
+              fontWeight: "600",
             }}
           >
             {izvBr?.naziv}
@@ -353,7 +364,7 @@ const Report = () => {
               marginTop: "-10px",
             }}
           >
-            Netico solutions
+            Netico Solutions
           </p>
           <div>
             <p
@@ -399,7 +410,7 @@ const Report = () => {
                 display: "block",
                 textAlign: "center",
                 color: "#74bc74",
-                fontWeight: "bold",
+                fontWeight: "600",
                 marginTop: "0",
               }}
             >
@@ -439,7 +450,7 @@ const Report = () => {
                     Број уговора
                   </td>
                   <td style={{ lineHeight: "20px", textAlign: "left" }}>
-                    Овирни споразум бр. {ugovor?.broj_ugovora_korisnik} од{" "}
+                    Оквирни споразум бр. {ugovor?.broj_ugovora_korisnik} од{" "}
                     {ugovor?.datum_ugovora} године према ЈН 18-22
                   </td>
                 </tr>
@@ -458,7 +469,9 @@ const Report = () => {
                     Објекат
                   </td>
                   <td style={{ lineHeight: "40px", textAlign: "left" }}>
-                    трансформаторска станица
+                    {izvBr?.naziv.substring(0, 2) === "ТС"
+                      ? "трансформаторска станица"
+                      : "разводно постројење"}
                   </td>
                 </tr>
                 <tr>
@@ -499,8 +512,9 @@ const Report = () => {
                             border: "none",
                             fontSize: "14px",
                             textAlign: "left",
+                            width: "10cm",
                           }}
-                          defaultValue="на отвореном"
+                          defaultValue="у затвореном/на отвореном"
                         ></input>
                       </td>
                     </tr>
@@ -519,7 +533,7 @@ const Report = () => {
                         width: "10cm",
                         textAlign: "left",
                       }}
-                      defaultValue="помоћне сабирнице"
+                      defaultValue="главне и помоћне сабирнице"
                     ></input>
                   </td>
                 </tr>
@@ -528,24 +542,44 @@ const Report = () => {
                     Место
                   </td>
                   <td style={{ lineHeight: "30px", textAlign: "left" }}>
-                    {narudzbenica.mesto}
+                    <input
+                      type="text"
+                      style={{
+                        border: "none",
+                        fontSize: "14px",
+                        width: "10cm",
+                        textAlign: "left",
+                      }}
+                      defaultValue={narudzbenica.mesto}
+                    ></input>
                   </td>
                 </tr>
                 <tr>
                   <td style={{ textAlign: "left" }}>Датум/период испитивања</td>
                   <td style={{ textAlign: "left" }}>
-                    {ispCurr[0]?.datum.substring(8, 10) +
-                      "." +
-                      ispCurr[0]?.datum.substring(5, 7) +
-                      "." +
-                      ispCurr[0]?.datum.substring(0, 4)}
-                    {". "}-{" "}
-                    {ispCurr[0]?.datum_do.substring(8, 10) +
-                      "." +
-                      ispCurr[0]?.datum_do.substring(5, 7) +
-                      "." +
-                      ispCurr[0]?.datum_do.substring(0, 4)}
-                    {". "}
+                    <input
+                      type="text"
+                      style={{
+                        border: "none",
+                        fontSize: "14px",
+                        width: "10cm",
+                        textAlign: "left",
+                      }}
+                      defaultValue={
+                        ispCurr[0]?.datum.substring(8, 10) +
+                        "." +
+                        ispCurr[0]?.datum.substring(5, 7) +
+                        "." +
+                        ispCurr[0]?.datum.substring(0, 4) +
+                        ". - " +
+                        ispCurr[0]?.datum_do.substring(8, 10) +
+                        "." +
+                        ispCurr[0]?.datum_do.substring(5, 7) +
+                        "." +
+                        ispCurr[0]?.datum_do.substring(0, 4) +
+                        ". "
+                      }
+                    ></input>
                   </td>
                 </tr>
                 <tr>
@@ -566,7 +600,6 @@ const Report = () => {
                 </tr>
                 <tr>
                   <td>
-                    {" "}
                     <br></br>
                   </td>
                   <td></td>
@@ -629,6 +662,7 @@ const Report = () => {
                     <strong>
                       ver{" "}
                       <input
+                        ref={templateRef}
                         type="text"
                         style={{
                           border: "none",
@@ -636,6 +670,10 @@ const Report = () => {
                           width: "2cm",
                           fontWeight: "bold",
                           textAlign: "left",
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter")
+                            calculatePages(templateRef.current.value);
                         }}
                       ></input>
                     </strong>
@@ -901,13 +939,13 @@ const Report = () => {
                 style={{ border: "none", width: "100%" }}
               ></input>
             </span>
-            <span>Калибрисан до</span>
+            {/* <span>Калибрисан до</span>
             <span>
               <input
                 defaultValue="07-2020"
                 style={{ border: "none", width: "100%" }}
               ></input>
-            </span>
+            </span> */}
             <span>Антена</span>
             <span>
               <input
@@ -915,6 +953,7 @@ const Report = () => {
                 style={{ border: "none", width: "100%" }}
               ></input>
             </span>
+            <br></br>
           </div>
           <p
             style={{
@@ -1078,30 +1117,33 @@ const Report = () => {
             sifra={ispCurr[0]?.sifra.substr(-3)}
           />
         </div>
-        <div id="pg6" className="reportTable">
-          <ReportTable
-            izvBr={izvBr}
-            no={no}
-            ispPolja={ispPolja}
-            pageCount={[pageCount]}
-            napIzv={napIzv}
-            sifra={ispCurr[0]?.sifra.substr(-3)}
-            extraPage={extraPage}
-          />
-          <Zakljucak
-            napIzv={napIzv}
-            str={(8 + Math.ceil(no / 43)).toString()}
-            pageCount={pageCount}
-            setPageCount={setPageCount}
-            ispPolja={ispPolja}
-            izvBr={izvBr}
-            sifra={ispCurr[0]?.sifra.substr(-3)}
-            extraPage={extraPage}
-          />
+        <div className="reportTable">
+          {tablePages ? (
+            <ReportTable
+              izvBr={izvBr}
+              // no={no}
+              ispPolja={ispPolja}
+              pageCount={[pageCount]}
+              napIzv={napIzv}
+              sifra={ispCurr[0]?.sifra.substr(-3)}
+              tablePages={tablePages}
+            />
+          ) : null}
+          {zakljucakPages ? (
+            <Zakljucak
+              napIzv={napIzv}
+              str={8 + tablePages}
+              pageCount={pageCount}
+              zakljucakPages={zakljucakPages}
+              ispPolja={ispPolja}
+              izvBr={izvBr}
+              sifra={ispCurr[0]?.sifra.substr(-3)}
+            />
+          ) : null}
           {izvBr ? (
             <Listovi
               pageCount={pageCount}
-              no={no}
+              no={Object.keys(history).length}
               ispPolja={ispPolja}
               ispCurr={ispCurr}
               izvBr={izvBr}

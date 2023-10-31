@@ -149,7 +149,7 @@ const List = ({
                 />
                 {ele.history.filter(
                   (h) => h.sifra_ispitivanja === "ISP" + sifraIspitivanja
-                )[0]?.chart.hits ? (
+                )[0]?.chart.hits?.data.length ? (
                   <PrintHits
                     chartData={
                       ele.history.filter(
