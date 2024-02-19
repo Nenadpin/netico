@@ -38,6 +38,7 @@ const Report = () => {
     setMessage,
     setUpload,
     setTipPrikaza,
+    trafoStanica,
   } = useContext(ReportContext);
 
   const [pageCount, setPageCount] = useState(0);
@@ -54,6 +55,7 @@ const Report = () => {
   const templateRef = useRef();
   const [tablePages, setTablePages] = useState(null);
   const [zakljucakPages, setZakljucakPages] = useState(null);
+  const [reportNapon,setReportNapon]=useState(null)
 
   useEffect(() => {
     setLoading(true);
@@ -80,6 +82,16 @@ const Report = () => {
       let tIsp = ispList.filter((i) => {
         return i.narudzbenica === narudzbenica.broj_narudzbenice;
       });
+      console.log(tIsp)
+      let reportN=[]
+      tIsp[0]?.zapisnik[0]?.zap?.forEach(element => {
+        if(!reportN.includes(element.napkV)) reportN.push(element.napkV)
+      });
+    reportN=reportN.sort((a,b)=>{
+      if (parseInt(a)>parseInt(b)) return 1
+      else return -1
+    })
+      setReportNapon(reportN)
       setIspCurr(tIsp);
       if (polja.length) {
         let f = polja;
@@ -88,20 +100,6 @@ const Report = () => {
             return Object.keys(history).includes(e.moja_sifra);
           });
         }
-        // for (let i = 0; i < f.length; i++) {
-        //   if (f[i].element && f[i].element.length) {
-        //     acc += f[i].element.length;
-        //   }
-        //   if (acc > 44) {
-        //     strNo++;
-        //     acc = 0;
-        //     extraG += 1;
-        //     i = i - 1;
-        //   }
-        //   if (i > 1 && f[i].napon !== f[i - 1].napon) {
-        //     acc += 4;
-        //   }
-        // }
         f = f.sort((a, b) => {
           const celijaA = a.celija_oznaka.trim();
           const celijaB = b.celija_oznaka.trim();
@@ -113,7 +111,7 @@ const Report = () => {
           }
           return 0;
         });
-        console.log(narudzbenica, reports);
+        //        console.log(f);
         setIspPolja(f);
         let tIzvest = reports.filter((r) => {
           return r.narudzbenica === narudzbenica.broj_narudzbenice;
@@ -121,13 +119,18 @@ const Report = () => {
         if (tIzvest.length) setIzvBr({ ...tIzvest[0] });
       }
       let nap = {};
-
       for (let i = 0; i < narudzbenica.stavke.length; i++) {
-        if ([1, 2, 6, 7, 10, 12].includes(narudzbenica.stavke[i].pos))
-          nap[10] = nap[10]
-            ? [...nap[10], narudzbenica.stavke[i]]
-            : [narudzbenica.stavke[i]];
-        else if ([3, 4, 8, 9, 11, 13].includes(narudzbenica.stavke[i].pos))
+        if ([1, 2, 6, 7, 10, 12].includes(narudzbenica.stavke[i].pos)) {
+          if (trafoStanica.napon.includes("10")) {
+            nap[10] = nap[10]
+              ? [...nap[10], narudzbenica.stavke[i]]
+              : [narudzbenica.stavke[i]];
+          } else {
+            nap[20] = nap[20]
+              ? [...nap[20], narudzbenica.stavke[i]]
+              : [narudzbenica.stavke[i]];
+          }
+        } else if ([3, 4, 8, 9, 11, 13].includes(narudzbenica.stavke[i].pos))
           nap[35] = nap[35]
             ? [...nap[35], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
@@ -136,9 +139,6 @@ const Report = () => {
             ? [...nap[110], narudzbenica.stavke[i]]
             : [narudzbenica.stavke[i]];
       }
-      // if (extraG > Math.ceil(no_el / 43)) setExtraPage(1);
-      // no_el += 8 + strNo + Object.keys(nap).length;
-      //     setPageCount(no_el);
       setTablePages(Math.ceil(no_el / 43));
       setZakljucakPages(Object.keys(nap).length);
       setNapIzv(nap);
@@ -789,7 +789,7 @@ const Report = () => {
           <Footer sifra={ispCurr[0]?.sifra.substr(-3)} />
         </div>
         <Sadrzaj
-          napIzv={napIzv}
+          napIzv={reportNapon}
           sifra={ispCurr[0]?.sifra.substr(-3)}
           strSad={Math.ceil(Object.keys(history).length / 44) + 1}
         />
@@ -825,7 +825,8 @@ const Report = () => {
             ? Object.keys(napIzv).map((nap, idn) => {
                 return (
                   <div key={idn}>
-                    <p style={{ textAlign: "left" }}>{nap} kV</p>
+                    <p style={{ textAlign: "left" }}>
+                      {(nap==='10'||nap==='20')?'10/20':nap} kV</p>
                     <table className="tbl1">
                       <colgroup>
                         <col span="1" style={{ width: "10%" }}></col>
@@ -1124,14 +1125,14 @@ const Report = () => {
               // no={no}
               ispPolja={ispPolja}
               pageCount={[pageCount]}
-              napIzv={napIzv}
+              napIzv={reportNapon}
               sifra={ispCurr[0]?.sifra.substr(-3)}
               tablePages={tablePages}
             />
           ) : null}
           {zakljucakPages ? (
             <Zakljucak
-              napIzv={napIzv}
+              napIzv={reportNapon}
               str={8 + tablePages}
               pageCount={pageCount}
               zakljucakPages={zakljucakPages}

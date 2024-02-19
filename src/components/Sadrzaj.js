@@ -78,7 +78,7 @@ const Sadrzaj = ({ napIzv, strSad, sifra }) => {
             </td>
             <td style={{ textAlign: "right" }}>{7 + strSad}</td>
           </tr>
-          {Object.keys(napIzv).map((n, index) => {
+          {napIzv?.map((n, index) => {
             return (
               <tr key={index}>
                 <td style={{ textAlign: "right", paddingRight: "10px" }}>
@@ -101,7 +101,7 @@ const Sadrzaj = ({ napIzv, strSad, sifra }) => {
               . . . . . .
             </td>
             <td style={{ textAlign: "right" }}>
-              {7 + strSad + Object.keys(napIzv).length}
+              {7 + strSad + napIzv.length}
             </td>
           </tr>
         </tbody>

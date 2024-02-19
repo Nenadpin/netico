@@ -5,7 +5,7 @@ import serbianTransliteration from "serbian-transliteration";
 import ReportContext from "../Context";
 
 const NewTS = ({ tsList, setTsList }) => {
-  const { role, setMessage, keepWorking } = useContext(ReportContext);
+  const { role, setMessage } = useContext(ReportContext);
   const sifraRef = useRef();
   const nazivRef = useRef();
   const naponRef = useRef();
@@ -15,6 +15,7 @@ const NewTS = ({ tsList, setTsList }) => {
   const [dispTS, setDispTS] = useState([]);
   const [opt, setOpt] = useState();
   const [value, setValue] = useState("");
+  const [editTS, setEditTS] = useState(false);
 
   const handleChange = (event, { newValue }) => {
     setValue(newValue);
@@ -34,7 +35,7 @@ const NewTS = ({ tsList, setTsList }) => {
               (word) =>
                 word.toLowerCase().slice(0, inputLength) === inputValueLower
             );
-      return filteredSuggestions.slice(0, 3); // Limiting to 3 suggestions
+      return filteredSuggestions.slice(0, 3);
     }
     return [];
   };
@@ -62,14 +63,6 @@ const NewTS = ({ tsList, setTsList }) => {
       objekat: serbianTransliteration.toCyrillic(objekatRef.current.value),
       koordinate: koordRef.current.value,
     };
-    if (
-      tsList.filter((t) => {
-        return t.sifra_ts === newTS.sifra_ts;
-      }).length
-    ) {
-      setMessage("Vec postoji ta sifra TS!");
-      return;
-    }
     if (newTS.sifra_ts && newTS.naziv && newTS.naponski_nivo && value) {
       try {
         const token = sessionStorage.getItem(role);
@@ -86,9 +79,19 @@ const NewTS = ({ tsList, setTsList }) => {
         );
         if (response.status === 210) {
           setMessage("primljeno");
-          console.log(newTS);
-          let newList = [...tsList, newTS];
-          setTsList(newList);
+          if (
+            tsList.filter((t) => {
+              return t.sifra_ts === newTS.sifra_ts;
+            }).length !== 0
+          ) {
+            setMessage("Izmenjena je trafostanica");
+            let newList = tsList.filter((t) => t.sifra_ts !== newTS.sifra_ts);
+            newList.push(newTS);
+            setTsList(newList);
+          } else {
+            let newList = [...tsList, newTS];
+            setTsList(newList);
+          }
           sifraRef.current.value = "";
           nazivRef.current.value = "";
           naponRef.current.value = "";
@@ -116,11 +119,27 @@ const NewTS = ({ tsList, setTsList }) => {
       .toString()
       .padStart(3, "0")}`;
   };
+  const populateTS = (ts) => {
+    sifraRef.current.value = ts.sifra_ts;
+    nazivRef.current.value = ts.naziv;
+    naponRef.current.value = ts.naponski_nivo;
+    setValue(ts.ed);
+    if (ts.region) regionRef.current.value = ts.region;
+    setEditTS((ts) => !ts);
+  };
+  const resetTS = () => {
+    setEditTS((ts) => !ts);
+    sifraRef.current.value = `TS${tsList.length + 104}`;
+    nazivRef.current.value = "";
+    naponRef.current.value = "";
+    regionRef.current.value = "";
+    setValue("");
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
       <form onSubmit={handleNewTS} style={{ marginTop: "0", width: "50%" }}>
-        <h3>Nova trafostanica</h3>
+        <h3>{editTS ? "Izmena trafostanice" : "Nova trafostanica"}</h3>
         <div
           style={{
             display: "grid",
@@ -155,11 +174,11 @@ const NewTS = ({ tsList, setTsList }) => {
               fontSize: "1.2rem",
               fontWeight: "400",
             }}
-            onFocus={() =>
-              (sifraRef.current.value = `TS${(tsList.length + 104)
-                .toString()
-                .padStart(3, "0")}`)
-            }
+            // onFocus={() =>
+            //   (sifraRef.current.value = `TS${(tsList.length + 104)
+            //     .toString()
+            //     .padStart(3, "0")}`)
+            // }
             ref={nazivRef}
           ></input>
           <h3>Naponski nivo (*)</h3>
@@ -219,9 +238,18 @@ const NewTS = ({ tsList, setTsList }) => {
         <button type="submit" style={{ marginLeft: "0" }} className="block-btn">
           Upisi u bazu
         </button>
+        {editTS ? (
+          <button
+            className="block-btn"
+            style={{ marginLeft: "0", background: "red" }}
+            onClick={() => resetTS()}
+          >
+            Odustani
+          </button>
+        ) : null}
       </form>
       {dispTS && opt ? (
-        <div style={{ maxHeight: "100vh", overflow: "scroll", width: "50%" }}>
+        <div style={{ overflow: "scroll", width: "50%" }}>
           <table style={{ maxWidth: "600px", margin: "0 auto" }}>
             <thead>
               <tr>
@@ -263,7 +291,11 @@ const NewTS = ({ tsList, setTsList }) => {
             <tbody>
               {dispTS.map((ts, ind) => {
                 return (
-                  <tr key={ind}>
+                  <tr
+                    key={ind}
+                    onClick={() => populateTS(ts)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <td>{ind + 1}</td>
                     <td>{ts.sifra_ts}</td>
                     <td style={{ paddingLeft: "5px", textAlign: "left" }}>

@@ -153,7 +153,7 @@ const Zakljucak = ({
             <tr style={{ border: "none" }}>
               <td style={{ border: "none", display: "block" }}>
                 {napIzv
-                  ? Object.keys(napIzv).map((pn, iz) => {
+                  ? napIzv.map((pn, iz) => {
                       return (
                         <div
                           key={iz}

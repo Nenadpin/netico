@@ -18,7 +18,7 @@ const ReportTable = ({
   let r_br = 0;
   let str = [];
   useMemo(() => {
-    // console.log(tablePages);
+    console.log(history);
     if (tablePages) {
       //      let total = Math.ceil(no / 43);
       for (let i = 0; i < tablePages; i++) str.push(8 + i);
@@ -88,7 +88,7 @@ const ReportTable = ({
                         className="newContainer"
                         style={{ marginLeft: "1.5cm" }}
                       >
-                        {Object.keys(napIzv).map((el, index) => {
+                        {napIzv.map((el, index) => {
                           return (
                             <table
                               className="tbl"
